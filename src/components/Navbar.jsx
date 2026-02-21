@@ -1,0 +1,46 @@
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './Navbar.css';
+
+export default function Navbar() {
+    const { user, isAdmin, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
+    return (
+        <nav className="navbar">
+            <div className="navbar-inner container">
+                <NavLink to="/" className="navbar-logo">
+                    <span className="logo-icon">◆</span>
+                    <span className="logo-text">BaroLab</span>
+                </NavLink>
+
+                <div className="navbar-links">
+                    <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Посты
+                    </NavLink>
+                    {isAdmin && (
+                        <NavLink
+                            to="/admin"
+                            className={({ isActive }) => `nav-link nav-link-admin ${isActive ? 'active' : ''}`}
+                        >
+                            ⚙ Админ
+                        </NavLink>
+                    )}
+                </div>
+
+                <div className="navbar-user">
+                    {user?.username && <span className="user-name-badge" style={{ marginRight: 8 }}>@{user.username}</span>}
+                    <span className="user-role-badge">{user?.role}</span>
+                    <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                        Выйти
+                    </button>
+                </div>
+            </div>
+        </nav>
+    );
+}
