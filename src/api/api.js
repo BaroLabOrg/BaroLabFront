@@ -95,6 +95,14 @@ export async function blockPost(postId) {
     return request(`/post/${postId}/block`, { method: 'PUT' });
 }
 
+export async function likePost(postId) {
+    return request(`/post/${postId}/like`, { method: 'POST' });
+}
+
+export async function dislikePost(postId) {
+    return request(`/post/${postId}/dislike`, { method: 'POST' });
+}
+
 // ═══════════ Comments ═══════════
 export async function getComments(postId) {
     return request(`/post/${postId}/comment`);

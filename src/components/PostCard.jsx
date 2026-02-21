@@ -8,6 +8,8 @@ export default function PostCard({ post }) {
         month: 'short',
         year: 'numeric',
     });
+    const ratingValue = typeof post?.rating === 'number' ? post.rating : 0;
+    const ratingTone = ratingValue > 0 ? 'positive' : ratingValue < 0 ? 'negative' : 'neutral';
 
     return (
         <Link to={`/post/${post.id}`} className="post-card glass-card">
@@ -20,8 +22,8 @@ export default function PostCard({ post }) {
             <h3 className="post-card-title">{post.title}</h3>
             <p className="post-card-content">{post.content}</p>
             <div className="post-card-footer">
-                <span className="post-card-rating">
-                    ★ {post.rating}
+                <span className={`post-card-rating rating-value rating-${ratingTone}`}>
+                    {post.rating}
                 </span>
                 <span className="post-card-read">Читать →</span>
             </div>

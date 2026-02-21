@@ -57,7 +57,7 @@
 .post-card-rating {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--warning);
+    color: var(--text-muted);
 }
 
 .post-card-read {
