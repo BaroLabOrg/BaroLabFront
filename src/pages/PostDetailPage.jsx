@@ -12,6 +12,7 @@ export default function PostDetailPage() {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [ratingLoading, setRatingLoading] = useState(false);
 
     // New comment
     const [commentBody, setCommentBody] = useState('');
@@ -51,6 +52,43 @@ export default function PostDetailPage() {
         }
     };
 
+    const applyRatingUpdate = (data) => {
+        if (!data) return;
+        if (data.post && data.post.id) {
+            setPost(data.post);
+            return;
+        }
+        if (data.id) {
+            setPost(data);
+            return;
+        }
+        if (typeof data.rating === 'number' || data.my_vote !== undefined) {
+            setPost((prev) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    ...(typeof data.rating === 'number' ? { rating: data.rating } : {}),
+                    ...(data.my_vote !== undefined ? { my_vote: data.my_vote } : {}),
+                };
+            });
+        }
+    };
+
+    const handleRating = async (type) => {
+        if (!post || ratingLoading) return;
+        setRatingLoading(true);
+        try {
+            const res = type === 'like'
+                ? await api.likePost(post.id)
+                : await api.dislikePost(post.id);
+            applyRatingUpdate(res);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setRatingLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="page">
@@ -87,6 +125,11 @@ export default function PostDetailPage() {
         })
         : '';
 
+    const likeActive = post?.my_vote === 1;
+    const dislikeActive = post?.my_vote === -1;
+    const ratingValue = typeof post?.rating === 'number' ? post.rating : 0;
+    const ratingTone = ratingValue > 0 ? 'positive' : ratingValue < 0 ? 'negative' : 'neutral';
+
     return (
         <div className="page">
             <div className="container">
@@ -99,7 +142,25 @@ export default function PostDetailPage() {
                                 👤 {post.author_username || post.user_id?.slice(0, 8)}
                             </span>
                             <span className="post-detail-date">{date}</span>
-                            <span className="post-detail-rating">★ {post.rating}</span>
+                            <span className={`post-detail-rating rating-value rating-${ratingTone}`}>{post.rating}</span>
+                            <div className="post-detail-rating-actions">
+                                <button
+                                    type="button"
+                                    className={`btn btn-ghost btn-sm rating-btn rating-btn-like ${likeActive ? 'active' : ''}`}
+                                    onClick={() => handleRating('like')}
+                                    disabled={ratingLoading}
+                                >
+                                    +
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`btn btn-ghost btn-sm rating-btn rating-btn-dislike ${dislikeActive ? 'active' : ''}`}
+                                    onClick={() => handleRating('dislike')}
+                                    disabled={ratingLoading}
+                                >
+                                    -
+                                </button>
+                            </div>
                         </div>
                         <h1 className="post-detail-title">{post.title}</h1>
                         <div className="post-detail-body">
@@ -147,3 +208,4 @@ export default function PostDetailPage() {
         </div>
     );
 }
+

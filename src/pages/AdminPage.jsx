@@ -232,7 +232,7 @@ function PostsTab() {
                             </div>
                             <div className="admin-item-badges">
                                 <StatusBadge status={post.status} />
-                                <span className="post-rating-badge">★ {post.rating}</span>
+                                <span className="post-rating-badge">{post.rating}</span>
                             </div>
                         </div>
                         <div className="admin-item-actions">
@@ -414,3 +414,4 @@ function LoadingSpinner() {
         </div>
     );
 }
+
