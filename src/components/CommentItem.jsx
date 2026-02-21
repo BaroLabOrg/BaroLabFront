@@ -1,4 +1,4 @@
-import StatusBadge from './StatusBadge';
+
 import './CommentItem.css';
 
 export default function CommentItem({ comment }) {
@@ -14,7 +14,6 @@ export default function CommentItem({ comment }) {
         <div className="comment-item fade-in">
             <div className="comment-header">
                 <span className="comment-author">👤 {comment.author_username || comment.user_id?.slice(0, 8)}...</span>
-                <StatusBadge status={comment.status} />
             </div>
             <p className="comment-body">{comment.body}</p>
             <span className="comment-date">{date}</span>

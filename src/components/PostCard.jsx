@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import StatusBadge from './StatusBadge';
+
 import './PostCard.css';
 
 export default function PostCard({ post }) {
@@ -12,8 +12,7 @@ export default function PostCard({ post }) {
     return (
         <Link to={`/post/${post.id}`} className="post-card glass-card">
             <div className="post-card-header">
-                <StatusBadge status={post.status} />
-                <span className="post-card-author" style={{ marginLeft: 8, marginRight: 'auto', opacity: 0.8, fontSize: '0.9rem' }}>
+                <span className="post-card-author" style={{ marginRight: 'auto', opacity: 0.8, fontSize: '0.9rem' }}>
                     👤 {post.author_username || post.user_id?.slice(0, 8)}
                 </span>
                 <span className="post-card-date">{date}</span>

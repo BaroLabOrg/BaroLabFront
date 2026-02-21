@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as api from '../api/api';
-import StatusBadge from '../components/StatusBadge';
+
 import CommentItem from '../components/CommentItem';
 import './PostDetailPage.css';
 
@@ -98,7 +98,6 @@ export default function PostDetailPage() {
                             <span className="post-detail-author" style={{ marginRight: 16 }}>
                                 👤 {post.author_username || post.user_id?.slice(0, 8)}
                             </span>
-                            <StatusBadge status={post.status} />
                             <span className="post-detail-date">{date}</span>
                             <span className="post-detail-rating">★ {post.rating}</span>
                         </div>
