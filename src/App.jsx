@@ -13,7 +13,7 @@ export default function App() {
 
     return (
         <>
-            {isAuthenticated && <Navbar />}
+            <Navbar />
             <Routes>
                 {/* Public */}
                 <Route
@@ -25,22 +25,14 @@ export default function App() {
                     element={isAuthenticated ? <Navigate to="/" replace /> : <SignUpPage />}
                 />
 
-                {/* Protected */}
+                {/* Protected / Public Mix */}
                 <Route
                     path="/"
-                    element={
-                        <ProtectedRoute>
-                            <PostsPage />
-                        </ProtectedRoute>
-                    }
+                    element={<PostsPage />}
                 />
                 <Route
                     path="/post/:postId"
-                    element={
-                        <ProtectedRoute>
-                            <PostDetailPage />
-                        </ProtectedRoute>
-                    }
+                    element={<PostDetailPage />}
                 />
                 <Route
                     path="/admin"

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 import PostCard from '../components/PostCard';
 import './PostsPage.css';
 
 export default function PostsPage() {
+    const { isAuthenticated } = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -66,16 +68,18 @@ export default function PostsPage() {
                         <h1 className="page-title">Лента постов</h1>
                         <p className="page-subtitle">Все публикации сообщества</p>
                     </div>
-                    <button
-                        id="create-post-toggle"
-                        className="btn btn-primary"
-                        onClick={() => setShowForm(!showForm)}
-                    >
-                        {showForm ? '✕ Закрыть' : '+ Новый пост'}
-                    </button>
+                    {isAuthenticated && (
+                        <button
+                            id="create-post-toggle"
+                            className="btn btn-primary"
+                            onClick={() => setShowForm(!showForm)}
+                        >
+                            {showForm ? '✕ Закрыть' : '+ Новый пост'}
+                        </button>
+                    )}
                 </div>
 
-                {showForm && (
+                {isAuthenticated && showForm && (
                     <form className="create-post-form glass-card fade-in" onSubmit={handleCreatePost}>
                         <h3 className="form-title">Создать пост</h3>
                         <div className="form-group">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 
 import CommentItem from '../components/CommentItem';
@@ -7,6 +8,7 @@ import './PostDetailPage.css';
 
 export default function PostDetailPage() {
     const { postId } = useParams();
+    const { isAuthenticated } = useAuth();
 
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
@@ -148,7 +150,8 @@ export default function PostDetailPage() {
                                     type="button"
                                     className={`btn btn-ghost btn-sm rating-btn rating-btn-like ${likeActive ? 'active' : ''}`}
                                     onClick={() => handleRating('like')}
-                                    disabled={ratingLoading}
+                                    disabled={ratingLoading || !isAuthenticated}
+                                    style={{ cursor: isAuthenticated ? 'pointer' : 'not-allowed' }}
                                 >
                                     +
                                 </button>
@@ -156,7 +159,8 @@ export default function PostDetailPage() {
                                     type="button"
                                     className={`btn btn-ghost btn-sm rating-btn rating-btn-dislike ${dislikeActive ? 'active' : ''}`}
                                     onClick={() => handleRating('dislike')}
-                                    disabled={ratingLoading}
+                                    disabled={ratingLoading || !isAuthenticated}
+                                    style={{ cursor: isAuthenticated ? 'pointer' : 'not-allowed' }}
                                 >
                                     -
                                 </button>
@@ -175,24 +179,32 @@ export default function PostDetailPage() {
                         Комментарии <span className="comments-count">{comments.length}</span>
                     </h2>
 
-                    <form className="comment-form" onSubmit={handleAddComment}>
-                        <textarea
-                            id="comment-input"
-                            value={commentBody}
-                            onChange={(e) => setCommentBody(e.target.value)}
-                            placeholder="Напишите комментарий..."
-                            rows="3"
-                            required
-                        />
-                        <button
-                            id="submit-comment"
-                            type="submit"
-                            className="btn btn-primary btn-sm"
-                            disabled={submitting}
-                        >
-                            {submitting ? 'Отправка...' : 'Отправить'}
-                        </button>
-                    </form>
+                    {isAuthenticated ? (
+                        <form className="comment-form" onSubmit={handleAddComment}>
+                            <textarea
+                                id="comment-input"
+                                value={commentBody}
+                                onChange={(e) => setCommentBody(e.target.value)}
+                                placeholder="Напишите комментарий..."
+                                rows="3"
+                                required
+                            />
+                            <button
+                                id="submit-comment"
+                                type="submit"
+                                className="btn btn-primary btn-sm"
+                                disabled={submitting}
+                            >
+                                {submitting ? 'Отправка...' : 'Отправить'}
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="guest-comment-prompt fade-in" style={{ padding: '16px', background: 'var(--glass-bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)', marginBottom: '24px', textAlign: 'center' }}>
+                            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+                                <Link to="/login" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: '500' }}>Войдите</Link> или <Link to="/sign-up" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: '500' }}>зарегистрируйтесь</Link>, чтобы оставить комментарий.
+                            </p>
+                        </div>
+                    )}
 
                     {error && <div className="auth-error" style={{ marginTop: 12 }}>{error}</div>}
 

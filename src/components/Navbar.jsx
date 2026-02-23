@@ -34,11 +34,24 @@ export default function Navbar() {
                 </div>
 
                 <div className="navbar-user">
-                    {user?.username && <span className="user-name-badge" style={{ marginRight: 8 }}>@{user.username}</span>}
-                    <span className="user-role-badge">{user?.role}</span>
-                    <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
-                        Выйти
-                    </button>
+                    {user ? (
+                        <>
+                            {user.username && <span className="user-name-badge" style={{ marginRight: 8 }}>@{user.username}</span>}
+                            <span className="user-role-badge">{user.role}</span>
+                            <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                                Выйти
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <NavLink to="/login" className="btn btn-ghost btn-sm" style={{ marginRight: 8 }}>
+                                Войти
+                            </NavLink>
+                            <NavLink to="/sign-up" className="btn btn-primary btn-sm">
+                                Регистрация
+                            </NavLink>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>
