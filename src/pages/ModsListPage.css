@@ -1,0 +1,96 @@
+/* ─── Mods List Page ─── */
+
+.mods-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.mods-header .page-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.mods-header .page-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+}
+
+.mods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+/* ─── Create Mod Form ─── */
+.create-mod-form {
+    padding: 28px;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.create-mod-form .form-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.create-mod-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.create-mod-form .form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.create-mod-form input,
+.create-mod-form textarea {
+    width: 100%;
+}
+
+/* ─── Empty State ─── */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 80px 20px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+    .mods-header {
+        flex-direction: column;
+    }
+
+    .mods-grid {
+        grid-template-columns: 1fr;
+    }
+}

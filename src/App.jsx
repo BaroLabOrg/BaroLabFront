@@ -7,6 +7,8 @@ import SignUpPage from './pages/SignUpPage';
 import PostsPage from './pages/PostsPage';
 import PostDetailPage from './pages/PostDetailPage';
 import AdminPage from './pages/AdminPage';
+import ModsListPage from './pages/ModsListPage';
+import ModPage from './pages/ModPage';
 
 export default function App() {
     const { isAuthenticated } = useAuth();
@@ -34,6 +36,17 @@ export default function App() {
                     path="/post/:postId"
                     element={<PostDetailPage />}
                 />
+
+                {/* Mods */}
+                <Route
+                    path="/mods"
+                    element={<ModsListPage />}
+                />
+                <Route
+                    path="/mod/:externalId"
+                    element={<ModPage />}
+                />
+
                 <Route
                     path="/admin"
                     element={

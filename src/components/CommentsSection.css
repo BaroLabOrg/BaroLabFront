@@ -1,0 +1,112 @@
+.mod-comments-section {
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.mod-comments-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+}
+
+.mod-comments-count {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-input);
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
+.mod-comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.mod-comment-input {
+    width: 100%;
+    resize: vertical;
+    min-height: 70px;
+}
+
+.mod-comment-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.mod-comment-guest {
+    padding: 20px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.mod-comment-guest p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.mod-comments-empty {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.mod-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mod-comment-card {
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    transition: border-color var(--transition-fast);
+}
+
+.mod-comment-card:hover {
+    border-color: var(--border-hover);
+}
+
+.mod-comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.mod-comment-author {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mod-comment-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.mod-comment-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.mod-comment-rating {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--danger);
+}

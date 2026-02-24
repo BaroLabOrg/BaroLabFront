@@ -1,0 +1,177 @@
+.mod-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mod-sidebar-card {
+    padding: 20px;
+}
+
+.mod-sidebar-card:hover {
+    background: var(--bg-card);
+}
+
+.mod-sidebar-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+}
+
+/* ─── Dependencies ─── */
+.mod-deps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mod-dep-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+}
+
+.mod-dep-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.mod-dep-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.mod-dep-badge.required {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.mod-dep-badge.optional {
+    color: var(--text-muted);
+    background: var(--bg-input);
+}
+
+/* ─── Creator ─── */
+.mod-creator-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+}
+
+.mod-creator-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.mod-creator-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mod-creator-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.mod-creator-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ─── Similar ─── */
+.mod-similar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mod-similar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.mod-similar-item:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.mod-similar-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.mod-similar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.mod-similar-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mod-similar-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.mod-similar-tag.safe {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.mod-similar-tag.nsfw {
+    color: var(--danger);
+    background: var(--danger-bg);
+}

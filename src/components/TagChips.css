@@ -1,0 +1,30 @@
+.tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-chip {
+    display: inline-block;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(108, 99, 255, 0.1);
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    border-radius: 20px;
+    transition: all var(--transition-fast);
+    cursor: default;
+}
+
+.tag-chip:hover {
+    background: rgba(108, 99, 255, 0.18);
+    color: var(--text-primary);
+    border-color: rgba(108, 99, 255, 0.35);
+}
+
+.tag-chips-empty {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
+}

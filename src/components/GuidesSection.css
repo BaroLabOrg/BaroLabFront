@@ -1,0 +1,96 @@
+.guides-section {
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.guides-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.guides-accent-bar {
+    width: 4px;
+    height: 24px;
+    background: var(--danger);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.guides-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.guides-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px 16px;
+    color: var(--text-muted);
+}
+
+.guides-empty-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+.guides-empty p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.guides-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.guide-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    transition: all var(--transition-fast);
+}
+
+.guide-item:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+}
+
+.guide-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.guide-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.guide-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.guide-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
