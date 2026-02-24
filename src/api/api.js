@@ -130,3 +130,37 @@ export async function blockComment(postId, commentId) {
         method: 'PUT',
     });
 }
+
+// ═══════════ Mods ═══════════
+export async function getMods() {
+    return request('/mods');
+}
+
+export async function getModById(externalId) {
+    return request(`/mod/${externalId}`);
+}
+
+export async function activateMod(externalId) {
+    return request(`/mod/${externalId}/activate`, { method: 'PUT' });
+}
+
+export async function blockMod(externalId) {
+    return request(`/mod/${externalId}/block`, { method: 'PUT' });
+}
+
+// ═══════════ Mod Comments ═══════════
+export async function getModComments(externalId) {
+    return request(`/mod/${externalId}/comment`);
+}
+
+export async function activateModComment(externalId, commentId) {
+    return request(`/mod/${externalId}/comment/${commentId}/activate`, {
+        method: 'PUT',
+    });
+}
+
+export async function blockModComment(externalId, commentId) {
+    return request(`/mod/${externalId}/comment/${commentId}/block`, {
+        method: 'PUT',
+    });
+}

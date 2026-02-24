@@ -95,6 +95,13 @@
     text-overflow: ellipsis;
 }
 
+.admin-item-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
 .admin-item-badges {
     display: flex;
     align-items: center;
@@ -225,4 +232,47 @@
         width: 100%;
         justify-content: flex-end;
     }
+}
+
+/* ─── Comments Ladder ─── */
+.admin-item-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.admin-item.expanded {
+    border-color: var(--accent);
+}
+
+.comments-ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 24px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+}
+
+.admin-comment-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 16px;
+}
+
+.comment-admin-author {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.no-comments {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-style: italic;
+    padding: 8px 0;
 }
