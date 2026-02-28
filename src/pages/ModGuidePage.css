@@ -1,0 +1,178 @@
+.guide-container {
+    padding: 6rem 2rem 2rem 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    color: #e0e0e0;
+}
+
+.guide-header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.guide-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.guide-meta {
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.guide-meta a {
+    color: #4da6ff;
+    text-decoration: none;
+}
+
+.guide-meta a:hover {
+    text-decoration: underline;
+}
+
+.guide-meta span {
+    margin-right: 15px;
+}
+
+.guide-content-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+/* React Markdown Styles */
+.guide-markdown-body {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.guide-markdown-body h2 {
+    margin-top: 2rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+.guide-markdown-body img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.guide-markdown-body code {
+    background-color: #1a1a1a;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.guide-markdown-body pre code {
+    display: block;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* Custom Components Styles */
+
+.guide-quote {
+    border-left: 4px solid #4da6ff;
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background-color: rgba(77, 166, 255, 0.05);
+    border-radius: 0 4px 4px 0;
+}
+
+.quote-text {
+    font-style: italic;
+    margin: 0;
+    color: #ccc;
+    font-size: 1.2rem;
+}
+
+.quote-author {
+    margin-top: 0.5rem;
+    text-align: right;
+    font-weight: bold;
+    color: #888;
+}
+
+/* Table / Infobox */
+.guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.guide-table th,
+.guide-table td {
+    border: 1px solid #333;
+    padding: 0.75rem;
+}
+
+.guide-table th {
+    background-color: #1a1a1a;
+}
+
+/* Infobox Specific Styling (floated right) */
+.guide-infobox {
+    float: right;
+    width: 300px;
+    margin: 0 0 1rem 2rem;
+    border: 1px solid #333;
+    background-color: #111;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.guide-infobox th {
+    background-color: #222;
+    color: #fff;
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.guide-infobox td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #222;
+}
+
+/* Clearfix for floated infobox */
+.guide-markdown-body::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/* Admin Actions */
+.guide-admin-actions {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #333;
+    text-align: right;
+}
+
+.guide-create-btn,
+.guide-edit-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.guide-create-btn:hover,
+.guide-edit-btn:hover {
+    background-color: #4da6ff;
+    color: #000;
+}
+
+.guide-loading,
+.guide-error {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.2rem;
+    color: #888;
+}

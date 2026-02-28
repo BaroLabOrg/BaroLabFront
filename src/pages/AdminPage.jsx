@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
+import * as guideApi from '../api/modGuides';
 import StatusBadge from '../components/StatusBadge';
+import { Link } from 'react-router-dom';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
@@ -15,7 +17,7 @@ export default function AdminPage() {
             <div className="container">
                 <div className="admin-header">
                     <h1 className="page-title">⚙ Панель администратора</h1>
-                    <p className="page-subtitle">Управление пользователями, постами и модами (с комментариями)</p>
+                    <p className="page-subtitle">Управление пользователями, постами, модами и их руководствами</p>
                 </div>
 
                 <div className="admin-tabs">
@@ -39,12 +41,19 @@ export default function AdminPage() {
                     >
                         🎮 Моды
                     </button>
+                    <button
+                        className={`admin-tab ${activeTab === 'guides' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('guides')}
+                    >
+                        📚 Руководства
+                    </button>
                 </div>
 
                 <div className="admin-content fade-in">
                     {activeTab === 'users' && isSuperAdmin && <UsersTab />}
                     {activeTab === 'posts' && <PostsTab />}
                     {activeTab === 'mods' && <ModsTab />}
+                    {activeTab === 'guides' && <GuidesTab />}
                 </div>
             </div>
         </div>
@@ -592,6 +601,111 @@ function ModsTab() {
                         </div>
                     );
                 })}
+            </div>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════════ */
+/*                GUIDES TAB                  */
+/* ═══════════════════════════════════════════ */
+function GuidesTab() {
+    const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [actionLoading, setActionLoading] = useState(null);
+
+    useEffect(() => {
+        loadGuides();
+    }, []);
+
+    const loadGuides = async () => {
+        try {
+            const data = await guideApi.getAllGuides();
+            const sortedData = data.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
+            setGuides(sortedData);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleActivate = async (guideId) => {
+        setActionLoading(guideId);
+        try {
+            const updated = await guideApi.activateGuide(guideId);
+            setGuides(guides.map((g) => (g.id === guideId ? updated : g)));
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleBlock = async (guideId) => {
+        setActionLoading(guideId);
+        try {
+            const updated = await guideApi.blockGuide(guideId);
+            setGuides(guides.map((g) => (g.id === guideId ? updated : g)));
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <div className="admin-tab-content">
+            {error && <div className="auth-error">{error}</div>}
+            <div className="admin-stat">Всего руководств: <strong>{guides.length}</strong></div>
+            <div className="admin-list">
+                {guides.map((guide) => (
+                    <div key={guide.id} className="admin-item-group">
+                        <div className="admin-item glass-card">
+                            <div className="admin-item-info">
+                                <div className="admin-item-main">
+                                    <span className="admin-item-name">{guide.title}</span>
+                                    <span className="admin-item-sub">
+                                        {guide.content?.slice(0, 80)}{guide.content?.length > 80 ? '...' : ''}
+                                    </span>
+                                    <span className="admin-item-meta">
+                                        🔗 <Link to={`/admin/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">К моду ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}
+                                    </span>
+                                    <span className="admin-item-date">
+                                        🕒 {formatDate(guide.createdAt || guide.created_at)}
+                                        {(guide.updatedAt || guide.updated_at) && (guide.updatedAt || guide.updated_at) !== (guide.createdAt || guide.created_at) ?
+                                            ` (обн. ${formatDate(guide.updatedAt || guide.updated_at)})` : ''}
+                                    </span>
+                                </div>
+                                <div className="admin-item-badges">
+                                    <StatusBadge status={guide.status} />
+                                </div>
+                            </div>
+                            <div className="admin-item-actions">
+                                {guide.status === 'BLOCKED' ? (
+                                    <button
+                                        className="btn btn-success btn-sm"
+                                        onClick={() => handleActivate(guide.id)}
+                                        disabled={actionLoading === guide.id}
+                                    >
+                                        Активировать
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => handleBlock(guide.id)}
+                                        disabled={actionLoading === guide.id}
+                                    >
+                                        Заблокировать
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

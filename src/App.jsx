@@ -9,6 +9,8 @@ import PostDetailPage from './pages/PostDetailPage';
 import AdminPage from './pages/AdminPage';
 import ModsListPage from './pages/ModsListPage';
 import ModPage from './pages/ModPage';
+import ModGuidePage from './pages/ModGuidePage';
+import AdminModGuideEditor from './pages/AdminModGuideEditor';
 
 export default function App() {
     const { isAuthenticated } = useAuth();
@@ -46,12 +48,32 @@ export default function App() {
                     path="/mod/:externalId"
                     element={<ModPage />}
                 />
+                <Route
+                    path="/mod/:id/guides/:guideId"
+                    element={<ModGuidePage />}
+                />
 
                 <Route
                     path="/admin"
                     element={
                         <ProtectedRoute adminOnly>
                             <AdminPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/mod/:id/guides/new"
+                    element={
+                        <ProtectedRoute adminOnly>
+                            <AdminModGuideEditor />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/mod/:id/guides/:guideId/edit"
+                    element={
+                        <ProtectedRoute adminOnly>
+                            <AdminModGuideEditor />
                         </ProtectedRoute>
                     }
                 />
