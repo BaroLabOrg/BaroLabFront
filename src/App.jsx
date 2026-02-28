@@ -10,6 +10,7 @@ import AdminPage from './pages/AdminPage';
 import ModsListPage from './pages/ModsListPage';
 import ModPage from './pages/ModPage';
 import ModGuidePage from './pages/ModGuidePage';
+import GuidesListPage from './pages/GuidesListPage';
 import AdminModGuideEditor from './pages/AdminModGuideEditor';
 
 export default function App() {
@@ -45,6 +46,10 @@ export default function App() {
                     element={<ModsListPage />}
                 />
                 <Route
+                    path="/guides"
+                    element={<GuidesListPage />}
+                />
+                <Route
                     path="/mod/:externalId"
                     element={<ModPage />}
                 />
@@ -64,7 +69,7 @@ export default function App() {
                 <Route
                     path="/admin/mod/:id/guides/new"
                     element={
-                        <ProtectedRoute adminOnly>
+                        <ProtectedRoute>
                             <AdminModGuideEditor />
                         </ProtectedRoute>
                     }
@@ -72,7 +77,7 @@ export default function App() {
                 <Route
                     path="/admin/mod/:id/guides/:guideId/edit"
                     element={
-                        <ProtectedRoute adminOnly>
+                        <ProtectedRoute>
                             <AdminModGuideEditor />
                         </ProtectedRoute>
                     }

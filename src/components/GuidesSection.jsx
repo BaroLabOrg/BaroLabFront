@@ -11,7 +11,8 @@ export default function GuidesSection() {
     const [guides, setGuides] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const canEditGuide = user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
+    const canCreateGuide = user !== null;
+    const canEditGuide = (guideAuthorId) => user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.id === guideAuthorId);
 
     useEffect(() => {
         async function fetchGuides() {
@@ -61,7 +62,7 @@ export default function GuidesSection() {
                     <span className="guides-accent-bar" />
                     <h3 className="guides-title" style={{ margin: 0 }}>Связанные руководства</h3>
                 </div>
-                {canEditGuide && (
+                {canCreateGuide && (
                     <button
                         onClick={handleCreateGuide}
                         style={{
@@ -99,7 +100,7 @@ export default function GuidesSection() {
                                     </span>
                                 </div>
                             </Link>
-                            {canEditGuide && (
+                            {canEditGuide(guide.author?.id) && (
                                 <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
                                     <button
                                         onClick={(e) => {

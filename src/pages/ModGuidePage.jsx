@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAuth } from '../context/AuthContext';
 import { getModGuideById } from '../api/modGuides';
 import { getMod } from '../api/mods';
 import './ModGuidePage.css';
@@ -82,6 +83,7 @@ const CustomTable = ({ children, ...props }) => {
 
 export default function ModGuidePage() {
     const { id, guideId } = useParams();
+    const { user } = useAuth();
     const [guide, setGuide] = useState(null);
     const [mod, setMod] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -122,9 +124,11 @@ export default function ModGuidePage() {
             <div className="guide-container">
                 <h1>Guide for {mod.title}</h1>
                 <p>No guide exists for this mod yet.</p>
-                <Link to={`/admin/mod/${id}/guides/new`} className="guide-create-btn">
-                    Create Guide (Admin)
-                </Link>
+                {user && (
+                    <Link to={`/admin/mod/${id}/guides/new`} className="guide-create-btn">
+                        Создать руководство
+                    </Link>
+                )}
             </div>
         );
     }
@@ -155,9 +159,11 @@ export default function ModGuidePage() {
             </div>
 
             <div className="guide-admin-actions">
-                <Link to={`/admin/mod/${id}/guides/${guideId}/edit`} className="guide-edit-btn">
-                    Edit Guide (Admin)
-                </Link>
+                {(user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.id === guide.author?.id)) && (
+                    <Link to={`/admin/mod/${id}/guides/${guideId}/edit`} className="guide-edit-btn">
+                        Редактировать
+                    </Link>
+                )}
             </div>
         </div>
     );
