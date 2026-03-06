@@ -152,3 +152,70 @@
 .admin-editor-error {
     color: #ff4d4d;
 }
+
+.btn-help {
+    background-color: #555;
+    color: #fff;
+    margin-right: 1rem;
+}
+
+.btn-help:hover {
+    background-color: #777;
+}
+
+.instructions-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.instructions-modal-content {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.instructions-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #333;
+    background-color: #222;
+    border-radius: 8px 8px 0 0;
+}
+
+.instructions-modal-header h3 {
+    margin: 0;
+}
+
+.instructions-modal-header button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.instructions-modal-header button:hover {
+    background-color: #555;
+}
+
+.instructions-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    color: #e0e0e0;
+}

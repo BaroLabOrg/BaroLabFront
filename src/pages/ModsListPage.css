@@ -1,24 +1,32 @@
 /* ─── Mods List Page ─── */
 
-.mods-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 32px;
+.mods-header-box {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(88, 101, 242, 0.2);
 }
 
-.mods-header .page-title {
-    font-size: 1.8rem;
+.mods-title {
+    font-size: 2.5rem;
     font-weight: 800;
-    color: var(--text-primary);
-    margin: 0;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #b3b3b3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    margin-top: 0;
 }
 
-.mods-header .page-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin: 4px 0 0;
+.mods-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
 .mods-grid {
@@ -86,8 +94,8 @@
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
-    .mods-header {
-        flex-direction: column;
+    .mods-header-box {
+        padding: 2rem 1rem;
     }
 
     .mods-grid {

@@ -11,7 +11,7 @@ import ModsListPage from './pages/ModsListPage';
 import ModPage from './pages/ModPage';
 import ModGuidePage from './pages/ModGuidePage';
 import GuidesListPage from './pages/GuidesListPage';
-import AdminModGuideEditor from './pages/AdminModGuideEditor';
+import ModGuideEditor from './pages/ModGuideEditor';
 
 export default function App() {
     const { isAuthenticated } = useAuth();
@@ -67,18 +67,18 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/admin/mod/:id/guides/new"
+                    path="/mod/:id/guides/new"
                     element={
                         <ProtectedRoute>
-                            <AdminModGuideEditor />
+                            <ModGuideEditor />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/mod/:id/guides/:guideId/edit"
+                    path="/mod/:id/guides/:guideId/edit"
                     element={
                         <ProtectedRoute>
-                            <AdminModGuideEditor />
+                            <ModGuideEditor />
                         </ProtectedRoute>
                     }
                 />

@@ -28,7 +28,7 @@ export default function ModCard({ mod }) {
                 </div>
                 <div className="mod-card-stats">
                     <span className="mod-card-transitions" title="Переходы">
-                        🔗 {mod.subscriptions_count ?? 0}
+                        🔗 {mod.popularity ?? 0}
                     </span>
                     <span className="mod-card-read">Подробнее →</span>
                 </div>

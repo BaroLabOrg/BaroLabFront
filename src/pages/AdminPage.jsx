@@ -672,7 +672,7 @@ function GuidesTab() {
                                         {guide.content?.slice(0, 80)}{guide.content?.length > 80 ? '...' : ''}
                                     </span>
                                     <span className="admin-item-meta">
-                                        🔗 <Link to={`/admin/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">К моду ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}
+                                        🔗 <Link to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">К моду ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}
                                     </span>
                                     <span className="admin-item-date">
                                         🕒 {formatDate(guide.createdAt || guide.created_at)}

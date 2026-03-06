@@ -125,7 +125,7 @@ export default function ModGuidePage() {
                 <h1>Guide for {mod.title}</h1>
                 <p>No guide exists for this mod yet.</p>
                 {user && (
-                    <Link to={`/admin/mod/${id}/guides/new`} className="guide-create-btn">
+                    <Link to={`/mod/${id}/guides/new`} className="guide-create-btn">
                         Создать руководство
                     </Link>
                 )}
@@ -160,7 +160,7 @@ export default function ModGuidePage() {
 
             <div className="guide-admin-actions">
                 {(user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.id === guide.author?.id)) && (
-                    <Link to={`/admin/mod/${id}/guides/${guideId}/edit`} className="guide-edit-btn">
+                    <Link to={`/mod/${id}/guides/${guideId}/edit`} className="guide-edit-btn">
                         Редактировать
                     </Link>
                 )}

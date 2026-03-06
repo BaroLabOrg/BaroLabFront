@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as guideApi from '../api/modGuides';
+import * as modsApi from '../api/mods';
+import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 import './GuidesListPage.css';
+import '../components/ModCard.css';
 
 export default function GuidesListPage() {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
     const [guides, setGuides] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    // Modal state
+    const [showModal, setShowModal] = useState(false);
+    const [mods, setMods] = useState([]);
+    const [loadingMods, setLoadingMods] = useState(false);
+    const [modsError, setModsError] = useState('');
 
     useEffect(() => {
         loadGuides();
@@ -25,6 +36,25 @@ export default function GuidesListPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleOpenModal = async () => {
+        setShowModal(true);
+        if (mods.length === 0) {
+            setLoadingMods(true);
+            try {
+                const data = await modsApi.getMods();
+                setMods(data);
+            } catch (err) {
+                setModsError(err.message);
+            } finally {
+                setLoadingMods(false);
+            }
+        }
+    };
+
+    const handleModSelect = (modId) => {
+        navigate(`/mod/${modId}/guides/new`);
     };
 
     if (loading) {
@@ -57,6 +87,13 @@ export default function GuidesListPage() {
                     <p className="guides-subtitle">
                         Полезные гайды, советы и инструкции по модам от нашего сообщества.
                     </p>
+                    {isAuthenticated && (
+                        <div className="guides-actions" style={{ marginTop: '1.5rem' }}>
+                            <button className="btn btn-primary" onClick={handleOpenModal}>
+                                ✍️ Создать руководство
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="guides-grid">
@@ -102,6 +139,69 @@ export default function GuidesListPage() {
                         ))
                     )}
                 </div>
+
+                {showModal && (
+                    <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                        <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h3>Выберите мод для руководства</h3>
+                                <button className="btn-close" onClick={() => setShowModal(false)}>✕</button>
+                            </div>
+                            <div className="modal-body">
+                                {loadingMods ? (
+                                    <div className="loading-state">
+                                        <div className="loading-spinner" />
+                                    </div>
+                                ) : modsError ? (
+                                    <div className="error-message">Ошибка: {modsError}</div>
+                                ) : mods.length === 0 ? (
+                                    <div className="no-guides-message">Нет доступных модов. Вы можете добавить мод на странице "Моды".</div>
+                                ) : (
+                                    <div className="mods-list">
+                                        {mods.map(mod => (
+                                            <div
+                                                key={mod.id}
+                                                className="mod-card glass-card hover-glow"
+                                                style={{ cursor: 'pointer', opacity: 1, animation: 'none' }}
+                                                onClick={() => handleModSelect(mod.external_id)}
+                                            >
+                                                <div className="mod-card-banner">
+                                                    <span className="mod-card-banner-placeholder">🔧</span>
+                                                </div>
+                                                <div className="mod-card-body">
+                                                    <h3 className="mod-card-title">{mod.title}</h3>
+                                                    <p className="mod-card-content">
+                                                        {mod.content?.length > 100
+                                                            ? mod.content.slice(0, 100) + '…'
+                                                            : mod.content}
+                                                    </p>
+                                                    <div className="mod-card-footer">
+                                                        <span className="mod-card-author">
+                                                            👤 {mod.author?.username || mod.author_username || 'Unknown'}
+                                                        </span>
+                                                        <span className="mod-card-date">
+                                                            {new Date(mod.createdAt || mod.created_at).toLocaleDateString('ru-RU', {
+                                                                day: 'numeric',
+                                                                month: 'short',
+                                                                year: 'numeric',
+                                                            })}
+                                                        </span>
+                                                    </div>
+                                                    <div className="mod-card-stats">
+                                                        <span className="mod-card-transitions" title="Переходы">
+                                                            🔗 {mod.popularity ?? 0}
+                                                        </span>
+                                                        <span className="mod-card-read">Создать руководство →</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );

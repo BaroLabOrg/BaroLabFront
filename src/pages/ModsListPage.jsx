@@ -65,19 +65,21 @@ export default function ModsListPage() {
     return (
         <div className="page">
             <div className="container">
-                <div className="mods-header">
-                    <div>
-                        <h1 className="page-title">Моды</h1>
-                        <p className="page-subtitle">Steam Workshop моды сообщества</p>
-                    </div>
+                <div className="mods-header-box glass-card shine">
+                    <h1 className="mods-title">🔧 Библиотека Модов</h1>
+                    <p className="mods-subtitle">
+                        Steam Workshop моды сообщества
+                    </p>
                     {isAuthenticated && (
-                        <button
-                            id="create-mod-toggle"
-                            className="btn btn-primary"
-                            onClick={() => setShowForm(!showForm)}
-                        >
-                            {showForm ? '✕ Закрыть' : '+ Добавить мод'}
-                        </button>
+                        <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
+                            <button
+                                id="create-mod-toggle"
+                                className="btn btn-primary"
+                                onClick={() => setShowForm(!showForm)}
+                            >
+                                {showForm ? '✕ Закрыть' : '➕ Добавить мод'}
+                            </button>
+                        </div>
                     )}
                 </div>
 

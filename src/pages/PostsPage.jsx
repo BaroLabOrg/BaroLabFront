@@ -63,19 +63,21 @@ export default function PostsPage() {
     return (
         <div className="page">
             <div className="container">
-                <div className="posts-header">
-                    <div>
-                        <h1 className="page-title">Лента постов</h1>
-                        <p className="page-subtitle">Все публикации сообщества</p>
-                    </div>
+                <div className="posts-header-box glass-card shine">
+                    <h1 className="posts-title">📝 Лента Постов</h1>
+                    <p className="posts-subtitle">
+                        Все публикации сообщества
+                    </p>
                     {isAuthenticated && (
-                        <button
-                            id="create-post-toggle"
-                            className="btn btn-primary"
-                            onClick={() => setShowForm(!showForm)}
-                        >
-                            {showForm ? '✕ Закрыть' : '+ Новый пост'}
-                        </button>
+                        <div className="posts-actions" style={{ marginTop: '1.5rem' }}>
+                            <button
+                                id="create-post-toggle"
+                                className="btn btn-primary"
+                                onClick={() => setShowForm(!showForm)}
+                            >
+                                {showForm ? '✕ Закрыть' : '📝 Новый пост'}
+                            </button>
+                        </div>
                     )}
                 </div>
 

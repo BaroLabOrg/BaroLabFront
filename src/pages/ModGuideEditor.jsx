@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import guideInstructions from '../../GUIDE_INSTRUCTIONS.md?raw';
 import { getModGuideById, createModGuide, updateModGuide } from '../api/modGuides';
 import { getMod } from '../api/mods';
-import './AdminModGuideEditor.css';
+import './ModGuideEditor.css';
 import './ModGuidePage.css'; // Reuse markdown styles for preview
 
-export default function AdminModGuideEditor() {
+export default function ModGuideEditor() {
     const { id, guideId } = useParams();
     const navigate = useNavigate();
 
@@ -19,6 +20,7 @@ export default function AdminModGuideEditor() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [showInstructions, setShowInstructions] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -78,12 +80,28 @@ export default function AdminModGuideEditor() {
 
     return (
         <div className="admin-guide-editor">
+            {showInstructions && (
+                <div className="instructions-modal-overlay" onClick={() => setShowInstructions(false)}>
+                    <div className="instructions-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="instructions-modal-header">
+                            <h3>Как писать руководства?</h3>
+                            <button onClick={() => setShowInstructions(false)}>Закрыть</button>
+                        </div>
+                        <div className="instructions-modal-body guide-markdown-body">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {guideInstructions}
+                            </ReactMarkdown>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="editor-header">
                 <div className="editor-header-left">
                     <h2>{isEditMode ? 'Editing Guide for:' : 'Creating Guide for:'} {mod.title}</h2>
                     {error && <div className="editor-error-msg">{error}</div>}
                 </div>
                 <div className="editor-header-right">
+                    <button className="btn-help" onClick={() => setShowInstructions(true)}>Как писать руководства?</button>
                     <button className="btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
                     <button className="btn-save" onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Save Guide'}

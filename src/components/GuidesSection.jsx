@@ -32,11 +32,11 @@ export default function GuidesSection() {
     }, [externalId]);
 
     const handleCreateGuide = () => {
-        navigate(`/admin/mod/${externalId}/guides/new`);
+        navigate(`/mod/${externalId}/guides/new`);
     };
 
     const handleEditGuide = (guideId) => {
-        navigate(`/admin/mod/${externalId}/guides/${guideId}/edit`);
+        navigate(`/mod/${externalId}/guides/${guideId}/edit`);
     };
 
     if (loading) {
