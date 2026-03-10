@@ -10,15 +10,18 @@ export default function ModCard({ mod }) {
 
     return (
         <Link to={`/mod/${mod.external_id}`} className="mod-card glass-card">
-            <div className="mod-card-banner">
-                <span className="mod-card-banner-placeholder">🔧</span>
+            <div
+                className="mod-card-banner"
+                style={mod.main_image ? { backgroundImage: `url(${mod.main_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+            >
+                {!mod.main_image && <span className="mod-card-banner-placeholder">🔧</span>}
             </div>
             <div className="mod-card-body">
                 <h3 className="mod-card-title">{mod.title}</h3>
                 <p className="mod-card-content">
-                    {mod.content?.length > 100
-                        ? mod.content.slice(0, 100) + '…'
-                        : mod.content}
+                    {mod.description?.length > 100
+                        ? mod.description.slice(0, 100) + '…'
+                        : mod.description}
                 </p>
                 <div className="mod-card-footer">
                     <span className="mod-card-author">

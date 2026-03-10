@@ -2,18 +2,8 @@ import { Link } from 'react-router-dom';
 import TagChips from './TagChips';
 import './ModSidebar.css';
 
-// Mock data — will be replaced by real API data
+// Only using MOCK_TAGS untill tags feature is fully implemented
 const MOCK_TAGS = ['Server Booster', 'Writer', 'Color|Issue', 'she/her', 'Gameplay'];
-const MOCK_DEPENDENCIES = [
-    { name: 'Lua For Barotrauma', required: true },
-    { name: 'BaroLib', required: true },
-    { name: 'EK Utils', required: false },
-];
-const MOCK_SIMILAR = [
-    { external_id: '1111111111', title: 'HD Textures Pack', tag: 'safe' },
-    { external_id: '2222222222', title: 'Realistic Lighting', tag: 'safe' },
-    { external_id: '3333333333', title: 'New Creatures Mod', tag: 'nsfw' },
-];
 
 export default function ModSidebar({ mod }) {
     const authorName = mod.author_username || 'Unknown';
@@ -27,19 +17,21 @@ export default function ModSidebar({ mod }) {
             </div>
 
             {/* Dependencies */}
-            <div className="mod-sidebar-card glass-card">
-                <h4 className="mod-sidebar-heading">НЕОБХОДИМЫЕ ПРОДУКТЫ</h4>
-                <ul className="mod-deps-list">
-                    {MOCK_DEPENDENCIES.map((dep, i) => (
-                        <li key={i} className="mod-dep-item">
-                            <span className="mod-dep-name">{dep.name}</span>
-                            <span className={`mod-dep-badge ${dep.required ? 'required' : 'optional'}`}>
-                                {dep.required ? '✔ required' : 'optional'}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {mod.required_mods && mod.required_mods.length > 0 && (
+                <div className="mod-sidebar-card glass-card">
+                    <h4 className="mod-sidebar-heading">НЕОБХОДИМЫЕ ПРОДУКТЫ</h4>
+                    <ul className="mod-deps-list">
+                        {mod.required_mods.map((depId, i) => (
+                            <li key={i} className="mod-dep-item">
+                                <Link to={`/mod/${depId}`} className="mod-dep-name">Mod ID: {depId}</Link>
+                                <span className={`mod-dep-badge required`}>
+                                    ✔ required
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             {/* Creators */}
             <div className="mod-sidebar-card glass-card">
@@ -53,25 +45,20 @@ export default function ModSidebar({ mod }) {
                 </div>
             </div>
 
-            {/* Similar mods */}
-            <div className="mod-sidebar-card glass-card">
-                <h4 className="mod-sidebar-heading">ПОХОЖИЕ</h4>
-                <div className="mod-similar-list">
-                    {MOCK_SIMILAR.map((sim, i) => (
-                        <Link
-                            key={i}
-                            to={`/mod/${sim.external_id}`}
-                            className="mod-similar-item"
-                        >
-                            <div className="mod-similar-avatar">🔧</div>
-                            <div className="mod-similar-info">
-                                <span className="mod-similar-name">{sim.title}</span>
-                                <span className={`mod-similar-tag ${sim.tag}`}>{sim.tag}</span>
-                            </div>
-                        </Link>
-                    ))}
+            {/* Mods Above */}
+            {mod.mods_above && mod.mods_above.length > 0 && (
+                <div className="mod-sidebar-card glass-card">
+                    <h4 className="mod-sidebar-heading">МОДЫ ДОЛЖНЫ БЫТЬ ВЫШЕ</h4>
+                    <ul className="mod-deps-list">
+                        {mod.mods_above.map((modId, i) => (
+                            <li key={i} className="mod-dep-item" style={{ alignItems: 'center' }}>
+                                <div className="mod-similar-avatar" style={{ width: '24px', height: '24px', flexShrink: 0, marginRight: '8px' }}>🔧</div>
+                                <Link to={`/mod/${modId}`} className="mod-dep-name">Mod ID: {modId}</Link>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-            </div>
+            )}
         </aside>
     );
 }

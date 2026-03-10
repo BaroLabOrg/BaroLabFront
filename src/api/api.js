@@ -76,10 +76,10 @@ export async function getPosts() {
     return request('/posts');
 }
 
-export async function createPost(title, content) {
+export async function createPost(title, description) {
     return request('/posts', {
         method: 'POST',
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, description }),
     });
 }
 

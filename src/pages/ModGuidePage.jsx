@@ -153,7 +153,7 @@ export default function ModGuidePage() {
                             table: CustomTable
                         }}
                     >
-                        {guide.content}
+                        {guide.description}
                     </ReactMarkdown>
                 </div>
             </div>

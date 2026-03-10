@@ -168,7 +168,7 @@ export default function PostDetailPage() {
                         </div>
                         <h1 className="post-detail-title">{post.title}</h1>
                         <div className="post-detail-body">
-                            {post.content}
+                            {post.description}
                         </div>
                     </article>
                 )}

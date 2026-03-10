@@ -44,7 +44,8 @@ export default function GuidesListPage() {
             setLoadingMods(true);
             try {
                 const data = await modsApi.getMods();
-                setMods(data);
+                const activeMods = data.filter(m => m.status === 'ACTIVE');
+                setMods(activeMods);
             } catch (err) {
                 setModsError(err.message);
             } finally {
@@ -117,8 +118,8 @@ export default function GuidesListPage() {
                                         </span>
                                     </div>
                                     <p className="guide-card-snippet">
-                                        {guide.content?.slice(0, 150)}
-                                        {guide.content?.length > 150 ? '...' : ''}
+                                        {guide.description?.slice(0, 150)}
+                                        {guide.description?.length > 150 ? '...' : ''}
                                     </p>
                                 </div>
                                 <div className="guide-card-footer">
@@ -171,9 +172,9 @@ export default function GuidesListPage() {
                                                 <div className="mod-card-body">
                                                     <h3 className="mod-card-title">{mod.title}</h3>
                                                     <p className="mod-card-content">
-                                                        {mod.content?.length > 100
-                                                            ? mod.content.slice(0, 100) + '…'
-                                                            : mod.content}
+                                                        {mod.description?.length > 100
+                                                            ? mod.description.slice(0, 100) + '…'
+                                                            : mod.description}
                                                     </p>
                                                     <div className="mod-card-footer">
                                                         <span className="mod-card-author">

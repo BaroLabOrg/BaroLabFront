@@ -13,8 +13,12 @@ export default function ModsListPage() {
     // Create mod state
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [description, setDescription] = useState('');
     const [externalUrl, setExternalUrl] = useState('');
+    const [mainImage, setMainImage] = useState('');
+    const [additionalImages, setAdditionalImages] = useState('');
+    const [requiredMods, setRequiredMods] = useState('');
+    const [modsAbove, setModsAbove] = useState('');
     const [creating, setCreating] = useState(false);
 
     useEffect(() => {
@@ -24,7 +28,8 @@ export default function ModsListPage() {
     const loadMods = async () => {
         try {
             const data = await modsApi.getMods();
-            setMods(data);
+            const activeMods = data.filter(m => m.status === 'ACTIVE');
+            setMods(activeMods);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -36,11 +41,19 @@ export default function ModsListPage() {
         e.preventDefault();
         setCreating(true);
         try {
-            const newMod = await modsApi.createMod(title, content, externalUrl);
+            const parsedAdditional = additionalImages ? additionalImages.split(',').map(s => s.trim()).filter(Boolean) : [];
+            const parsedRequired = requiredMods ? requiredMods.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
+            const parsedModsAbove = modsAbove ? modsAbove.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
+
+            const newMod = await modsApi.createMod(title, description, externalUrl, mainImage, parsedAdditional, parsedRequired, parsedModsAbove);
             setMods([newMod, ...mods]);
             setTitle('');
-            setContent('');
+            setDescription('');
             setExternalUrl('');
+            setMainImage('');
+            setAdditionalImages('');
+            setRequiredMods('');
+            setModsAbove('');
             setShowForm(false);
         } catch (err) {
             setError(err.message);
@@ -101,8 +114,8 @@ export default function ModsListPage() {
                             <label className="form-label">Описание</label>
                             <textarea
                                 id="mod-content-input"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Описание мода"
                                 required
                                 rows="4"
@@ -117,6 +130,46 @@ export default function ModsListPage() {
                                 onChange={(e) => setExternalUrl(e.target.value)}
                                 placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=..."
                                 required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Главная картинка (URL)</label>
+                            <input
+                                id="mod-main-image-input"
+                                type="url"
+                                value={mainImage}
+                                onChange={(e) => setMainImage(e.target.value)}
+                                placeholder="https://example.com/image.jpg"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Дополнительные картинки (URL, через запятую)</label>
+                            <input
+                                id="mod-additional-images-input"
+                                type="text"
+                                value={additionalImages}
+                                onChange={(e) => setAdditionalImages(e.target.value)}
+                                placeholder="https://img1.jpg, https://img2.jpg"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Необходимые моды (ID из Steam, через запятую)</label>
+                            <input
+                                id="mod-required-input"
+                                type="text"
+                                value={requiredMods}
+                                onChange={(e) => setRequiredMods(e.target.value)}
+                                placeholder="12345678, 87654321"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Моды выше (ID из Steam, через запятую)</label>
+                            <input
+                                id="mod-above-input"
+                                type="text"
+                                value={modsAbove}
+                                onChange={(e) => setModsAbove(e.target.value)}
+                                placeholder="11223344"
                             />
                         </div>
                         <button

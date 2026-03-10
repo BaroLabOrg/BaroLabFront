@@ -53,10 +53,18 @@ export async function createModComment(externalId, body) {
     });
 }
 
-export async function createMod(title, content, external_url) {
+export async function createMod(title, description, external_url, main_image, additional_images, required_mods, mods_above) {
     return request('/mods', {
         method: 'POST',
-        body: JSON.stringify({ title, content, external_url }),
+        body: JSON.stringify({
+            title,
+            description,
+            external_url,
+            main_image,
+            additional_images,
+            required_mods,
+            mods_above
+        }),
     });
 }
 

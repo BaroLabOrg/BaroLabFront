@@ -294,7 +294,7 @@ function PostsTab() {
                                     <div className="admin-item-main">
                                         <span className="admin-item-name">{post.title}</span>
                                         <span className="admin-item-sub">
-                                            {post.content?.slice(0, 80)}{post.content?.length > 80 ? '...' : ''}
+                                            {post.description?.slice(0, 80)}{post.description?.length > 80 ? '...' : ''}
                                         </span>
                                         <span className="admin-item-date">
                                             🕒 {formatDate(post.createdAt || post.created_at)}
@@ -508,7 +508,7 @@ function ModsTab() {
                                     <div className="admin-item-main">
                                         <span className="admin-item-name">{mod.title}</span>
                                         <span className="admin-item-sub">
-                                            {mod.content?.slice(0, 80)}{mod.content?.length > 80 ? '...' : ''}
+                                            {mod.description?.slice(0, 80)}{mod.description?.length > 80 ? '...' : ''}
                                         </span>
                                         <span className="admin-item-meta">
                                             🔥 Популярность: {mod.popularity} &nbsp;|&nbsp; 👤 {mod.author_username}
@@ -669,7 +669,7 @@ function GuidesTab() {
                                 <div className="admin-item-main">
                                     <span className="admin-item-name">{guide.title}</span>
                                     <span className="admin-item-sub">
-                                        {guide.content?.slice(0, 80)}{guide.content?.length > 80 ? '...' : ''}
+                                        {guide.description?.slice(0, 80)}{guide.description?.length > 80 ? '...' : ''}
                                     </span>
                                     <span className="admin-item-meta">
                                         🔗 <Link to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">К моду ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}

@@ -40,17 +40,17 @@ export async function getModGuideById(modId, guideId) {
     return request(`/mod/${modId}/guide/${guideId}`);
 }
 
-export async function createModGuide(modId, title, content) {
+export async function createModGuide(modId, title, description) {
     return request(`/mod/${modId}/guide`, {
         method: 'POST',
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, description }),
     });
 }
 
-export async function updateModGuide(modId, guideId, title, content) {
+export async function updateModGuide(modId, guideId, title, description) {
     return request(`/mod/${modId}/guide/${guideId}`, {
         method: 'PUT',
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, description }),
     });
 }
 

@@ -20,7 +20,7 @@ export default function PostCard({ post }) {
                 <span className="post-card-date">{date}</span>
             </div>
             <h3 className="post-card-title">{post.title}</h3>
-            <p className="post-card-content">{post.content}</p>
+            <p className="post-card-content">{post.description}</p>
             <div className="post-card-footer">
                 <span className={`post-card-rating rating-value rating-${ratingTone}`}>
                     {post.rating}

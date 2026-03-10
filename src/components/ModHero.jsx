@@ -5,10 +5,10 @@ export default function ModHero({ mod, onSubscribe }) {
     const [subscribing, setSubscribing] = useState(false);
     const [subError, setSubError] = useState('');
 
-    const subtitle = mod.content
-        ? mod.content.length > 150
-            ? mod.content.slice(0, 150) + '…'
-            : mod.content
+    const subtitle = mod.description
+        ? mod.description.length > 150
+            ? mod.description.slice(0, 150) + '…'
+            : mod.description
         : 'Описание мода';
 
     const handleSubscribe = async () => {
@@ -26,8 +26,11 @@ export default function ModHero({ mod, onSubscribe }) {
     return (
         <div className="mod-hero glass-card fade-in">
             <div className="mod-hero-left">
-                <div className="mod-hero-avatar">
-                    <span className="mod-hero-avatar-placeholder">🔧</span>
+                <div
+                    className="mod-hero-avatar"
+                    style={mod.main_image ? { backgroundImage: `url(${mod.main_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                >
+                    {!mod.main_image && <span className="mod-hero-avatar-placeholder">🔧</span>}
                 </div>
                 <div className="mod-hero-info">
                     <h1 className="mod-hero-title">{mod.title}</h1>

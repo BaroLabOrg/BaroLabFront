@@ -13,7 +13,7 @@ export default function PostsPage() {
     // Create post state
     const [showForm, setShowForm] = useState(false);
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [description, setDescription] = useState('');
     const [creating, setCreating] = useState(false);
 
     useEffect(() => {
@@ -23,7 +23,8 @@ export default function PostsPage() {
     const loadPosts = async () => {
         try {
             const data = await api.getPosts();
-            setPosts(data);
+            const activePosts = data.filter(p => p.status === 'ACTIVE');
+            setPosts(activePosts);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -35,10 +36,10 @@ export default function PostsPage() {
         e.preventDefault();
         setCreating(true);
         try {
-            const newPost = await api.createPost(title, content);
+            const newPost = await api.createPost(title, description);
             setPosts([newPost, ...posts]);
             setTitle('');
-            setContent('');
+            setDescription('');
             setShowForm(false);
         } catch (err) {
             setError(err.message);
@@ -99,8 +100,8 @@ export default function PostsPage() {
                             <label className="form-label">Содержание</label>
                             <textarea
                                 id="post-content-input"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Напишите что-нибудь интересное..."
                                 required
                                 rows="4"

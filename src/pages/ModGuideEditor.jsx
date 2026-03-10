@@ -15,7 +15,7 @@ export default function ModGuideEditor() {
     const isEditMode = !!guideId;
 
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [description, setDescription] = useState('');
     const [mod, setMod] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -35,7 +35,7 @@ export default function ModGuideEditor() {
                         const guideData = await getModGuideById(id, guideId);
                         if (guideData) {
                             setTitle(guideData.title);
-                            setContent(guideData.content);
+                            setDescription(guideData.description);
                         }
                     } catch (guideErr) {
                         // Ignore 404s (guide doesn't exist yet)
@@ -63,9 +63,9 @@ export default function ModGuideEditor() {
         setError('');
         try {
             if (isEditMode) {
-                await updateModGuide(id, guideId, title, content);
+                await updateModGuide(id, guideId, title, description);
             } else {
-                await createModGuide(id, title, content);
+                await createModGuide(id, title, description);
             }
             navigate(`/mod/${id}`);
         } catch (err) {
@@ -125,8 +125,8 @@ export default function ModGuideEditor() {
                     <div className="pane-header">Markdown Source</div>
                     <textarea
                         className="markdown-textarea"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         placeholder="Write your guide here using Markdown..."
                     />
                 </div>
@@ -138,7 +138,7 @@ export default function ModGuideEditor() {
                         {/* We use the same classes as viewing so it looks identical */}
                         {title && <h1>{title}</h1>}
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {content}
+                            {description}
                         </ReactMarkdown>
                     </div>
                 </div>
