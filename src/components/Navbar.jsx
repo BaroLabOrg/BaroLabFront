@@ -15,7 +15,7 @@ export default function Navbar() {
         <nav className="navbar">
             <div className="navbar-inner container">
                 <NavLink to="/" className="navbar-logo">
-                    <span className="logo-icon">◆</span>
+                    <span className="logo-icon">◊</span>
                     <span className="logo-text">BaroLab</span>
                 </NavLink>
 
@@ -25,6 +25,9 @@ export default function Navbar() {
                     </NavLink>
                     <NavLink to="/guides" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Руководства
+                    </NavLink>
+                    <NavLink to="/tags" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Теги
                     </NavLink>
                     {isAdmin && (
                         <NavLink
@@ -60,3 +63,4 @@ export default function Navbar() {
         </nav>
     );
 }
+

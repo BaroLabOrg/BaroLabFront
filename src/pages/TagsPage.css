@@ -1,0 +1,146 @@
+.tags-page {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.tags-header-box {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(88, 101, 242, 0.2);
+}
+
+.tags-title {
+    margin: 0 0 0.8rem;
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #b3b3b3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.tags-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.tags-controls {
+    margin-bottom: 1.8rem;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+}
+
+.tags-sort-controls {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.tags-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.tags-control-group select {
+    min-width: 150px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.7rem;
+}
+
+.tags-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: min(460px, 100%);
+}
+
+.tags-create-form label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.tags-create-row {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.tags-create-row input {
+    flex: 1;
+}
+
+.tags-form-error {
+    margin: 0;
+    color: var(--danger);
+    font-size: 0.78rem;
+}
+
+.tags-form-error-field {
+    color: var(--warning);
+}
+
+.tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.tag-item-card {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.tag-item-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.tag-slug {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.tag-usage,
+.tag-date {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 900px) {
+    .tags-controls {
+        align-items: stretch;
+    }
+
+    .tags-create-form {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .tags-header-box {
+        padding: 2rem 1rem;
+    }
+
+    .tags-create-row {
+        flex-direction: column;
+    }
+}
+
