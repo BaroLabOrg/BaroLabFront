@@ -11,6 +11,7 @@ import ModPage from './pages/ModPage';
 import ModGuidePage from './pages/ModGuidePage';
 import GuidesListPage from './pages/GuidesListPage';
 import ModGuideEditor from './pages/ModGuideEditor';
+import TagsPage from './pages/TagsPage';
 
 export default function App() {
     const { isAuthenticated } = useAuth();
@@ -43,6 +44,10 @@ export default function App() {
                 <Route
                     path="/guides"
                     element={<GuidesListPage />}
+                />
+                <Route
+                    path="/tags"
+                    element={<TagsPage />}
                 />
                 <Route
                     path="/mod/:externalId"

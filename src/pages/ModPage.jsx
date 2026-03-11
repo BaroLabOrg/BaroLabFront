@@ -28,7 +28,11 @@ export default function ModPage() {
             const data = await modsApi.getMod(externalId);
             setMod(data);
             const images = [...(data.additional_images || [])].filter(Boolean);
-            if (images.length > 0) setSelectedImage(images[0]);
+            if (images.length > 0) {
+                setSelectedImage(images[0]);
+            } else {
+                setSelectedImage(null);
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -138,7 +142,7 @@ export default function ModPage() {
                             </main>
 
                             {/* Right column: sidebar */}
-                            <ModSidebar mod={mod} />
+                            <ModSidebar mod={mod} tags={Array.isArray(mod.tags) ? mod.tags : []} />
                         </div>
                     </>
                 )}
