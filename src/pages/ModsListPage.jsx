@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import * as modsApi from '../api/mods';
 import ModCard from '../components/ModCard';
@@ -83,7 +84,7 @@ export default function ModsListPage() {
                     <p className="mods-subtitle">
                         Steam Workshop моды сообщества
                     </p>
-                    {isAuthenticated && (
+                    {isAuthenticated ? (
                         <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
                             <button
                                 id="create-mod-toggle"
@@ -93,6 +94,11 @@ export default function ModsListPage() {
                                 {showForm ? '✕ Закрыть' : '➕ Добавить мод'}
                             </button>
                         </div>
+                    ) : (
+                        <p className="auth-prompt" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
+                            <Link to="/login" className="auth-link">Войдите в аккаунт</Link> или{' '}
+                            <Link to="/sign-up" className="auth-link">зарегистрируйтесь</Link>, чтобы добавлять моды.
+                        </p>
                     )}
                 </div>
 

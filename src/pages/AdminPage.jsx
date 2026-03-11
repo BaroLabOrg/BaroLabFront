@@ -10,14 +10,14 @@ const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
 
 export default function AdminPage() {
     const { isSuperAdmin } = useAuth();
-    const [activeTab, setActiveTab] = useState(isSuperAdmin ? 'users' : 'posts');
+    const [activeTab, setActiveTab] = useState(isSuperAdmin ? 'users' : 'mods');
 
     return (
         <div className="page">
             <div className="container">
                 <div className="admin-header">
                     <h1 className="page-title">⚙ Панель администратора</h1>
-                    <p className="page-subtitle">Управление пользователями, постами, модами и их руководствами</p>
+                    <p className="page-subtitle">Управление пользователями, модами и их руководствами</p>
                 </div>
 
                 <div className="admin-tabs">
@@ -29,12 +29,7 @@ export default function AdminPage() {
                             👥 Пользователи
                         </button>
                     )}
-                    <button
-                        className={`admin-tab ${activeTab === 'posts' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('posts')}
-                    >
-                        📝 Посты
-                    </button>
+
                     <button
                         className={`admin-tab ${activeTab === 'mods' ? 'active' : ''}`}
                         onClick={() => setActiveTab('mods')}
@@ -51,7 +46,7 @@ export default function AdminPage() {
 
                 <div className="admin-content fade-in">
                     {activeTab === 'users' && isSuperAdmin && <UsersTab />}
-                    {activeTab === 'posts' && <PostsTab />}
+
                     {activeTab === 'mods' && <ModsTab />}
                     {activeTab === 'guides' && <GuidesTab />}
                 </div>
@@ -175,221 +170,7 @@ function UsersTab() {
     );
 }
 
-/* ═══════════════════════════════════════════ */
-/*                POSTS TAB                   */
-/* ═══════════════════════════════════════════ */
-function PostsTab() {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [actionLoading, setActionLoading] = useState(null);
 
-    const [selectedId, setSelectedId] = useState(null);
-    const [comments, setComments] = useState([]);
-    const [commentsLoading, setCommentsLoading] = useState(false);
-    const [commentsOpen, setCommentsOpen] = useState(false);
-    const [commentActionLoading, setCommentActionLoading] = useState(null);
-
-    useEffect(() => {
-        loadPosts();
-    }, []);
-
-    const loadPosts = async () => {
-        try {
-            const data = await api.getPosts();
-            setPosts(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleActivate = async (postId) => {
-        setActionLoading(postId);
-        try {
-            const updated = await api.activatePost(postId);
-            setPosts(posts.map((p) => (p.id === postId ? updated : p)));
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setActionLoading(null);
-        }
-    };
-
-    const handleBlock = async (postId) => {
-        setActionLoading(postId);
-        try {
-            const updated = await api.blockPost(postId);
-            setPosts(posts.map((p) => (p.id === postId ? updated : p)));
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setActionLoading(null);
-        }
-    };
-
-    const toggleComments = async (postId) => {
-        if (selectedId === postId && commentsOpen) {
-            setCommentsOpen(false);
-            setSelectedId(null);
-            setComments([]);
-            return;
-        }
-
-        setSelectedId(postId);
-        setCommentsOpen(true);
-        setCommentsLoading(true);
-        setComments([]);
-        setError('');
-
-        try {
-            const data = await api.getComments(postId);
-            const sortedData = data.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
-            setComments(sortedData);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setCommentsLoading(false);
-        }
-    };
-
-    const handleCommentActivate = async (commentId) => {
-        setCommentActionLoading(commentId);
-        try {
-            const updated = await api.activateComment(selectedId, commentId);
-            setComments(comments.map((c) => (c.id === commentId ? updated : c)));
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setCommentActionLoading(null);
-        }
-    };
-
-    const handleCommentBlock = async (commentId) => {
-        setCommentActionLoading(commentId);
-        try {
-            const updated = await api.blockComment(selectedId, commentId);
-            setComments(comments.map((c) => (c.id === commentId ? updated : c)));
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setCommentActionLoading(null);
-        }
-    };
-
-    if (loading) return <LoadingSpinner />;
-
-    return (
-        <div className="admin-tab-content">
-            {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего постов: <strong>{posts.length}</strong></div>
-            <div className="admin-list">
-                {posts.map((post) => {
-                    const isOpen = selectedId === post.id && commentsOpen;
-                    return (
-                        <div key={post.id} className="admin-item-group">
-                            <div className={`admin-item glass-card ${isOpen ? 'expanded' : ''}`}>
-                                <div className="admin-item-info">
-                                    <div className="admin-item-main">
-                                        <span className="admin-item-name">{post.title}</span>
-                                        <span className="admin-item-sub">
-                                            {post.description?.slice(0, 80)}{post.description?.length > 80 ? '...' : ''}
-                                        </span>
-                                        <span className="admin-item-date">
-                                            🕒 {formatDate(post.createdAt || post.created_at)}
-                                            {(post.updatedAt || post.updated_at) && (post.updatedAt || post.updated_at) !== (post.createdAt || post.created_at) ?
-                                                ` (обн. ${formatDate(post.updatedAt || post.updated_at)})` : ''}
-                                        </span>
-                                    </div>
-                                    <div className="admin-item-badges">
-                                        <StatusBadge status={post.status} />
-                                        <span className="post-rating-badge">{post.rating}</span>
-                                    </div>
-                                </div>
-                                <div className="admin-item-actions">
-                                    {post.status === 'BLOCKED' ? (
-                                        <button
-                                            className="btn btn-success btn-sm"
-                                            onClick={() => handleActivate(post.id)}
-                                            disabled={actionLoading === post.id}
-                                        >
-                                            Активировать
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleBlock(post.id)}
-                                            disabled={actionLoading === post.id}
-                                        >
-                                            Заблокировать
-                                        </button>
-                                    )}
-                                    <button
-                                        className={`btn btn-outline btn-sm ${isOpen ? 'active' : ''}`}
-                                        onClick={() => toggleComments(post.id)}
-                                    >
-                                        {isOpen ? '▲ Скрыть комм.' : '▼ Комментарии'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {isOpen && (
-                                <div className="comments-ladder">
-                                    {commentsLoading && <LoadingSpinner />}
-                                    {!commentsLoading && comments.length === 0 && (
-                                        <p className="no-comments">Нет комментариев</p>
-                                    )}
-                                    {!commentsLoading && comments.map((c) => (
-                                        <div key={c.id} className="admin-comment-item glass-card">
-                                            <div className="admin-item-info">
-                                                <div className="admin-item-main">
-                                                    <span className="comment-admin-author">
-                                                        👤 {c.author_username}
-                                                    </span>
-                                                    <span className="admin-item-sub">{c.body}</span>
-                                                    <span className="admin-item-date">
-                                                        🕒 {formatDate(c.createdAt || c.created_at)}
-                                                        {(c.updatedAt || c.updated_at) && (c.updatedAt || c.updated_at) !== (c.createdAt || c.created_at) ?
-                                                            ` (обн. ${formatDate(c.updatedAt || c.updated_at)})` : ''}
-                                                    </span>
-                                                </div>
-                                                <div className="admin-item-badges">
-                                                    <StatusBadge status={c.status} />
-                                                </div>
-                                            </div>
-                                            <div className="admin-item-actions">
-                                                {c.status === 'BLOCKED' ? (
-                                                    <button
-                                                        className="btn btn-success btn-sm"
-                                                        onClick={() => handleCommentActivate(c.id)}
-                                                        disabled={commentActionLoading === c.id}
-                                                    >
-                                                        Активировать
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        className="btn btn-danger btn-sm"
-                                                        onClick={() => handleCommentBlock(c.id)}
-                                                        disabled={commentActionLoading === c.id}
-                                                    >
-                                                        Заблокировать
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
-/* ═══════════════════════════════════════════ */
 /*                 MODS TAB                   */
 /* ═══════════════════════════════════════════ */
 function ModsTab() {
@@ -458,7 +239,7 @@ function ModsTab() {
         setError('');
 
         try {
-            const data = await api.getModComments(externalId);
+            const data = await api.getComments(externalId);
             const sortedData = data.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
             setComments(sortedData);
         } catch (err) {
@@ -471,7 +252,7 @@ function ModsTab() {
     const handleCommentActivate = async (commentId) => {
         setCommentActionLoading(commentId);
         try {
-            const updated = await api.activateModComment(selectedId, commentId);
+            const updated = await api.activateComment(selectedId, commentId);
             setComments(comments.map((c) => (c.id === commentId ? updated : c)));
         } catch (err) {
             setError(err.message);
@@ -483,7 +264,7 @@ function ModsTab() {
     const handleCommentBlock = async (commentId) => {
         setCommentActionLoading(commentId);
         try {
-            const updated = await api.blockModComment(selectedId, commentId);
+            const updated = await api.blockComment(selectedId, commentId);
             setComments(comments.map((c) => (c.id === commentId ? updated : c)));
         } catch (err) {
             setError(err.message);

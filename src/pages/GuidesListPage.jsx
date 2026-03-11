@@ -88,12 +88,17 @@ export default function GuidesListPage() {
                     <p className="guides-subtitle">
                         Полезные гайды, советы и инструкции по модам от нашего сообщества.
                     </p>
-                    {isAuthenticated && (
+                    {isAuthenticated ? (
                         <div className="guides-actions" style={{ marginTop: '1.5rem' }}>
                             <button className="btn btn-primary" onClick={handleOpenModal}>
                                 ✍️ Создать руководство
                             </button>
                         </div>
+                    ) : (
+                        <p className="auth-prompt" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
+                            <Link to="/login" className="auth-link">Войдите в аккаунт</Link> или{' '}
+                            <Link to="/sign-up" className="auth-link">зарегистрируйтесь</Link>, чтобы создавать руководства.
+                        </p>
                     )}
                 </div>
 

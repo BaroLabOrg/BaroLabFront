@@ -21,9 +21,6 @@ export default function Navbar() {
 
                 <div className="navbar-links">
                     <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Посты
-                    </NavLink>
-                    <NavLink to="/mods" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Моды
                     </NavLink>
                     <NavLink to="/guides" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

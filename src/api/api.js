@@ -71,62 +71,30 @@ export async function updateUserRole(userId, role) {
     });
 }
 
-// ═══════════ Posts ═══════════
-export async function getPosts() {
-    return request('/posts');
-}
-
-export async function createPost(title, description) {
-    return request('/posts', {
-        method: 'POST',
-        body: JSON.stringify({ title, description }),
-    });
-}
-
-export async function getPostById(postId) {
-    return request(`/post/${postId}`);
-}
-
-export async function activatePost(postId) {
-    return request(`/post/${postId}/activate`, { method: 'PUT' });
-}
-
-export async function blockPost(postId) {
-    return request(`/post/${postId}/block`, { method: 'PUT' });
-}
-
-export async function likePost(postId) {
-    return request(`/post/${postId}/like`, { method: 'POST' });
-}
-
-export async function dislikePost(postId) {
-    return request(`/post/${postId}/dislike`, { method: 'POST' });
-}
-
 // ═══════════ Comments ═══════════
-export async function getComments(postId) {
-    return request(`/post/${postId}/comment`);
+export async function getComments(modId) {
+    return request(`/mod/${modId}/comment`);
 }
 
-export async function getCommentById(postId, commentId) {
-    return request(`/post/${postId}/comment/${commentId}`);
+export async function getCommentById(modId, commentId) {
+    return request(`/mod/${modId}/comment/${commentId}`);
 }
 
-export async function createComment(postId, body) {
-    return request(`/post/${postId}/comment`, {
+export async function createComment(modId, body) {
+    return request(`/mod/${modId}/comment`, {
         method: 'POST',
         body: JSON.stringify({ body }),
     });
 }
 
-export async function activateComment(postId, commentId) {
-    return request(`/post/${postId}/comment/${commentId}/activate`, {
+export async function activateComment(modId, commentId) {
+    return request(`/mod/${modId}/comment/${commentId}/activate`, {
         method: 'PUT',
     });
 }
 
-export async function blockComment(postId, commentId) {
-    return request(`/post/${postId}/comment/${commentId}/block`, {
+export async function blockComment(modId, commentId) {
+    return request(`/mod/${modId}/comment/${commentId}/block`, {
         method: 'PUT',
     });
 }
@@ -148,19 +116,4 @@ export async function blockMod(externalId) {
     return request(`/mod/${externalId}/block`, { method: 'PUT' });
 }
 
-// ═══════════ Mod Comments ═══════════
-export async function getModComments(externalId) {
-    return request(`/mod/${externalId}/comment`);
-}
 
-export async function activateModComment(externalId, commentId) {
-    return request(`/mod/${externalId}/comment/${commentId}/activate`, {
-        method: 'PUT',
-    });
-}
-
-export async function blockModComment(externalId, commentId) {
-    return request(`/mod/${externalId}/comment/${commentId}/block`, {
-        method: 'PUT',
-    });
-}

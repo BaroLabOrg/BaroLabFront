@@ -4,8 +4,7 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import PostsPage from './pages/PostsPage';
-import PostDetailPage from './pages/PostDetailPage';
+
 import AdminPage from './pages/AdminPage';
 import ModsListPage from './pages/ModsListPage';
 import ModPage from './pages/ModPage';
@@ -33,11 +32,7 @@ export default function App() {
                 {/* Protected / Public Mix */}
                 <Route
                     path="/"
-                    element={<PostsPage />}
-                />
-                <Route
-                    path="/post/:postId"
-                    element={<PostDetailPage />}
+                    element={<ModsListPage />}
                 />
 
                 {/* Mods */}
