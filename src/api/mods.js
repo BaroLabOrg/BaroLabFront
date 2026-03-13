@@ -115,6 +115,14 @@ export async function subscribeMod(externalId) {
     }
 }
 
+export async function addTagToMod(externalId, tagId) {
+    return request(`/mod/${externalId}/tags/${tagId}`, { method: 'POST' });
+}
+
+export async function removeTagFromMod(externalId, tagId) {
+    return request(`/mod/${externalId}/tags/${tagId}`, { method: 'DELETE' });
+}
+
 // ═══════════ Admin ═══════════
 
 export async function activateMod(externalId) {

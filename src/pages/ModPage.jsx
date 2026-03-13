@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import * as modsApi from '../api/mods';
 
 import ModHero from '../components/ModHero';
@@ -11,6 +12,7 @@ import './ModPage.css';
 
 export default function ModPage() {
     const { externalId } = useParams();
+    const { isAuthenticated, isAdmin } = useAuth();
 
     const [mod, setMod] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -41,6 +43,29 @@ export default function ModPage() {
     };
 
     const handleSubscribe = () => modsApi.subscribeMod(externalId);
+
+    const handleAddTag = async (tagId) => {
+        try {
+            await modsApi.addTagToMod(externalId, tagId);
+            // Reload the mod to get updated tags
+            await loadMod();
+        } catch (err) {
+            console.error('Failed to add tag:', err);
+            // Optionally, show a toast or error message here
+            alert('Ошибка при добавлении тега: ' + err.message);
+        }
+    };
+
+    const handleRemoveTag = async (tagId) => {
+        try {
+            await modsApi.removeTagFromMod(externalId, tagId);
+            // Reload the mod to get updated tags
+            await loadMod();
+        } catch (err) {
+            console.error('Failed to remove tag:', err);
+            alert('Ошибка при удалении тега: ' + err.message);
+        }
+    };
 
     if (loading) {
         return (
@@ -142,7 +167,14 @@ export default function ModPage() {
                             </main>
 
                             {/* Right column: sidebar */}
-                            <ModSidebar mod={mod} tags={Array.isArray(mod.tags) ? mod.tags : []} />
+                            <ModSidebar 
+                                mod={mod} 
+                                tags={Array.isArray(mod.tags) ? mod.tags : []} 
+                                onAddTag={handleAddTag}
+                                onRemoveTag={handleRemoveTag}
+                                isAuthenticated={isAuthenticated}
+                                isAdmin={isAdmin}
+                            />
                         </div>
                     </>
                 )}

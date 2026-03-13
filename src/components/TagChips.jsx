@@ -1,6 +1,6 @@
 import './TagChips.css';
 
-export default function TagChips({ tags = [] }) {
+export default function TagChips({ tags = [], onRemove, showRemoveButton = false }) {
     const normalizedTags = (tags || [])
         .map((tag, index) => {
             if (typeof tag === 'string') {
@@ -15,6 +15,7 @@ export default function TagChips({ tags = [] }) {
 
             return {
                 key: tag?.id || tag?.slug || `${label}-${index}`,
+                id: tag?.id,
                 label,
             };
         })
@@ -29,6 +30,19 @@ export default function TagChips({ tags = [] }) {
             {normalizedTags.map((tag) => (
                 <span key={tag.key} className="tag-chip">
                     {tag.label}
+                    {showRemoveButton && onRemove && (
+                        <button
+                            className="tag-remove-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                onRemove(tag.id || tag.key);
+                            }}
+                            title="Удалить тег"
+                        >
+                            &times;
+                        </button>
+                    )}
                 </span>
             ))}
         </div>

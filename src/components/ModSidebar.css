@@ -21,6 +21,49 @@
     margin: 0 0 16px;
 }
 
+/* ─── Tag Selection ─── */
+.mod-sidebar-add-tag {
+    margin-top: 16px;
+}
+
+.mod-tag-add-btn {
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.mod-sidebar-tag-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--bg-input);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.mod-tag-select {
+    width: 100%;
+    cursor: pointer;
+    background-color: #1e1e24 !important; /* Hardcoded dark hex */
+    color: #ffffff !important;           /* Hardcoded white hex */
+    color-scheme: dark;
+}
+
+.mod-tag-select option {
+    color: #ffffff;
+    background-color: #1e1e24; /* Hardcoded dark hex instead of CSS variable */
+}
+
+.mod-tag-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mod-tag-actions button {
+    flex: 1;
+}
+
 /* ─── Dependencies ─── */
 .mod-deps-list {
     list-style: none;
