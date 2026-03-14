@@ -23,6 +23,24 @@
     border-color: rgba(108, 99, 255, 0.35);
 }
 
+.tag-remove-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.1rem;
+    line-height: 0.5;
+    padding: 0;
+    margin-left: 6px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.tag-remove-btn:hover {
+    opacity: 1;
+    color: var(--danger, #ff4d4f);
+}
+
 .tag-chips-empty {
     color: var(--text-muted);
     font-size: 0.85rem;
