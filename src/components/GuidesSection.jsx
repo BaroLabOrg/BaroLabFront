@@ -1,35 +1,60 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getModGuides } from '../api/modGuides';
+import { mapPaginationError } from '../api/api';
 import { useAuth } from '../context/AuthContext';
+import Pagination from './Pagination';
 import './GuidesSection.css';
 
 export default function GuidesSection() {
+    const PAGE_SIZE = 10;
     const { externalId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [guides, setGuides] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
     const canCreateGuide = user !== null;
     const canEditGuide = (guideAuthorId) => user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.id === guideAuthorId);
 
     useEffect(() => {
+        setPage(0);
+    }, [externalId]);
+
+    useEffect(() => {
         async function fetchGuides() {
+            if (!externalId) {
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+            setError('');
             try {
-                if (externalId) {
-                    const data = await getModGuides(externalId);
-                    setGuides(data || []);
-                }
+                const data = await getModGuides(externalId, {
+                    page,
+                    size: PAGE_SIZE,
+                    sortBy: 'createdAt',
+                    direction: 'desc',
+                });
+                setGuides(data.items);
+                setTotalPages(data.total_pages);
+                setHasNext(data.has_next);
+                setHasPrevious(data.has_previous);
             } catch (err) {
-                // Ignore errors if the guide just doesn't exist
-                console.error('Failed to fetch guides', err);
+                setError(mapPaginationError(err, 'Не удалось загрузить руководства'));
             } finally {
                 setLoading(false);
             }
         }
+
         fetchGuides();
-    }, [externalId]);
+    }, [externalId, page]);
 
     const handleCreateGuide = () => {
         navigate(`/mod/${externalId}/guides/new`);
@@ -88,43 +113,62 @@ export default function GuidesSection() {
                 </div>
             ) : (
                 <ul className="guides-list">
-                    {guides.map((guide) => (
-                        <li key={guide.id} className="guide-item" style={{ position: 'relative', marginBottom: '0.5rem' }}>
-                            <Link to={`/mod/${externalId}/guides/${guide.id}`} className="guide-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
-                                <span className="guide-icon">📄</span>
-                                <div className="guide-info" style={{ marginLeft: '1rem', flex: 1 }}>
-                                    <span className="guide-name" style={{ color: '#4da6ff', fontWeight: 'bold' }}>{guide.title}</span>
-                                    <br />
-                                    <span className="guide-meta" style={{ fontSize: '0.8rem', color: '#888' }}>
-                                        Автор: {guide.author?.username || 'Unknown'} · {guide.createdAt ? new Date(guide.createdAt).toLocaleDateString() : 'N/A'}
-                                    </span>
-                                </div>
-                            </Link>
-                            {canEditGuide(guide.author?.id) && (
-                                <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleEditGuide(guide.id);
-                                        }}
-                                        style={{
-                                            background: 'transparent',
-                                            color: '#4da6ff',
-                                            border: '1px solid #4da6ff',
-                                            padding: '0.3rem 0.6rem',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer',
-                                            fontSize: '0.8rem'
-                                        }}
-                                    >
-                                        Редактировать
-                                    </button>
-                                </div>
-                            )}
-                        </li>
-                    ))}
+                    {guides.map((guide) => {
+                        const guideCreatedAt = guide.createdAt || guide.created_at;
+
+                        return (
+                            <li key={guide.id} className="guide-item" style={{ position: 'relative', marginBottom: '0.5rem' }}>
+                                <Link to={`/mod/${externalId}/guides/${guide.id}`} className="guide-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                                    <span className="guide-icon">📄</span>
+                                    <div className="guide-info" style={{ marginLeft: '1rem', flex: 1 }}>
+                                        <span className="guide-name" style={{ color: '#4da6ff', fontWeight: 'bold' }}>{guide.title}</span>
+                                        <br />
+                                        <span className="guide-meta" style={{ fontSize: '0.8rem', color: '#888' }}>
+                                            Автор: {guide.author?.username || 'Unknown'} · {guideCreatedAt ? new Date(guideCreatedAt).toLocaleDateString() : 'N/A'}
+                                        </span>
+                                    </div>
+                                </Link>
+                                {canEditGuide(guide.author?.id) && (
+                                    <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleEditGuide(guide.id);
+                                            }}
+                                            style={{
+                                                background: 'transparent',
+                                                color: '#4da6ff',
+                                                border: '1px solid #4da6ff',
+                                                padding: '0.3rem 0.6rem',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                fontSize: '0.8rem'
+                                            }}
+                                        >
+                                            Редактировать
+                                        </button>
+                                    </div>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
+
+            {error && (
+                <div className="auth-error" style={{ marginTop: '1rem' }}>
+                    {error}
+                </div>
+            )}
+
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
+                disabled={loading}
+                onPageChange={setPage}
+            />
         </section>
     );
 }

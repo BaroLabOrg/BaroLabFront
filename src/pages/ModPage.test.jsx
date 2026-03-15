@@ -28,6 +28,13 @@ vi.mock('../components/CommentsSection', () => ({
     default: () => <div>CommentsSection</div>,
 }));
 
+vi.mock('../context/AuthContext', () => ({
+    useAuth: () => ({
+        isAuthenticated: false,
+        isAdmin: false,
+    }),
+}));
+
 describe('ModPage tags read-only behavior', () => {
     it('renders only tags from backend mod response', async () => {
         vi.spyOn(modsApi, 'getMod').mockResolvedValue({

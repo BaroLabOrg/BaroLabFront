@@ -14,13 +14,13 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-inner container">
-                <NavLink to="/" className="navbar-logo">
+                <NavLink to="/mods" className="navbar-logo">
                     <span className="logo-icon">◊</span>
                     <span className="logo-text">BaroLab</span>
                 </NavLink>
 
                 <div className="navbar-links">
-                    <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                    <NavLink to="/mods" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Моды
                     </NavLink>
                     <NavLink to="/guides" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

@@ -12,7 +12,10 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
 
     useEffect(() => {
         if (isAuthenticated) {
-            tagsApi.getTags().then(data => setAllTags(data || [])).catch(err => console.error("Failed to load tags:", err));
+            tagsApi
+                .getTags({ page: 0, size: 100, sortBy: 'name', direction: 'asc' })
+                .then((data) => setAllTags(Array.isArray(data.items) ? data.items : []))
+                .catch((err) => console.error('Failed to load tags:', err));
         }
     }, [isAuthenticated]);
 

@@ -20,7 +20,7 @@ export default function LoginPage() {
         setLoading(true);
         try {
             await doLogin(login, password);
-            navigate('/');
+            navigate('/mods');
         } catch (err) {
             if (err.status === 403) {
                 setSsoError('Этот аккаунт привязан к Google. Пожалуйста, используйте вход через Google.');
@@ -38,7 +38,7 @@ export default function LoginPage() {
         setLoading(true);
         try {
             await loginWithGoogle(credentialResponse.credential);
-            navigate('/');
+            navigate('/mods');
         } catch (err) {
             setError(err.message || 'Ошибка входа через Google');
         } finally {

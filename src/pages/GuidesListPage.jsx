@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { mapPaginationError } from '../api/api';
 import * as guideApi from '../api/modGuides';
 import * as modsApi from '../api/mods';
 import { useAuth } from '../context/AuthContext';
-import StatusBadge from '../components/StatusBadge';
+import Pagination from '../components/Pagination';
 import './GuidesListPage.css';
 import '../components/ModCard.css';
 
 export default function GuidesListPage() {
+    const PAGE_SIZE = 12;
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [guides, setGuides] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
+    const [totalGuides, setTotalGuides] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -21,18 +28,26 @@ export default function GuidesListPage() {
     const [modsError, setModsError] = useState('');
 
     useEffect(() => {
-        loadGuides();
-    }, []);
+        loadGuides(page);
+    }, [page]);
 
-    const loadGuides = async () => {
+    const loadGuides = async (targetPage) => {
+        setLoading(true);
+        setError('');
         try {
-            const data = await guideApi.getAllGuides();
-            // Filter out inactive/blocked guides for public view
-            const activeGuides = data.filter(g => g.status === 'ACTIVE');
-            const sortedData = activeGuides.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
-            setGuides(sortedData);
+            const data = await guideApi.getAllGuides({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setGuides(data.items);
+            setTotalGuides(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(mapPaginationError(err, 'Не удалось загрузить руководства'));
         } finally {
             setLoading(false);
         }
@@ -42,12 +57,18 @@ export default function GuidesListPage() {
         setShowModal(true);
         if (mods.length === 0) {
             setLoadingMods(true);
+            setModsError('');
             try {
-                const data = await modsApi.getMods();
-                const activeMods = data.filter(m => m.status === 'ACTIVE');
+                const data = await modsApi.getMods({
+                    page: 0,
+                    size: 100,
+                    sortBy: 'title',
+                    direction: 'asc',
+                });
+                const activeMods = data.items.filter((m) => m.status === 'ACTIVE');
                 setMods(activeMods);
             } catch (err) {
-                setModsError(err.message);
+                setModsError(mapPaginationError(err, 'Не удалось загрузить список модов'));
             } finally {
                 setLoadingMods(false);
             }
@@ -86,7 +107,7 @@ export default function GuidesListPage() {
                 <div className="guides-header-box glass-card shine">
                     <h1 className="guides-title">📚 Библиотека Руководств</h1>
                     <p className="guides-subtitle">
-                        Полезные гайды, советы и инструкции по модам от нашего сообщества.
+                        Полезные гайды, советы и инструкции по модам от нашего сообщества. Всего: {totalGuides}
                     </p>
                     {isAuthenticated ? (
                         <div className="guides-actions" style={{ marginTop: '1.5rem' }}>
@@ -105,7 +126,7 @@ export default function GuidesListPage() {
                 <div className="guides-grid">
                     {guides.length === 0 ? (
                         <div className="no-guides-message">
-                            Пока нет доступных руководств.
+                            На этой странице нет доступных руководств.
                         </div>
                     ) : (
                         guides.map((guide) => (
@@ -145,6 +166,15 @@ export default function GuidesListPage() {
                         ))
                     )}
                 </div>
+
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    hasNext={hasNext}
+                    hasPrevious={hasPrevious}
+                    disabled={loading}
+                    onPageChange={setPage}
+                />
 
                 {showModal && (
                     <div className="modal-overlay" onClick={() => setShowModal(false)}>

@@ -20,7 +20,7 @@ export default function SignUpPage() {
         setLoading(true);
         try {
             await signUp(login, email, username, password);
-            navigate('/');
+            navigate('/mods');
         } catch (err) {
             setError(err.message || 'Ошибка регистрации');
         } finally {
@@ -33,7 +33,7 @@ export default function SignUpPage() {
         setLoading(true);
         try {
             await loginWithGoogle(credentialResponse.credential);
-            navigate('/');
+            navigate('/mods');
         } catch (err) {
             setError(err.message || 'Ошибка регистрации через Google');
         } finally {

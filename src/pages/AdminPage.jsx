@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 import * as guideApi from '../api/modGuides';
 import StatusBadge from '../components/StatusBadge';
+import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
 import './AdminPage.css';
 
@@ -59,21 +60,38 @@ export default function AdminPage() {
 /*                USERS TAB                   */
 /* ═══════════════════════════════════════════ */
 function UsersTab() {
+    const PAGE_SIZE = 12;
     const [users, setUsers] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
 
     useEffect(() => {
-        loadUsers();
-    }, []);
+        loadUsers(page);
+    }, [page]);
 
-    const loadUsers = async () => {
+    const loadUsers = async (targetPage) => {
+        setLoading(true);
+        setError('');
         try {
-            const data = await api.getUsers();
-            setUsers(data);
+            const data = await api.getUsers({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setUsers(data.items);
+            setTotalUsers(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(api.mapPaginationError(err, 'Не удалось загрузить пользователей'));
         } finally {
             setLoading(false);
         }
@@ -120,7 +138,7 @@ function UsersTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего пользователей: <strong>{users.length}</strong></div>
+            <div className="admin-stat">Всего пользователей: <strong>{totalUsers}</strong></div>
             <div className="admin-list">
                 {users.map((user) => (
                     <div key={user.id} className="admin-item glass-card">
@@ -166,6 +184,14 @@ function UsersTab() {
                     </div>
                 ))}
             </div>
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
+                disabled={loading || actionLoading !== null}
+                onPageChange={setPage}
+            />
         </div>
     );
 }
@@ -174,27 +200,49 @@ function UsersTab() {
 /*                 MODS TAB                   */
 /* ═══════════════════════════════════════════ */
 function ModsTab() {
+    const PAGE_SIZE = 10;
+    const COMMENT_PAGE_SIZE = 8;
     const [mods, setMods] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalMods, setTotalMods] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
 
     const [selectedId, setSelectedId] = useState(null);
     const [comments, setComments] = useState([]);
+    const [commentPage, setCommentPage] = useState(0);
+    const [commentTotalPages, setCommentTotalPages] = useState(0);
+    const [commentHasNext, setCommentHasNext] = useState(false);
+    const [commentHasPrevious, setCommentHasPrevious] = useState(false);
     const [commentsLoading, setCommentsLoading] = useState(false);
     const [commentsOpen, setCommentsOpen] = useState(false);
     const [commentActionLoading, setCommentActionLoading] = useState(null);
 
     useEffect(() => {
-        loadMods();
-    }, []);
+        loadMods(page);
+    }, [page]);
 
-    const loadMods = async () => {
+    const loadMods = async (targetPage) => {
+        setLoading(true);
+        setError('');
         try {
-            const data = await api.getMods();
-            setMods(data);
+            const data = await api.getMods({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setMods(data.items);
+            setTotalMods(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(api.mapPaginationError(err, 'Не удалось загрузить моды'));
         } finally {
             setLoading(false);
         }
@@ -224,29 +272,50 @@ function ModsTab() {
         }
     };
 
-    const toggleComments = async (externalId) => {
-        if (selectedId === externalId && commentsOpen) {
-            setCommentsOpen(false);
-            setSelectedId(null);
-            setComments([]);
-            return;
-        }
-
-        setSelectedId(externalId);
-        setCommentsOpen(true);
+    const loadComments = async (externalId, targetPage = 0) => {
         setCommentsLoading(true);
         setComments([]);
         setError('');
 
         try {
-            const data = await api.getComments(externalId);
-            const sortedData = data.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
-            setComments(sortedData);
+            const data = await api.getComments(externalId, {
+                page: targetPage,
+                size: COMMENT_PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setComments(data.items);
+            setCommentPage(data.page);
+            setCommentTotalPages(data.total_pages);
+            setCommentHasNext(data.has_next);
+            setCommentHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(api.mapPaginationError(err, 'Не удалось загрузить комментарии'));
         } finally {
             setCommentsLoading(false);
         }
+    };
+
+    const toggleComments = async (externalId) => {
+        if (selectedId === externalId && commentsOpen) {
+            setCommentsOpen(false);
+            setSelectedId(null);
+            setComments([]);
+            setCommentPage(0);
+            setCommentTotalPages(0);
+            setCommentHasNext(false);
+            setCommentHasPrevious(false);
+            return;
+        }
+
+        setSelectedId(externalId);
+        setCommentsOpen(true);
+        await loadComments(externalId, 0);
+    };
+
+    const handleCommentPageChange = async (nextPage) => {
+        if (!selectedId) return;
+        await loadComments(selectedId, nextPage);
     };
 
     const handleCommentActivate = async (commentId) => {
@@ -278,7 +347,7 @@ function ModsTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего модов: <strong>{mods.length}</strong></div>
+            <div className="admin-stat">Всего модов: <strong>{totalMods}</strong></div>
             <div className="admin-list">
                 {mods.map((mod) => {
                     const isOpen = selectedId === mod.external_id && commentsOpen;
@@ -377,12 +446,28 @@ function ModsTab() {
                                             </div>
                                         </div>
                                     ))}
+                                    <Pagination
+                                        page={commentPage}
+                                        totalPages={commentTotalPages}
+                                        hasNext={commentHasNext}
+                                        hasPrevious={commentHasPrevious}
+                                        disabled={commentsLoading || commentActionLoading !== null}
+                                        onPageChange={handleCommentPageChange}
+                                    />
                                 </div>
                             )}
                         </div>
                     );
                 })}
             </div>
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
+                disabled={loading || actionLoading !== null}
+                onPageChange={setPage}
+            />
         </div>
     );
 }
@@ -391,22 +476,38 @@ function ModsTab() {
 /*                GUIDES TAB                  */
 /* ═══════════════════════════════════════════ */
 function GuidesTab() {
+    const PAGE_SIZE = 12;
     const [guides, setGuides] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalGuides, setTotalGuides] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
 
     useEffect(() => {
-        loadGuides();
-    }, []);
+        loadGuides(page);
+    }, [page]);
 
-    const loadGuides = async () => {
+    const loadGuides = async (targetPage) => {
+        setLoading(true);
+        setError('');
         try {
-            const data = await guideApi.getAllGuides();
-            const sortedData = data.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
-            setGuides(sortedData);
+            const data = await guideApi.getAllGuides({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setGuides(data.items);
+            setTotalGuides(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(api.mapPaginationError(err, 'Не удалось загрузить руководства'));
         } finally {
             setLoading(false);
         }
@@ -441,7 +542,7 @@ function GuidesTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего руководств: <strong>{guides.length}</strong></div>
+            <div className="admin-stat">Всего руководств: <strong>{totalGuides}</strong></div>
             <div className="admin-list">
                 {guides.map((guide) => (
                     <div key={guide.id} className="admin-item-group">
@@ -488,6 +589,14 @@ function GuidesTab() {
                     </div>
                 ))}
             </div>
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
+                disabled={loading || actionLoading !== null}
+                onPageChange={setPage}
+            />
         </div>
     );
 }
