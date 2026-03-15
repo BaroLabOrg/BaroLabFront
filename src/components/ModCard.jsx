@@ -2,19 +2,26 @@ import { Link } from 'react-router-dom';
 import './ModCard.css';
 
 export default function ModCard({ mod }) {
-    const date = new Date(mod.created_at).toLocaleDateString('ru-RU', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
+    const externalId = mod.external_id || mod.externalId;
+    const mainImage = mod.main_image || mod.mainImage;
+    const authorName = mod.author_username || mod.authorUsername || mod.author?.username || 'Unknown';
+    const createdAt = mod.created_at || mod.createdAt;
+    const createdDate = createdAt ? new Date(createdAt) : null;
+    const date = createdDate && !Number.isNaN(createdDate.getTime())
+        ? createdDate.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        })
+        : '';
 
     return (
-        <Link to={`/mod/${mod.external_id}`} className="mod-card glass-card">
+        <Link to={`/mod/${externalId}`} className="mod-card glass-card">
             <div
                 className="mod-card-banner"
-                style={mod.main_image ? { backgroundImage: `url(${mod.main_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                style={mainImage ? { backgroundImage: `url(${mainImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
             >
-                {!mod.main_image && <span className="mod-card-banner-placeholder">🔧</span>}
+                {!mainImage && <span className="mod-card-banner-placeholder">🔧</span>}
             </div>
             <div className="mod-card-body">
                 <h3 className="mod-card-title">{mod.title}</h3>
@@ -25,7 +32,7 @@ export default function ModCard({ mod }) {
                 </p>
                 <div className="mod-card-footer">
                     <span className="mod-card-author">
-                        👤 {mod.author_username || 'Unknown'}
+                        👤 {authorName}
                     </span>
                     <span className="mod-card-date">{date}</span>
                 </div>

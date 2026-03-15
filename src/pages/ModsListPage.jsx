@@ -1,23 +1,66 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
+import * as tagsApi from '../api/tags';
 import ModCard from '../components/ModCard';
 import Pagination from '../components/Pagination';
+import TagChips from '../components/TagChips';
 import './ModsListPage.css';
 
+const PAGE_SIZE = 12;
+const TAGS_PAGE_SIZE = 100;
+const MODS_SORT_BY = 'createdAt';
+const MODS_DIRECTION = 'desc';
+
+function normalizePage(value) {
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed < 0) return 0;
+    return parsed;
+}
+
+function normalizeQuery(value) {
+    return String(value || '').trim();
+}
+
+function parseTags(searchParams) {
+    const rawValues = searchParams.getAll('tags');
+    const values = rawValues.flatMap((value) =>
+        String(value || '')
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+    );
+
+    return [...new Set(values)];
+}
+
+function getTagFilterValue(tag) {
+    return String(tag?.slug || tag?.name || '').trim();
+}
+
 export default function ModsListPage() {
-    const PAGE_SIZE = 12;
+    const [searchParams, setSearchParams] = useSearchParams();
     const { isAuthenticated } = useAuth();
+    const query = normalizeQuery(searchParams.get('q'));
+    const selectedTags = parseTags(searchParams);
+    const selectedTagsKey = selectedTags.join(',');
+    const page = normalizePage(searchParams.get('page'));
+
     const [mods, setMods] = useState([]);
-    const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [hasNext, setHasNext] = useState(false);
     const [hasPrevious, setHasPrevious] = useState(false);
     const [totalMods, setTotalMods] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchInput, setSearchInput] = useState(query);
+
+    const [allTags, setAllTags] = useState([]);
+    const [tagToAdd, setTagToAdd] = useState('');
+    const [tagsLoading, setTagsLoading] = useState(true);
+    const [tagsError, setTagsError] = useState('');
 
     // Create mod state
     const [showForm, setShowForm] = useState(false);
@@ -30,19 +73,47 @@ export default function ModsListPage() {
     const [modsAbove, setModsAbove] = useState('');
     const [creating, setCreating] = useState(false);
 
-    useEffect(() => {
-        loadMods(page);
-    }, [page]);
+    const updateSearch = (nextValues = {}) => {
+        const nextQuery = normalizeQuery(nextValues.q ?? query);
+        const nextPage = normalizePage(nextValues.page ?? page);
+        const nextTags = [...new Set((nextValues.tags ?? selectedTags)
+            .map((tag) => String(tag || '').trim())
+            .filter(Boolean))];
 
-    const loadMods = async (targetPage) => {
+        const nextParams = new URLSearchParams(searchParams);
+
+        if (nextQuery) {
+            nextParams.set('q', nextQuery);
+        } else {
+            nextParams.delete('q');
+        }
+
+        if (nextTags.length > 0) {
+            nextParams.set('tags', nextTags.join(','));
+        } else {
+            nextParams.delete('tags');
+        }
+
+        if (nextPage > 0) {
+            nextParams.set('page', String(nextPage));
+        } else {
+            nextParams.delete('page');
+        }
+
+        setSearchParams(nextParams);
+    };
+
+    const loadMods = async ({ currentQuery, currentTags, currentPage }) => {
         setLoading(true);
         setError('');
         try {
-            const data = await modsApi.getMods({
-                page: targetPage,
+            const data = await modsApi.searchMods({
+                q: currentQuery,
+                tags: currentTags,
+                page: currentPage,
                 size: PAGE_SIZE,
-                sortBy: 'createdAt',
-                direction: 'desc',
+                sortBy: MODS_SORT_BY,
+                direction: MODS_DIRECTION,
             });
             setMods(data.items);
             setTotalMods(data.total);
@@ -50,10 +121,109 @@ export default function ModsListPage() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
+            setMods([]);
+            setTotalMods(0);
+            setTotalPages(0);
+            setHasNext(false);
+            setHasPrevious(false);
             setError(mapPaginationError(err, 'Не удалось загрузить моды'));
         } finally {
             setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        setSearchInput(query);
+    }, [query]);
+
+    useEffect(() => {
+        loadMods({
+            currentQuery: query,
+            currentTags: selectedTags,
+            currentPage: page,
+        });
+    }, [query, selectedTagsKey, page]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadTags = async () => {
+            setTagsLoading(true);
+            setTagsError('');
+            try {
+                const data = await tagsApi.getTags({
+                    page: 0,
+                    size: TAGS_PAGE_SIZE,
+                    sortBy: 'name',
+                    direction: 'asc',
+                });
+
+                if (!cancelled) {
+                    setAllTags(Array.isArray(data.items) ? data.items : []);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setAllTags([]);
+                    setTagsError(mapPaginationError(err, 'Не удалось загрузить теги'));
+                }
+            } finally {
+                if (!cancelled) {
+                    setTagsLoading(false);
+                }
+            }
+        };
+
+        loadTags();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const handleSearchSubmit = (event) => {
+        event.preventDefault();
+        updateSearch({
+            q: searchInput,
+            tags: selectedTags,
+            page: 0,
+        });
+    };
+
+    const handlePageChange = (nextPage) => {
+        updateSearch({
+            q: query,
+            tags: selectedTags,
+            page: nextPage,
+        });
+    };
+
+    const handleAddTagFilter = () => {
+        if (!tagToAdd || selectedTags.includes(tagToAdd)) return;
+        updateSearch({
+            q: query,
+            tags: [...selectedTags, tagToAdd],
+            page: 0,
+        });
+        setTagToAdd('');
+    };
+
+    const handleRemoveTagFilter = (tagValue) => {
+        updateSearch({
+            q: query,
+            tags: selectedTags.filter((tag) => tag !== tagValue),
+            page: 0,
+        });
+    };
+
+    const handleResetFilters = () => {
+        setSearchInput('');
+        setTagToAdd('');
+
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete('q');
+        nextParams.delete('tags');
+        nextParams.delete('page');
+        setSearchParams(nextParams);
     };
 
     const handleCreateMod = async (e) => {
@@ -75,9 +245,17 @@ export default function ModsListPage() {
             setModsAbove('');
             setShowForm(false);
             if (page === 0) {
-                await loadMods(0);
+                await loadMods({
+                    currentQuery: query,
+                    currentTags: selectedTags,
+                    currentPage: 0,
+                });
             } else {
-                setPage(0);
+                updateSearch({
+                    q: query,
+                    tags: selectedTags,
+                    page: 0,
+                });
             }
         } catch (err) {
             setError(err.message);
@@ -86,18 +264,28 @@ export default function ModsListPage() {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="page">
-                <div className="container">
-                    <div className="loading-state">
-                        <div className="loading-spinner" />
-                        <p>Загрузка модов...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const hasActiveFilters = query.length > 0 || selectedTags.length > 0 || page > 0;
+    const selectableTags = allTags.filter((tag) => {
+        const value = getTagFilterValue(tag);
+        return value && !selectedTags.includes(value);
+    });
+
+    const selectedTagObjects = selectedTags.map((value) => {
+        const selectedTag = allTags.find((tag) => getTagFilterValue(tag) === value);
+        if (selectedTag) {
+            return {
+                id: value,
+                name: selectedTag.name || selectedTag.slug || value,
+                slug: selectedTag.slug || value,
+            };
+        }
+
+        return {
+            id: value,
+            name: value,
+            slug: value,
+        };
+    });
 
     return (
         <div className="page">
@@ -124,6 +312,79 @@ export default function ModsListPage() {
                         </p>
                     )}
                 </div>
+
+                <section className="mods-search-panel glass-card">
+                    <form className="mods-search-form" onSubmit={handleSearchSubmit}>
+                        <label className="mods-search-label" htmlFor="mods-search-input">
+                            Поиск по названию мода
+                        </label>
+                        <div className="mods-search-row">
+                            <input
+                                id="mods-search-input"
+                                type="text"
+                                value={searchInput}
+                                onChange={(event) => setSearchInput(event.target.value)}
+                                placeholder="Введите название мода"
+                                autoComplete="off"
+                            />
+                            <button className="btn btn-primary" type="submit" disabled={loading || creating}>
+                                Найти
+                            </button>
+                            <button
+                                className="btn btn-ghost"
+                                type="button"
+                                disabled={!hasActiveFilters || loading || creating}
+                                onClick={handleResetFilters}
+                            >
+                                Сбросить
+                            </button>
+                        </div>
+                    </form>
+
+                    <div className="mods-tags-filter">
+                        <label className="mods-search-label" htmlFor="mods-tag-select">
+                            Фильтр по тегам
+                        </label>
+                        <div className="mods-tag-row">
+                            <select
+                                id="mods-tag-select"
+                                value={tagToAdd}
+                                onChange={(event) => setTagToAdd(event.target.value)}
+                                disabled={tagsLoading || selectableTags.length === 0}
+                            >
+                                <option value="">Выберите тег</option>
+                                {selectableTags.map((tag) => {
+                                    const value = getTagFilterValue(tag);
+                                    return (
+                                        <option key={tag.id || value} value={value}>
+                                            {tag.name || value}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                            <button
+                                className="btn btn-ghost"
+                                type="button"
+                                onClick={handleAddTagFilter}
+                                disabled={!tagToAdd || loading || creating}
+                            >
+                                Добавить тег
+                            </button>
+                        </div>
+
+                        {tagsLoading && <p className="mods-tags-meta">Загрузка тегов...</p>}
+                        {tagsError && <p className="mods-tags-error">{tagsError}</p>}
+
+                        <div className="mods-selected-tags">
+                            <span className="mods-tags-meta">Выбранные теги</span>
+                            <TagChips
+                                tags={selectedTagObjects}
+                                showRemoveButton
+                                onRemove={handleRemoveTagFilter}
+                            />
+                        </div>
+                    </div>
+                </section>
 
                 {isAuthenticated && showForm && (
                     <form className="create-mod-form glass-card fade-in" onSubmit={handleCreateMod}>
@@ -214,15 +475,24 @@ export default function ModsListPage() {
 
                 {error && <div className="auth-error" style={{ marginBottom: 16 }}>{error}</div>}
 
-                {mods.length === 0 ? (
+                {loading ? (
+                    <div className="loading-state">
+                        <div className="loading-spinner" />
+                        <p>Загрузка модов...</p>
+                    </div>
+                ) : mods.length === 0 ? (
                     <div className="empty-state fade-in">
                         <span className="empty-icon">🔧</span>
-                        <p>Модов пока нет на этой странице.</p>
+                        <p>По текущему запросу моды не найдены.</p>
                     </div>
                 ) : (
                     <div className="mods-grid">
                         {mods.map((mod, i) => (
-                            <ModCard key={mod.id} mod={mod} style={{ animationDelay: `${i * 0.05}s` }} />
+                            <ModCard
+                                key={mod.id || mod.external_id || mod.externalId}
+                                mod={mod}
+                                style={{ animationDelay: `${i * 0.05}s` }}
+                            />
                         ))}
                     </div>
                 )}
@@ -233,7 +503,7 @@ export default function ModsListPage() {
                     hasNext={hasNext}
                     hasPrevious={hasPrevious}
                     disabled={loading || creating}
-                    onPageChange={setPage}
+                    onPageChange={handlePageChange}
                 />
             </div>
         </div>
