@@ -23,17 +23,17 @@ export default function App() {
                 {/* Public */}
                 <Route
                     path="/login"
-                    element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+                    element={isAuthenticated ? <Navigate to="/mods" replace /> : <LoginPage />}
                 />
                 <Route
                     path="/sign-up"
-                    element={isAuthenticated ? <Navigate to="/" replace /> : <SignUpPage />}
+                    element={isAuthenticated ? <Navigate to="/mods" replace /> : <SignUpPage />}
                 />
 
                 {/* Protected / Public Mix */}
                 <Route
                     path="/"
-                    element={<ModsListPage />}
+                    element={<Navigate to="/mods" replace />}
                 />
 
                 {/* Mods */}
@@ -84,7 +84,7 @@ export default function App() {
                 />
 
                 {/* Fallback */}
-                <Route path="*" element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />} />
+                <Route path="*" element={<Navigate to={isAuthenticated ? '/mods' : '/login'} replace />} />
             </Routes>
         </>
     );

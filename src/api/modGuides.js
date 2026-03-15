@@ -1,39 +1,18 @@
-const API_BASE = 'http://localhost:8080';
+import { normalizePagedResponse, request } from './api';
 
-function getToken() {
-    return localStorage.getItem('barolab_token');
-}
-
-async function request(path, options = {}) {
-    const token = getToken();
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options.headers,
-    };
-
-    const res = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers,
+export async function getModGuides(
+    modId,
+    {
+        page = 0,
+        size = 20,
+        sortBy = 'createdAt',
+        direction = 'desc',
+    } = {},
+) {
+    const response = await request(`/mod/${modId}/guide`, {
+        query: { page, size, sortBy, direction },
     });
-
-    if (!res.ok) {
-        let errorMsg = `Error ${res.status}`;
-        try {
-            const body = await res.json();
-            errorMsg = body.message || errorMsg;
-        } catch { }
-        throw new Error(errorMsg);
-    }
-
-    if (res.status === 204) return null;
-
-    const text = await res.text();
-    return text ? JSON.parse(text) : null;
-}
-
-export async function getModGuides(modId) {
-    return request(`/mod/${modId}/guide`);
+    return normalizePagedResponse(response);
 }
 
 export async function getModGuideById(modId, guideId) {
@@ -43,14 +22,14 @@ export async function getModGuideById(modId, guideId) {
 export async function createModGuide(modId, title, description) {
     return request(`/mod/${modId}/guide`, {
         method: 'POST',
-        body: JSON.stringify({ title, description }),
+        body: { title, description },
     });
 }
 
 export async function updateModGuide(modId, guideId, title, description) {
     return request(`/mod/${modId}/guide/${guideId}`, {
         method: 'PUT',
-        body: JSON.stringify({ title, description }),
+        body: { title, description },
     });
 }
 
@@ -60,8 +39,16 @@ export async function deleteModGuide(modId, guideId) {
     });
 }
 
-export async function getAllGuides() {
-    return request('/guides');
+export async function getAllGuides({
+    page = 0,
+    size = 20,
+    sortBy = 'createdAt',
+    direction = 'desc',
+} = {}) {
+    const response = await request('/guides', {
+        query: { page, size, sortBy, direction },
+    });
+    return normalizePagedResponse(response);
 }
 
 export async function activateGuide(guideId) {

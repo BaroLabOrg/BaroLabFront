@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
 import ModCard from '../components/ModCard';
+import Pagination from '../components/Pagination';
 import './ModsListPage.css';
 
 export default function ModsListPage() {
+    const PAGE_SIZE = 12;
     const { isAuthenticated } = useAuth();
     const [mods, setMods] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
+    const [totalMods, setTotalMods] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -23,16 +31,26 @@ export default function ModsListPage() {
     const [creating, setCreating] = useState(false);
 
     useEffect(() => {
-        loadMods();
-    }, []);
+        loadMods(page);
+    }, [page]);
 
-    const loadMods = async () => {
+    const loadMods = async (targetPage) => {
+        setLoading(true);
+        setError('');
         try {
-            const data = await modsApi.getMods();
-            const activeMods = data.filter(m => m.status === 'ACTIVE');
-            setMods(activeMods);
+            const data = await modsApi.getMods({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setMods(data.items);
+            setTotalMods(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(err.message);
+            setError(mapPaginationError(err, 'Не удалось загрузить моды'));
         } finally {
             setLoading(false);
         }
@@ -41,13 +59,13 @@ export default function ModsListPage() {
     const handleCreateMod = async (e) => {
         e.preventDefault();
         setCreating(true);
+        setError('');
         try {
             const parsedAdditional = additionalImages ? additionalImages.split(',').map(s => s.trim()).filter(Boolean) : [];
             const parsedRequired = requiredMods ? requiredMods.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
             const parsedModsAbove = modsAbove ? modsAbove.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
 
-            const newMod = await modsApi.createMod(title, description, externalUrl, mainImage, parsedAdditional, parsedRequired, parsedModsAbove);
-            setMods([newMod, ...mods]);
+            await modsApi.createMod(title, description, externalUrl, mainImage, parsedAdditional, parsedRequired, parsedModsAbove);
             setTitle('');
             setDescription('');
             setExternalUrl('');
@@ -56,6 +74,11 @@ export default function ModsListPage() {
             setRequiredMods('');
             setModsAbove('');
             setShowForm(false);
+            if (page === 0) {
+                await loadMods(0);
+            } else {
+                setPage(0);
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -82,7 +105,7 @@ export default function ModsListPage() {
                 <div className="mods-header-box glass-card shine">
                     <h1 className="mods-title">🔧 Библиотека Модов</h1>
                     <p className="mods-subtitle">
-                        Steam Workshop моды сообщества
+                        Steam Workshop моды сообщества · всего: {totalMods}
                     </p>
                     {isAuthenticated ? (
                         <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
@@ -194,7 +217,7 @@ export default function ModsListPage() {
                 {mods.length === 0 ? (
                     <div className="empty-state fade-in">
                         <span className="empty-icon">🔧</span>
-                        <p>Модов пока нет. Добавьте первый!</p>
+                        <p>Модов пока нет на этой странице.</p>
                     </div>
                 ) : (
                     <div className="mods-grid">
@@ -203,6 +226,15 @@ export default function ModsListPage() {
                         ))}
                     </div>
                 )}
+
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    hasNext={hasNext}
+                    hasPrevious={hasPrevious}
+                    disabled={loading || creating}
+                    onPageChange={setPage}
+                />
             </div>
         </div>
     );

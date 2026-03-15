@@ -276,3 +276,12 @@
     font-style: italic;
     padding: 8px 0;
 }
+
+.admin-tab-content > .pagination {
+    margin-top: 18px;
+}
+
+.comments-ladder > .pagination {
+    margin-top: 10px;
+    width: 100%;
+}

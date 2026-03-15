@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { mapPaginationError } from '../api/api';
 import { createTag, getTags } from '../api/tags';
 import { mapCreateTagError } from '../api/tagErrorMapper';
+import Pagination from '../components/Pagination';
 import './TagsPage.css';
 
 const SORT_BY_VALUES = ['name', 'createdAt', 'created_at'];
 const DIRECTION_VALUES = ['asc', 'desc'];
+const PAGE_SIZE_VALUES = [10, 20, 50, 100];
 
 function normalizeSortBy(value) {
     return SORT_BY_VALUES.includes(value) ? value : 'name';
@@ -13,6 +16,18 @@ function normalizeSortBy(value) {
 
 function normalizeDirection(value) {
     return DIRECTION_VALUES.includes(value) ? value : 'asc';
+}
+
+function normalizePage(value) {
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed < 0) return 0;
+    return parsed;
+}
+
+function normalizeSize(value) {
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed <= 0) return 20;
+    return parsed;
 }
 
 function formatTagDate(tag) {
@@ -32,8 +47,14 @@ export default function TagsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const sortBy = normalizeSortBy(searchParams.get('sortBy'));
     const direction = normalizeDirection(searchParams.get('direction'));
+    const page = normalizePage(searchParams.get('page'));
+    const size = normalizeSize(searchParams.get('size'));
 
     const [tags, setTags] = useState([]);
+    const [totalTags, setTotalTags] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loadingError, setLoadingError] = useState('');
 
@@ -42,37 +63,73 @@ export default function TagsPage() {
     const [fieldError, setFieldError] = useState('');
     const [formError, setFormError] = useState('');
 
-    const loadTags = async (currentSortBy, currentDirection) => {
+    const updateSearch = (nextValues) => {
+        const next = new URLSearchParams(searchParams);
+        Object.entries(nextValues).forEach(([key, value]) => {
+            next.set(key, String(value));
+        });
+        setSearchParams(next);
+    };
+
+    const loadTags = async (currentSortBy, currentDirection, currentPage, currentSize) => {
         setLoading(true);
         setLoadingError('');
         try {
             const data = await getTags({
+                page: currentPage,
+                size: currentSize,
                 sortBy: currentSortBy,
                 direction: currentDirection,
             });
-            setTags(Array.isArray(data) ? data : []);
+            setTags(data.items);
+            setTotalTags(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
         } catch (error) {
-            setLoadingError(error.message);
+            setLoadingError(mapPaginationError(error, 'Не удалось загрузить теги'));
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        loadTags(sortBy, direction);
-    }, [sortBy, direction]);
+        loadTags(sortBy, direction, page, size);
+    }, [sortBy, direction, page, size]);
 
     const handleSortByChange = (event) => {
-        setSearchParams({
+        updateSearch({
             sortBy: event.target.value,
             direction,
+            page: 0,
+            size,
         });
     };
 
     const handleDirectionChange = (event) => {
-        setSearchParams({
+        updateSearch({
             sortBy,
             direction: event.target.value,
+            page: 0,
+            size,
+        });
+    };
+
+    const handleSizeChange = (event) => {
+        updateSearch({
+            sortBy,
+            direction,
+            page: 0,
+            size: event.target.value,
+        });
+    };
+
+    const handlePageChange = (nextPage) => {
+        updateSearch({
+            sortBy,
+            direction,
+            page: nextPage,
+            size,
         });
     };
 
@@ -91,7 +148,16 @@ export default function TagsPage() {
         try {
             await createTag(trimmedName);
             setNewTagName('');
-            await loadTags(sortBy, direction);
+            if (page === 0) {
+                await loadTags(sortBy, direction, 0, size);
+            } else {
+                updateSearch({
+                    sortBy,
+                    direction,
+                    page: 0,
+                    size,
+                });
+            }
         } catch (error) {
             const mappedError = mapCreateTagError(error);
             if (mappedError.target === 'field') {
@@ -110,7 +176,7 @@ export default function TagsPage() {
                 <section className="tags-header-box glass-card shine">
                     <h1 className="tags-title">Каталог тегов</h1>
                     <p className="tags-subtitle">
-                        Глобальные теги системы. Создание тега не прикрепляет его к модификациям.
+                        Глобальные теги системы. Создание тега не прикрепляет его к модификациям. Всего: {totalTags}
                     </p>
                 </section>
 
@@ -130,6 +196,17 @@ export default function TagsPage() {
                             <select value={direction} onChange={handleDirectionChange}>
                                 <option value="asc">asc</option>
                                 <option value="desc">desc</option>
+                            </select>
+                        </label>
+
+                        <label className="tags-control-group">
+                            <span>Размер страницы</span>
+                            <select value={size} onChange={handleSizeChange}>
+                                {PAGE_SIZE_VALUES.map((value) => (
+                                    <option key={value} value={value}>
+                                        {value}
+                                    </option>
+                                ))}
                             </select>
                         </label>
                     </div>
@@ -167,20 +244,33 @@ export default function TagsPage() {
                     </div>
                 ) : (
                     <section className="tags-grid">
-                        {tags.map((tag) => (
-                            <article key={tag.id || tag.slug} className="tag-item-card glass-card">
-                                <h3>{tag.name}</h3>
-                                <p className="tag-slug">slug: {tag.slug}</p>
-                                {tag.usageCount !== null && tag.usageCount !== undefined && (
-                                    <p className="tag-usage">Использований: {tag.usageCount}</p>
-                                )}
-                                {formatTagDate(tag) && (
-                                    <p className="tag-date">Создан: {formatTagDate(tag)}</p>
-                                )}
-                            </article>
-                        ))}
+                        {tags.map((tag) => {
+                            const usageCount = tag.usageCount ?? tag.usage_count;
+
+                            return (
+                                <article key={tag.id || tag.slug} className="tag-item-card glass-card">
+                                    <h3>{tag.name}</h3>
+                                    <p className="tag-slug">slug: {tag.slug}</p>
+                                    {usageCount !== null && usageCount !== undefined && (
+                                        <p className="tag-usage">Использований: {usageCount}</p>
+                                    )}
+                                    {formatTagDate(tag) && (
+                                        <p className="tag-date">Создан: {formatTagDate(tag)}</p>
+                                    )}
+                                </article>
+                            );
+                        })}
                     </section>
                 )}
+
+                <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    hasNext={hasNext}
+                    hasPrevious={hasPrevious}
+                    disabled={loading || submitting}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

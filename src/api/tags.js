@@ -1,73 +1,15 @@
-const API_BASE = 'http://localhost:8080';
+import { normalizePagedResponse, request } from './api';
 
-class ApiRequestError extends Error {
-    constructor({ message, status, code }) {
-        super(message);
-        this.name = 'ApiRequestError';
-        this.status = status;
-        this.code = code;
-    }
-}
-
-function getToken() {
-    return localStorage.getItem('barolab_token');
-}
-
-async function readJsonSafely(response) {
-    const text = await response.text();
-    if (!text) return null;
-
-    try {
-        return JSON.parse(text);
-    } catch {
-        return null;
-    }
-}
-
-function buildUrl(path, query) {
-    if (!query) {
-        return `${API_BASE}${path}`;
-    }
-
-    const searchParams = new URLSearchParams();
-    Object.entries(query).forEach(([key, value]) => {
-        if (value === undefined || value === null || value === '') return;
-        searchParams.set(key, String(value));
+export async function getTags({
+    page = 0,
+    size = 20,
+    sortBy = 'name',
+    direction = 'asc',
+} = {}) {
+    const response = await request('/api/tags', {
+        query: { page, size, sortBy, direction },
     });
-
-    const queryString = searchParams.toString();
-    return queryString ? `${API_BASE}${path}?${queryString}` : `${API_BASE}${path}`;
-}
-
-async function request(path, options = {}) {
-    const token = getToken();
-    const response = await fetch(buildUrl(path, options.query), {
-        method: options.method || 'GET',
-        headers: {
-            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...options.headers,
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
-    });
-
-    const responseBody = await readJsonSafely(response);
-    if (!response.ok) {
-        throw new ApiRequestError({
-            message: responseBody?.message || `Error ${response.status}`,
-            status: response.status,
-            code: responseBody?.code,
-        });
-    }
-
-    if (response.status === 204) return null;
-    return responseBody;
-}
-
-export async function getTags({ sortBy, direction } = {}) {
-    return request('/api/tags', {
-        query: { sortBy, direction },
-    });
+    return normalizePagedResponse(response);
 }
 
 export async function getTagById(tagId) {

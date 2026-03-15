@@ -10,6 +10,19 @@ vi.mock('../api/tags', () => ({
     createTag: vi.fn(),
 }));
 
+function paged(items, overrides = {}) {
+    return {
+        items,
+        total: items.length,
+        page: 0,
+        size: 20,
+        total_pages: 1,
+        has_next: false,
+        has_previous: false,
+        ...overrides,
+    };
+}
+
 function renderTagsPage(initialPath = '/tags') {
     return render(
         <MemoryRouter initialEntries={[initialPath]}>
@@ -22,10 +35,10 @@ function renderTagsPage(initialPath = '/tags') {
 
 describe('TagsPage', () => {
     it('renders tags list from catalog endpoint', async () => {
-        tagsApi.getTags.mockResolvedValue([
+        tagsApi.getTags.mockResolvedValue(paged([
             { id: 1, name: 'Medical', slug: 'medical', usageCount: 5 },
             { id: 2, name: 'Survival', slug: 'survival', usageCount: null },
-        ]);
+        ]));
 
         renderTagsPage();
 
@@ -39,8 +52,8 @@ describe('TagsPage', () => {
     it('creates tag successfully and refreshes list', async () => {
         const user = userEvent.setup();
         tagsApi.getTags
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([{ id: 11, name: 'Medical', slug: 'medical', usageCount: null }]);
+            .mockResolvedValueOnce(paged([]))
+            .mockResolvedValueOnce(paged([{ id: 11, name: 'Medical', slug: 'medical', usageCount: null }]));
         tagsApi.createTag.mockResolvedValue({ id: 11, name: 'Medical', slug: 'medical' });
 
         renderTagsPage();
@@ -58,7 +71,7 @@ describe('TagsPage', () => {
 
     it('shows duplicate message on 409', async () => {
         const user = userEvent.setup();
-        tagsApi.getTags.mockResolvedValue([]);
+        tagsApi.getTags.mockResolvedValue(paged([]));
         tagsApi.createTag.mockRejectedValue({ status: 409, code: 'TAG_ALREADY_EXISTS' });
 
         renderTagsPage();
@@ -71,7 +84,7 @@ describe('TagsPage', () => {
 
     it('blocks submit for empty value', async () => {
         const user = userEvent.setup();
-        tagsApi.getTags.mockResolvedValue([]);
+        tagsApi.getTags.mockResolvedValue(paged([]));
         tagsApi.createTag.mockResolvedValue({ id: 1, name: 'X', slug: 'x' });
 
         renderTagsPage();
@@ -85,12 +98,14 @@ describe('TagsPage', () => {
 
     it('loads list using sorting query params', async () => {
         const user = userEvent.setup();
-        tagsApi.getTags.mockResolvedValue([]);
+        tagsApi.getTags.mockResolvedValue(paged([]));
 
         renderTagsPage('/tags?sortBy=created_at&direction=desc');
 
         await waitFor(() => {
             expect(tagsApi.getTags).toHaveBeenCalledWith({
+                page: 0,
+                size: 20,
                 sortBy: 'created_at',
                 direction: 'desc',
             });
@@ -100,6 +115,8 @@ describe('TagsPage', () => {
 
         await waitFor(() => {
             expect(tagsApi.getTags).toHaveBeenCalledWith({
+                page: 0,
+                size: 20,
                 sortBy: 'name',
                 direction: 'desc',
             });
