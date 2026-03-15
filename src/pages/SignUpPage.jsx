@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import './LoginPage.css'; /* reuse same auth styles */
 
@@ -10,7 +11,7 @@ export default function SignUpPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { signUp } = useAuth();
+    const { signUp, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -25,6 +26,23 @@ export default function SignUpPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setError('');
+        setLoading(true);
+        try {
+            await loginWithGoogle(credentialResponse.credential);
+            navigate('/');
+        } catch (err) {
+            setError(err.message || 'Ошибка регистрации через Google');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleError = () => {
+        setError('Не удалось войти через Google. Попробуйте ещё раз.');
     };
 
     return (
@@ -99,6 +117,23 @@ export default function SignUpPage() {
                             {loading ? 'Создание...' : 'Зарегистрироваться'}
                         </button>
                     </form>
+
+                    <div className="auth-divider">
+                        <span>или</span>
+                    </div>
+
+                    <div className="google-login-wrapper">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            theme="filled_black"
+                            size="large"
+                            width="100%"
+                            text="signup_with"
+                            shape="rectangular"
+                            locale="ru"
+                        />
+                    </div>
 
                     <div className="auth-footer">
                         <span>Уже есть аккаунт?</span>

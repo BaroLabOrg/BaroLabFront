@@ -63,6 +63,12 @@ export function AuthProvider({ children }) {
         return data;
     };
 
+    const loginWithGoogle = async (idToken) => {
+        const data = await api.googleLogin(idToken);
+        setToken(data.token);
+        return data;
+    };
+
     const logout = () => {
         setToken(null);
     };
@@ -81,6 +87,7 @@ export function AuthProvider({ children }) {
                 isSuperAdmin,
                 login: loginUser,
                 signUp: signUpUser,
+                loginWithGoogle,
                 logout,
             }}
         >
