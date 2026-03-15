@@ -19,6 +19,31 @@ export async function getMods({
     return normalizePagedResponse(response);
 }
 
+export async function searchMods({
+    q = '',
+    tags = [],
+    page = 0,
+    size = 20,
+    sortBy = 'createdAt',
+    direction = 'desc',
+} = {}) {
+    const normalizedTags = Array.isArray(tags)
+        ? tags.map((tag) => String(tag).trim()).filter(Boolean).join(',')
+        : String(tags || '').trim();
+
+    const response = await request('/search/mods', {
+        query: {
+            q: String(q || '').trim(),
+            tags: normalizedTags,
+            page,
+            size,
+            sortBy,
+            direction,
+        },
+    });
+    return normalizePagedResponse(response);
+}
+
 export async function getMod(externalId) {
     return request(`/mod/${externalId}`);
 }
