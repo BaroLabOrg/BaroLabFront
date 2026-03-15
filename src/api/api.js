@@ -23,7 +23,9 @@ async function request(path, options = {}) {
             const body = await res.json();
             errorMsg = body.message || errorMsg;
         } catch { }
-        throw new Error(errorMsg);
+        const error = new Error(errorMsg);
+        error.status = res.status;
+        throw error;
     }
 
     if (res.status === 204) return null;
@@ -44,6 +46,13 @@ export async function signUp(login, email, username, password) {
     return request('/sign-up', {
         method: 'POST',
         body: JSON.stringify({ login, email, username, password }),
+    });
+}
+
+export async function googleLogin(idToken) {
+    return request('/api/v1/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ id_token: idToken }),
     });
 }
 
