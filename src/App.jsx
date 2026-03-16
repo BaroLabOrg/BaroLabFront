@@ -8,6 +8,8 @@ import SignUpPage from './pages/SignUpPage';
 import AdminPage from './pages/AdminPage';
 import ModsListPage from './pages/ModsListPage';
 import ModPage from './pages/ModPage';
+import SubmarinesListPage from './pages/SubmarinesListPage';
+import SubmarinePage from './pages/SubmarinePage';
 import ModGuidePage from './pages/ModGuidePage';
 import GuidesListPage from './pages/GuidesListPage';
 import ModGuideEditor from './pages/ModGuideEditor';
@@ -40,6 +42,14 @@ export default function App() {
                 <Route
                     path="/mods"
                     element={<ModsListPage />}
+                />
+                <Route
+                    path="/submarines"
+                    element={<SubmarinesListPage />}
+                />
+                <Route
+                    path="/submarines/:externalId"
+                    element={<SubmarinePage />}
                 />
                 <Route
                     path="/guides"

@@ -23,6 +23,9 @@ export default function Navbar() {
                     <NavLink to="/mods" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Моды
                     </NavLink>
+                    <NavLink to="/submarines" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Подлодки
+                    </NavLink>
                     <NavLink to="/guides" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Руководства
                     </NavLink>
