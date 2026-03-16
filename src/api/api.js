@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080';
+export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export class ApiRequestError extends Error {
     constructor({ message, status, code }) {
@@ -14,6 +14,10 @@ function getToken() {
 }
 
 function buildUrl(path, query) {
+    if (!API_BASE) {
+        throw new Error('VITE_API_BASE_URL is not configured');
+    }
+
     if (!query) return `${API_BASE}${path}`;
 
     const searchParams = new URLSearchParams();

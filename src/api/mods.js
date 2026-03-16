@@ -1,6 +1,4 @@
-import { normalizePagedResponse, request } from './api';
-
-const API_BASE = 'http://localhost:8080';
+import { API_BASE, normalizePagedResponse, request } from './api';
 
 function getToken() {
     return localStorage.getItem('barolab_token');
