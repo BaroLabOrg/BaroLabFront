@@ -1,0 +1,79 @@
+.submarine-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: inherit;
+    padding: 1rem;
+    min-height: 290px;
+}
+
+.submarine-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem;
+}
+
+.submarine-card-title {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+.submarine-card-subtitle {
+    margin: 0.3rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.submarine-card-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.submarine-card-status.active {
+    color: var(--success);
+    background: var(--success-bg);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+.submarine-card-status.blocked {
+    color: var(--danger);
+    background: var(--danger-bg);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.submarine-card-description {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    min-height: 3.2rem;
+}
+
+.submarine-card-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.submarine-card-tags {
+    margin-top: auto;
+}
+
+.submarine-card-footer {
+    margin-top: 0.2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 600;
+}

@@ -1,0 +1,143 @@
+.submarine-page-container {
+    max-width: 1400px;
+}
+
+.submarine-back-btn {
+    margin-top: 1rem;
+}
+
+.submarine-hero {
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.submarine-hero h1 {
+    margin: 0;
+    font-size: 1.9rem;
+}
+
+.submarine-hero-subtitle {
+    margin: 0.45rem 0 0;
+    color: var(--text-secondary);
+}
+
+.submarine-hero-description {
+    margin: 0.95rem 0 0;
+    color: var(--text-primary);
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+
+.submarine-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1rem;
+    align-items: start;
+}
+
+.submarine-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.submarine-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.submarine-section {
+    padding: 1rem;
+}
+
+.submarine-section h2 {
+    margin: 0 0 0.8rem;
+    font-size: 1rem;
+}
+
+.submarine-section h3 {
+    margin: 0 0 0.55rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.submarine-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+}
+
+.submarine-metric {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    padding: 0.65rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.submarine-metric span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.submarine-metric strong {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.submarine-weapons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.submarine-weapons ul {
+    margin: 0;
+    padding-left: 1rem;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.submarine-weapons p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.submarine-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.submarine-meta p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.submarine-meta strong {
+    color: var(--text-primary);
+}
+
+@media (max-width: 1024px) {
+    .submarine-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .submarine-metrics-grid,
+    .submarine-weapons {
+        grid-template-columns: 1fr;
+    }
+
+    .submarine-hero h1 {
+        font-size: 1.45rem;
+    }
+}

@@ -94,16 +94,26 @@
 }
 
 @media (max-width: 600px) {
+    .navbar-inner {
+        gap: 8px;
+    }
+
     .navbar-links {
         gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
     }
 
     .nav-link {
-        padding: 8px 10px;
-        font-size: 0.82rem;
+        padding: 8px 8px;
+        font-size: 0.76rem;
     }
 
     .user-role-badge {
+        display: none;
+    }
+
+    .user-name-badge {
         display: none;
     }
 }

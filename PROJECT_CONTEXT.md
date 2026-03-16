@@ -1,6 +1,6 @@
 # BaroLabFront — Полный контекст проекта
 
-Дата аудита: 2026-03-15
+Дата аудита: 2026-03-16
 
 ## 1. Назначение проекта
 
@@ -47,11 +47,13 @@ npm run dev
 
 Используется:
 
+- `VITE_API_BASE_URL` (базовый URL backend API)
 - `VITE_GOOGLE_CLIENT_ID` (Google OAuth client id)
 
 Важно:
 
-- API base URL сейчас зашит в коде: `http://localhost:8080` (см. `src/api/api.js`, `src/api/mods.js`), а не через `VITE_*` переменную.
+- `src/api/api.js` использует `VITE_API_BASE_URL` как обязательную переменную.
+- при отсутствии `VITE_API_BASE_URL` запросы падают с ошибкой конфигурации (`VITE_API_BASE_URL is not configured`).
 
 ## 4. Структура репозитория
 
@@ -148,6 +150,7 @@ src/
 `src/api/api.js`:
 
 - базовый `request()` над `fetch`;
+- базовый URL берется из `VITE_API_BASE_URL`;
 - автоподстановка Bearer токена;
 - обработка query params;
 - нормализация пагинации (`normalizePagedResponse`);
@@ -172,6 +175,7 @@ Users:
 Mods:
 
 - `GET /mods`
+- `GET /search/mods`
 - `GET /mod/:externalId`
 - `POST /mods`
 - `PUT /mod/:externalId/activate`
@@ -183,6 +187,7 @@ Mods:
 Comments:
 
 - `GET /mod/:externalId/comment`
+- `GET /mod/:externalId/comment/:commentId`
 - `POST /mod/:externalId/comment`
 - `PUT /mod/:externalId/comment/:commentId/activate`
 - `PUT /mod/:externalId/comment/:commentId/block`
@@ -225,6 +230,7 @@ Tags:
 ### `ModsListPage`
 
 - пагинация модов;
+- поиск по названию (`q`) и фильтрация по тегам (`tags`) через URL query params;
 - форма создания нового мода (только авторизованный);
 - преобразование полей списков через CSV input (`additional_images`, `required_mods`, `mods_above`).
 
@@ -313,8 +319,9 @@ Tags:
 
 - `src/pages/TagsPage.test.jsx` (5 тестов)
 - `src/pages/ModPage.test.jsx` (2 теста)
+- `src/pages/ModsListPage.test.jsx` (9 тестов)
 
-Всего: 7 тестов.
+Всего: 16 тестов.
 
 ### Фактический статус на момент аудита
 
@@ -323,26 +330,25 @@ Tags:
 
 Build-метрики:
 
-- JS bundle: ~464 KB (до gzip)
-- CSS: ~38.5 KB (до gzip)
+- JS bundle: ~468.16 KB (до gzip)
+- CSS: ~39.43 KB (до gzip)
 
 ## 12. Обнаруженные риски и техдолг
 
-1. API base URL захардкожен (`http://localhost:8080`) в нескольких файлах.
-2. Дублирование API-методов между `src/api/api.js` и `src/api/mods.js` (например, `getMods`, `activateMod`, `blockMod`).
-3. Неиспользуемые/legacy-файлы:
+1. Дублирование API-методов между `src/api/api.js` и `src/api/mods.js` (например, `getMods`, `activateMod`, `blockMod`).
+2. Неиспользуемые/legacy-файлы:
    - `src/components/PostCard.css`
    - `src/pages/PostDetailPage.css`
-4. В `src/pages/GuidesListPage.css` используются неописанные CSS переменные:
+3. В `src/pages/GuidesListPage.css` используются неописанные CSS переменные:
    - `--primary`
    - `--primary-hover`
    - `--text`
-5. Смешение подходов к стилям:
+4. Смешение подходов к стилям:
    - CSS variables + inline styles + hardcoded цвета.
-6. Ошибки местами выводятся через `alert` и `console.error`, вместо единого UX-паттерна уведомлений.
-7. Тестовое покрытие ограничено двумя страницами.
-8. Отсутствуют скрипты `lint`/`format` в `package.json`.
-9. Ролевой список в админке включает `SUPERUSER`, но ключевая проверка `isAdmin` учитывает только `ADMIN`/`SUPER_ADMIN` (нужна явная бизнес-валидация, что это ожидаемое поведение).
+5. Ошибки местами выводятся через `alert` и `console.error`, вместо единого UX-паттерна уведомлений.
+6. Тестовое покрытие ограничено тремя страницами и не покрывает `AuthContext`/`ProtectedRoute`, админские сценарии и редактор гайдов.
+7. Отсутствуют скрипты `lint`/`format` в `package.json`.
+8. Ролевой список в админке включает `SUPERUSER`, но ключевая проверка `isAdmin` учитывает только `ADMIN`/`SUPER_ADMIN` (нужна явная бизнес-валидация, что это ожидаемое поведение).
 
 ## 13. Что важно знать новому разработчику
 
@@ -357,7 +363,7 @@ Build-метрики:
 
 ## 14. Рекомендуемый план стабилизации (короткий)
 
-1. Вынести `API_BASE` в `VITE_API_BASE_URL` и убрать дубли API-оберток.
+1. Завершить консолидацию API-слоя: `VITE_API_BASE_URL` уже вынесен, следующий шаг — убрать дубли API-оберток.
 2. Удалить/архивировать неиспользуемые CSS и привести стили к единой системе токенов.
 3. Добавить единый слой уведомлений (toast/snackbar) вместо `alert`.
 4. Расширить тесты минимум на:
