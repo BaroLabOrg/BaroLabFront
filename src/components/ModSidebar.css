@@ -141,6 +141,17 @@
     color: var(--text-primary);
 }
 
+.mod-creator-link {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.mod-creator-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
 .mod-creator-role {
     font-size: 0.75rem;
     color: var(--text-muted);

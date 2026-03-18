@@ -285,3 +285,128 @@
     margin-top: 10px;
     width: 100%;
 }
+
+/* ─── Steam Sync Tab ─── */
+.steam-sync-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.steam-sync-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.steam-sync-controls .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.steam-sync-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+}
+
+.steam-sync-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.steam-sync-status.status-idle {
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.steam-sync-status.status-running {
+    color: var(--warning);
+    background: var(--warning-bg);
+}
+
+.steam-sync-status.status-stopping {
+    color: var(--danger);
+    background: var(--danger-bg);
+}
+
+.steam-sync-cursor {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    word-break: break-all;
+}
+
+.steam-sync-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.steam-sync-stat-card {
+    padding: 16px;
+}
+
+.steam-sync-stat-card p {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+}
+
+.steam-sync-stat-card strong {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.steam-sync-terminal-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.steam-sync-terminal-title {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.steam-sync-terminal {
+    background: #05070e;
+    border: 1px solid rgba(128, 255, 180, 0.2);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    min-height: 220px;
+    max-height: 360px;
+    overflow-y: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: #a7f3d0;
+}
+
+.steam-sync-terminal p {
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.steam-sync-terminal p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .steam-sync-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .steam-sync-meta {
+        align-items: flex-start;
+    }
+}

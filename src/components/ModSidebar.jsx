@@ -5,7 +5,9 @@ import TagChips from './TagChips';
 import './ModSidebar.css';
 
 export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAuthenticated, isAdmin }) {
-    const authorName = mod.author_username || 'Unknown';
+    const authorName = mod.author_username || mod.authorUsername || 'Unknown';
+    const authorSteamId = mod.author_steam_id || mod.authorSteamId || null;
+    const steamProfileUrl = authorSteamId ? `https://steamcommunity.com/profiles/${authorSteamId}` : null;
     const [allTags, setAllTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState('');
     const [isAddingTag, setIsAddingTag] = useState(false);
@@ -103,8 +105,19 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                 <div className="mod-creator-card">
                     <div className="mod-creator-avatar">👤</div>
                     <div className="mod-creator-info">
-                        <span className="mod-creator-name">{authorName}</span>
-                        <span className="mod-creator-role">Автор</span>
+                        {steamProfileUrl ? (
+                            <a
+                                className="mod-creator-name mod-creator-link"
+                                href={steamProfileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {authorName}
+                            </a>
+                        ) : (
+                            <span className="mod-creator-name">{authorName}</span>
+                        )}
+                        <span className="mod-creator-role">{authorSteamId ? 'Автор Steam Workshop' : 'Автор BaroLab'}</span>
                     </div>
                 </div>
             </div>

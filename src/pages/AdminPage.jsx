@@ -5,12 +5,13 @@ import * as guideApi from '../api/modGuides';
 import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
+import SteamSyncTab from './SteamSyncTab';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
 
 export default function AdminPage() {
-    const { isSuperAdmin } = useAuth();
+    const { isAdmin, isSuperAdmin } = useAuth();
     const [activeTab, setActiveTab] = useState(isSuperAdmin ? 'users' : 'mods');
 
     return (
@@ -43,6 +44,14 @@ export default function AdminPage() {
                     >
                         📚 Руководства
                     </button>
+                    {isAdmin && (
+                        <button
+                            className={`admin-tab ${activeTab === 'steam-sync' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('steam-sync')}
+                        >
+                            🚢 Steam Sync
+                        </button>
+                    )}
                 </div>
 
                 <div className="admin-content fade-in">
@@ -50,6 +59,7 @@ export default function AdminPage() {
 
                     {activeTab === 'mods' && <ModsTab />}
                     {activeTab === 'guides' && <GuidesTab />}
+                    {activeTab === 'steam-sync' && isAdmin && <SteamSyncTab />}
                 </div>
             </div>
         </div>

@@ -4,6 +4,9 @@ import './ModHero.css';
 export default function ModHero({ mod, onSubscribe }) {
     const [subscribing, setSubscribing] = useState(false);
     const [subError, setSubError] = useState('');
+    const authorName = mod.author_username || mod.authorUsername || 'Unknown';
+    const authorSteamId = mod.author_steam_id || mod.authorSteamId || null;
+    const steamProfileUrl = authorSteamId ? `https://steamcommunity.com/profiles/${authorSteamId}` : null;
 
     const subtitle = mod.description
         ? mod.description.length > 150
@@ -36,7 +39,18 @@ export default function ModHero({ mod, onSubscribe }) {
                     <h1 className="mod-hero-title">{mod.title}</h1>
                     <p className="mod-hero-subtitle">{subtitle}</p>
                     <div className="mod-hero-meta">
-                        <span className="mod-hero-author">👤 {mod.author_username || 'Unknown'}</span>
+                        {steamProfileUrl ? (
+                            <a
+                                className="mod-hero-author mod-hero-author-link"
+                                href={steamProfileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                👤 {authorName}
+                            </a>
+                        ) : (
+                            <span className="mod-hero-author">👤 {authorName}</span>
+                        )}
                         <span className="mod-hero-separator">·</span>
                         <span className="mod-hero-date">
                             {new Date(mod.created_at).toLocaleDateString('ru-RU', {
