@@ -125,6 +125,51 @@
     color: var(--text-primary);
 }
 
+.submarine-gallery-loading {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.submarine-tag-editor {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.submarine-tag-editor-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.submarine-tag-editor-controls label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.submarine-tag-editor-controls select {
+    width: 100%;
+}
+
+.submarine-tag-editor-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.submarine-tag-meta {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.submarine-tag-error {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--danger);
+}
+
 @media (max-width: 1024px) {
     .submarine-layout {
         grid-template-columns: 1fr;
