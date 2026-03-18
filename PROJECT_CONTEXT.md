@@ -149,7 +149,8 @@ src/
 - вход в `/admin` разрешен только `isAdmin`;
 - вкладка управления пользователями в админке — только для `SUPER_ADMIN`;
 - вкладка `Steam Sync` в админке доступна ролям `ADMIN` и `SUPER_ADMIN`;
-- добавление/удаление тегов у мода: добавление для авторизованных, удаление для админа;
+- теги модов: добавление для авторизованных, удаление для админа;
+- теги подлодок: добавление/удаление для админа или автора подлодки;
 - создание модов, подлодок, комментариев, гайдов — для авторизованных.
 
 ## 7. API-слой и контракты
@@ -219,6 +220,8 @@ Submarines:
 - `GET /search/submarines`
 - `GET /api/submarines/:externalId`
 - `POST /api/submarines`
+- `POST /api/submarines/:externalId/tags/:tagId`
+- `DELETE /api/submarines/:externalId/tags/:tagId`
 
 Tags:
 
@@ -272,7 +275,9 @@ Steam Sync (admin):
 `SubmarinePage`:
 
 - детальная карточка подлодки;
+- лениво загружаемая галерея изображений (`SubmarineGallery`);
 - метрики, вооружение, теги, метаданные, статус.
+- управление тегами (для админа/автора подлодки).
 
 `GuidesListPage`:
 
@@ -324,6 +329,7 @@ Steam Sync (admin):
 Доменные (подлодки):
 
 - `SubmarineCard`
+- `SubmarineGallery`
 
 ## 10. UI и стили
 
@@ -340,19 +346,21 @@ Steam Sync (admin):
 - `src/pages/ModPage.test.jsx` — 2
 - `src/pages/TagsPage.test.jsx` — 5
 - `src/pages/SubmarinesListPage.test.jsx` — 11
-- `src/pages/SubmarinePage.test.jsx` — 2
+- `src/pages/SubmarinePage.test.jsx` — 3
 
-Итого: **29 тестов**.
+Итого: **30 тестов**.
 
 Фактический статус на 2026-03-18:
 
-- `npm test` — успешно (29/29).
+- `npm test` — успешно (30/30).
 - `npm run build` — успешно.
 
 Build-метрики:
 
-- `dist/assets/index-DBepPFmI.js`: **510.22 kB** (gzip **151.52 kB**)
-- `dist/assets/index-DEVzx9zP.css`: **49.22 kB** (gzip **9.09 kB**)
+- `dist/assets/index-D4kPRB2_.js`: **516.85 kB** (gzip **153.84 kB**)
+- `dist/assets/index-DHScuyME.css`: **50.14 kB** (gzip **9.22 kB**)
+- `dist/assets/SubmarineGallery-UI3y0J4g.js`: **1.10 kB** (gzip **0.65 kB**)
+- `dist/assets/SubmarineGallery-ABMJRPnb.css`: **0.91 kB** (gzip **0.42 kB**)
 - Vite warning: чанк JS > 500 kB.
 
 ## 12. Риски и техдолг
@@ -365,7 +373,7 @@ Build-метрики:
 6. Тестами не покрыты `AuthContext`, `ProtectedRoute`, `AdminPage`, `GuidesSection`/`ModGuideEditor`.
 7. Нет `lint`/`format` скриптов в `package.json`.
 8. Роль `SUPERUSER` есть в UI, но не учитывается в `isAdmin` (возможный бизнес-рассинхрон).
-9. Монолитный JS-бандл (510 kB до gzip) уже превышает warning-порог.
+9. Крупный основной JS-chunk (516.85 kB до gzip) превышает warning-порог; есть code-split для `SubmarineGallery`, но вклад в общий вес пока минимальный.
 
 ## 13. Что важно новому разработчику
 
@@ -393,9 +401,10 @@ Build-метрики:
    - маршруты `/submarines` и `/submarines/:externalId`.
 2. Расширено автотестирование:
    - добавлены тесты на подлодки;
-   - общее покрытие выросло с 16 до 29 тестов.
+   - общее покрытие выросло с 16 до 30 тестов.
 3. Обновился фактический размер фронтенд-бандла:
-   - JS вырос до ~510 kB (до gzip), появился warning по chunk size.
+   - основной JS-чанк вырос до ~516.85 kB (до gzip), warning по chunk size сохраняется.
+   - добавлен отдельный lazy chunk для `SubmarineGallery` (~1.10 kB).
 4. Добавлен отдельный admin-домен для Steam Sync:
    - API (`src/api/steamSync.js`);
    - UI-вкладка `Steam Sync` в `AdminPage`;
