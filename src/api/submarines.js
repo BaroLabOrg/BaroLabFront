@@ -71,6 +71,13 @@ function firstDefined(...values) {
     return undefined;
 }
 
+function normalizeStringArray(values) {
+    if (!Array.isArray(values)) return [];
+    return values
+        .map((value) => String(value || '').trim())
+        .filter(Boolean);
+}
+
 function normalizeTag(tag) {
     if (!tag || typeof tag !== 'object') return null;
     return {
@@ -87,54 +94,98 @@ export function normalizeSubmarine(submarine) {
     if (!submarine || typeof submarine !== 'object') return null;
 
     const status = firstDefined(submarine.status);
+    const externalId = firstDefined(submarine.external_id, submarine.externalId);
+    const userId = firstDefined(submarine.user_id, submarine.userId);
+    const authorUsername = firstDefined(
+        submarine.author_username,
+        submarine.authorUsername,
+        submarine.author?.username,
+    );
+    const createdAt = firstDefined(submarine.created_at, submarine.createdAt);
+    const updatedAt = firstDefined(submarine.updated_at, submarine.updatedAt);
+    const submarineClass = firstDefined(submarine.submarine_class, submarine.submarineClass);
+    const mainImage = firstDefined(submarine.main_image, submarine.mainImage);
+    const additionalImages = normalizeStringArray(
+        firstDefined(submarine.additional_images, submarine.additionalImages),
+    );
     const recommendedCrewMin = firstDefined(submarine.recommendedCrewMin, submarine.recommended_crew_min);
     const recommendedCrewMax = firstDefined(submarine.recommendedCrewMax, submarine.recommended_crew_max);
+    const recommendedCrewDisplay = firstDefined(
+        submarine.recommendedCrewDisplay,
+        submarine.recommended_crew_display,
+        recommendedCrewMin !== undefined && recommendedCrewMax !== undefined
+            ? `${recommendedCrewMin} - ${recommendedCrewMax}`
+            : undefined,
+    );
+    const cargoCapacity = firstDefined(submarine.cargoCapacity, submarine.cargo_capacity);
+    const maxHorizontalSpeedKph = firstDefined(submarine.maxHorizontalSpeedKph, submarine.max_horizontal_speed_kph);
+    const turretSlotCount = firstDefined(submarine.turretSlotCount, submarine.turret_slot_count);
+    const largeTurretSlotCount = firstDefined(submarine.largeTurretSlotCount, submarine.large_turret_slot_count);
+    const lengthMeters = firstDefined(submarine.lengthMeters, submarine.length_meters);
+    const heightMeters = firstDefined(submarine.heightMeters, submarine.height_meters);
+    const maxDescentSpeedKph = firstDefined(submarine.maxDescentSpeedKph, submarine.max_descent_speed_kph);
+    const maxReactorOutputKw = firstDefined(submarine.maxReactorOutputKw, submarine.max_reactor_output_kw);
+    const fabricationType = firstDefined(submarine.fabricationType, submarine.fabrication_type);
+    const defaultTurretWeapons = normalizeStringArray(
+        firstDefined(submarine.defaultTurretWeapons, submarine.default_turret_weapons),
+    );
+    const defaultLargeTurretWeapons = normalizeStringArray(
+        firstDefined(submarine.defaultLargeTurretWeapons, submarine.default_large_turret_weapons),
+    );
 
     return {
         ...submarine,
         id: firstDefined(submarine.id),
-        externalId: firstDefined(submarine.externalId, submarine.external_id),
+        external_id: externalId,
+        externalId,
         title: firstDefined(submarine.title),
         description: firstDefined(submarine.description),
-        userId: firstDefined(submarine.userId, submarine.user_id),
-        authorUsername: firstDefined(
-            submarine.authorUsername,
-            submarine.author_username,
-            submarine.author?.username,
-        ),
+        main_image: mainImage,
+        mainImage,
+        additional_images: additionalImages,
+        additionalImages,
+        user_id: userId,
+        userId,
+        author_username: authorUsername,
+        authorUsername,
         active: firstDefined(submarine.active, status ? status === 'ACTIVE' : undefined),
         blocked: firstDefined(submarine.blocked, status ? status === 'BLOCKED' : undefined),
-        createdAt: firstDefined(submarine.createdAt, submarine.created_at),
-        updatedAt: firstDefined(submarine.updatedAt, submarine.updated_at),
-        submarineClass: firstDefined(submarine.submarineClass, submarine.submarine_class),
+        created_at: createdAt,
+        createdAt,
+        updated_at: updatedAt,
+        updatedAt,
+        submarine_class: submarineClass,
+        submarineClass,
         tier: firstDefined(submarine.tier),
         price: firstDefined(submarine.price),
+        recommended_crew_min: recommendedCrewMin,
         recommendedCrewMin,
+        recommended_crew_max: recommendedCrewMax,
         recommendedCrewMax,
-        recommendedCrewDisplay: firstDefined(
-            submarine.recommendedCrewDisplay,
-            submarine.recommended_crew_display,
-            recommendedCrewMin !== undefined && recommendedCrewMax !== undefined
-                ? `${recommendedCrewMin} - ${recommendedCrewMax}`
-                : undefined,
-        ),
-        cargoCapacity: firstDefined(submarine.cargoCapacity, submarine.cargo_capacity),
-        maxHorizontalSpeedKph: firstDefined(submarine.maxHorizontalSpeedKph, submarine.max_horizontal_speed_kph),
-        turretSlotCount: firstDefined(submarine.turretSlotCount, submarine.turret_slot_count),
-        largeTurretSlotCount: firstDefined(submarine.largeTurretSlotCount, submarine.large_turret_slot_count),
-        lengthMeters: firstDefined(submarine.lengthMeters, submarine.length_meters),
-        heightMeters: firstDefined(submarine.heightMeters, submarine.height_meters),
-        maxDescentSpeedKph: firstDefined(submarine.maxDescentSpeedKph, submarine.max_descent_speed_kph),
-        maxReactorOutputKw: firstDefined(submarine.maxReactorOutputKw, submarine.max_reactor_output_kw),
-        fabricationType: firstDefined(submarine.fabricationType, submarine.fabrication_type),
-        defaultTurretWeapons: Array.isArray(firstDefined(submarine.defaultTurretWeapons, submarine.default_turret_weapons))
-            ? [...firstDefined(submarine.defaultTurretWeapons, submarine.default_turret_weapons)]
-            : [],
-        defaultLargeTurretWeapons: Array.isArray(
-            firstDefined(submarine.defaultLargeTurretWeapons, submarine.default_large_turret_weapons),
-        )
-            ? [...firstDefined(submarine.defaultLargeTurretWeapons, submarine.default_large_turret_weapons)]
-            : [],
+        recommended_crew_display: recommendedCrewDisplay,
+        recommendedCrewDisplay,
+        cargo_capacity: cargoCapacity,
+        cargoCapacity,
+        max_horizontal_speed_kph: maxHorizontalSpeedKph,
+        maxHorizontalSpeedKph,
+        turret_slot_count: turretSlotCount,
+        turretSlotCount,
+        large_turret_slot_count: largeTurretSlotCount,
+        largeTurretSlotCount,
+        length_meters: lengthMeters,
+        lengthMeters,
+        height_meters: heightMeters,
+        heightMeters,
+        max_descent_speed_kph: maxDescentSpeedKph,
+        maxDescentSpeedKph,
+        max_reactor_output_kw: maxReactorOutputKw,
+        maxReactorOutputKw,
+        fabrication_type: fabricationType,
+        fabricationType,
+        default_turret_weapons: defaultTurretWeapons,
+        defaultTurretWeapons,
+        default_large_turret_weapons: defaultLargeTurretWeapons,
+        defaultLargeTurretWeapons,
         tags: Array.isArray(submarine.tags) ? submarine.tags.map(normalizeTag).filter(Boolean) : [],
     };
 }
@@ -178,62 +229,83 @@ export async function getSubmarines({
 export async function searchSubmarines({
     q = '',
     submarineClass,
+    submarine_class,
     tier,
     priceMin,
     priceMax,
+    price_min,
+    price_max,
     recommendedCrewMin,
     recommendedCrewMax,
+    recommended_crew_min,
+    recommended_crew_max,
     cargoCapacityMin,
     cargoCapacityMax,
+    cargo_capacity_min,
+    cargo_capacity_max,
     maxHorizontalSpeedKphMin,
     maxHorizontalSpeedKphMax,
+    max_horizontal_speed_kph_min,
+    max_horizontal_speed_kph_max,
     turretSlotCount,
     largeTurretSlotCount,
+    turret_slot_count,
+    large_turret_slot_count,
     lengthMetersMin,
     lengthMetersMax,
+    length_meters_min,
+    length_meters_max,
     heightMetersMin,
     heightMetersMax,
+    height_meters_min,
+    height_meters_max,
     maxDescentSpeedKphMin,
     maxDescentSpeedKphMax,
+    max_descent_speed_kph_min,
+    max_descent_speed_kph_max,
     maxReactorOutputKwMin,
     maxReactorOutputKwMax,
+    max_reactor_output_kw_min,
+    max_reactor_output_kw_max,
     fabricationType,
+    fabrication_type,
     tags = [],
     page = 0,
     size = 20,
     sortBy = 'createdAt',
+    sort_by,
     direction = 'desc',
 } = {}) {
     const response = await request('/search/submarines', {
-        query: {
+        query: cleanUndefined({
             q: String(q || '').trim(),
-            submarineClass,
+            submarineClass: firstDefined(submarineClass, submarine_class),
             tier,
-            priceMin,
-            priceMax,
-            recommendedCrewMin,
-            recommendedCrewMax,
-            cargoCapacityMin,
-            cargoCapacityMax,
-            maxHorizontalSpeedKphMin,
-            maxHorizontalSpeedKphMax,
-            turretSlotCount,
-            largeTurretSlotCount,
-            lengthMetersMin,
-            lengthMetersMax,
-            heightMetersMin,
-            heightMetersMax,
-            maxDescentSpeedKphMin,
-            maxDescentSpeedKphMax,
-            maxReactorOutputKwMin,
-            maxReactorOutputKwMax,
-            fabricationType,
+            priceMin: firstDefined(priceMin, price_min),
+            priceMax: firstDefined(priceMax, price_max),
+            recommendedCrewMin: firstDefined(recommendedCrewMin, recommended_crew_min),
+            recommendedCrewMax: firstDefined(recommendedCrewMax, recommended_crew_max),
+            cargoCapacityMin: firstDefined(cargoCapacityMin, cargo_capacity_min),
+            cargoCapacityMax: firstDefined(cargoCapacityMax, cargo_capacity_max),
+            maxHorizontalSpeedKphMin: firstDefined(maxHorizontalSpeedKphMin, max_horizontal_speed_kph_min),
+            maxHorizontalSpeedKphMax: firstDefined(maxHorizontalSpeedKphMax, max_horizontal_speed_kph_max),
+            turretSlotCount: firstDefined(turretSlotCount, turret_slot_count),
+            largeTurretSlotCount: firstDefined(largeTurretSlotCount, large_turret_slot_count),
+            lengthMetersMin: firstDefined(lengthMetersMin, length_meters_min),
+            lengthMetersMax: firstDefined(lengthMetersMax, length_meters_max),
+            heightMetersMin: firstDefined(heightMetersMin, height_meters_min),
+            heightMetersMax: firstDefined(heightMetersMax, height_meters_max),
+            maxDescentSpeedKphMin: firstDefined(maxDescentSpeedKphMin, max_descent_speed_kph_min),
+            maxDescentSpeedKphMax: firstDefined(maxDescentSpeedKphMax, max_descent_speed_kph_max),
+            maxReactorOutputKwMin: firstDefined(maxReactorOutputKwMin, max_reactor_output_kw_min),
+            maxReactorOutputKwMax: firstDefined(maxReactorOutputKwMax, max_reactor_output_kw_max),
+            fabricationType: firstDefined(fabricationType, fabrication_type),
             tags: normalizeTagQuery(tags),
             page,
             size,
-            sortBy,
+            sortBy: firstDefined(sortBy, sort_by),
             direction,
-        },
+        }),
     });
     return normalizeSubmarinePage(response);
 }
@@ -250,6 +322,10 @@ export async function createSubmarine(payload) {
             title: payload.title,
             description: payload.description,
             submarine_class: payload.submarineClass,
+            main_image: firstDefined(payload.main_image, payload.mainImage),
+            additional_images: normalizeStringArray(
+                firstDefined(payload.additional_images, payload.additionalImages),
+            ),
             tier: payload.tier,
             price: payload.price,
             recommended_crew_min: payload.recommendedCrewMin,
@@ -268,4 +344,16 @@ export async function createSubmarine(payload) {
         }),
     });
     return normalizeSubmarine(response);
+}
+
+export async function addSubmarineTag(externalId, tagId) {
+    return request(`/api/submarines/${externalId}/tags/${tagId}`, {
+        method: 'POST',
+    });
+}
+
+export async function removeSubmarineTag(externalId, tagId) {
+    return request(`/api/submarines/${externalId}/tags/${tagId}`, {
+        method: 'DELETE',
+    });
 }

@@ -31,6 +31,8 @@ function buildSubmarine(externalId, title, overrides = {}) {
         externalId,
         title,
         description: `${title} description`,
+        main_image: `https://cdn.test/submarine-${externalId}.jpg`,
+        additional_images: [`https://cdn.test/submarine-${externalId}.jpg`],
         submarineClass: 'ATTACK',
         tier: 2,
         price: 2500,
@@ -127,6 +129,8 @@ describe('SubmarinesListPage', () => {
             expect(screen.getByText('Typhon')).toBeInTheDocument();
             expect(screen.getByText('Orca')).toBeInTheDocument();
         });
+        expect(screen.getByRole('img', { name: 'Typhon preview' })).toBeInTheDocument();
+        expect(screen.getByRole('img', { name: 'Orca preview' })).toBeInTheDocument();
 
         expect(submarinesApi.searchSubmarines).toHaveBeenCalledWith(expect.objectContaining({
             q: '',
@@ -139,7 +143,7 @@ describe('SubmarinesListPage', () => {
     });
 
     it('restores filters from URL query params', async () => {
-        renderSubmarinesPage('/submarines?q=orca&submarineClass=ATTACK&tier=2&priceMin=1000&priceMax=3000&tags=military,fast&page=1&size=20&sortBy=price&direction=asc');
+        renderSubmarinesPage('/submarines?q=orca&submarineClass=ATTACK&tier=2&priceMin=1000&priceMax=3000&recommendedCrewMin=2&recommendedCrewMax=5&maxHorizontalSpeedKphMin=22.5&maxHorizontalSpeedKphMax=44.1&tags=military,fast&page=1&size=20&sortBy=price&direction=asc');
 
         await waitFor(() => {
             expect(submarinesApi.searchSubmarines).toHaveBeenCalledWith(expect.objectContaining({
@@ -148,6 +152,10 @@ describe('SubmarinesListPage', () => {
                 tier: 2,
                 priceMin: 1000,
                 priceMax: 3000,
+                recommendedCrewMin: 2,
+                recommendedCrewMax: 5,
+                maxHorizontalSpeedKphMin: 22.5,
+                maxHorizontalSpeedKphMax: 44.1,
                 tags: ['military', 'fast'],
                 page: 1,
                 size: 20,

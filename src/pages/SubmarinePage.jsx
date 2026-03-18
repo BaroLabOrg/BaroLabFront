@@ -1,8 +1,13 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import * as tagsApi from '../api/tags';
 import * as submarinesApi from '../api/submarines';
+import { useAuth } from '../context/AuthContext';
 import TagChips from '../components/TagChips';
 import './SubmarinePage.css';
+
+const TAGS_PAGE_SIZE = 100;
+const LazySubmarineGallery = lazy(() => import('../components/SubmarineGallery'));
 
 function formatDate(value) {
     if (!value) return '—';
@@ -34,9 +39,17 @@ function metric(label, value) {
 
 export default function SubmarinePage() {
     const { externalId } = useParams();
+    const { isAuthenticated, isAdmin, user } = useAuth();
     const [submarine, setSubmarine] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [allTags, setAllTags] = useState([]);
+    const [tagsLoading, setTagsLoading] = useState(false);
+    const [tagsError, setTagsError] = useState('');
+    const [selectedTag, setSelectedTag] = useState('');
+    const [isAddingTag, setIsAddingTag] = useState(false);
+    const [tagActionError, setTagActionError] = useState('');
+    const [tagMutationLoading, setTagMutationLoading] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -68,6 +81,113 @@ export default function SubmarinePage() {
         };
     }, [externalId]);
 
+    const submarineTags = Array.isArray(submarine?.tags) ? submarine.tags : [];
+    const authorUsername = submarine?.author_username || submarine?.authorUsername || '';
+    const authorId = submarine?.user_id ?? submarine?.userId;
+    const currentUserId = user?.id;
+    const normalizedAuthorUsername = String(authorUsername || '').trim().toLowerCase();
+    const normalizedCurrentUsername = String(user?.username || '').trim().toLowerCase();
+    const isAuthorById = authorId !== undefined
+        && authorId !== null
+        && currentUserId !== undefined
+        && currentUserId !== null
+        && String(authorId) === String(currentUserId);
+    const isAuthorByUsername = normalizedAuthorUsername
+        && normalizedCurrentUsername
+        && normalizedAuthorUsername === normalizedCurrentUsername;
+    const canManageTags = Boolean(isAuthenticated && submarine && (isAdmin || isAuthorById || isAuthorByUsername));
+
+    useEffect(() => {
+        if (!canManageTags) {
+            setAllTags([]);
+            setSelectedTag('');
+            setIsAddingTag(false);
+            setTagsError('');
+            return;
+        }
+
+        let cancelled = false;
+
+        const loadTags = async () => {
+            setTagsLoading(true);
+            setTagsError('');
+            try {
+                const response = await tagsApi.getTags({
+                    page: 0,
+                    size: TAGS_PAGE_SIZE,
+                    sortBy: 'name',
+                    direction: 'asc',
+                });
+                if (!cancelled) {
+                    setAllTags(Array.isArray(response.items) ? response.items : []);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setAllTags([]);
+                    setTagsError(err?.message || 'Не удалось загрузить теги');
+                }
+            } finally {
+                if (!cancelled) {
+                    setTagsLoading(false);
+                }
+            }
+        };
+
+        loadTags();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [canManageTags]);
+
+    const currentTagIds = new Set(
+        submarineTags
+            .map((tag) => String(tag?.id || '').trim())
+            .filter(Boolean),
+    );
+
+    const selectableTags = allTags.filter((tag) => {
+        const tagId = String(tag?.id || '').trim();
+        if (!tagId) return false;
+        return !currentTagIds.has(tagId);
+    });
+
+    const handleAddTag = async () => {
+        const tagId = String(selectedTag || '').trim();
+        if (!tagId || tagMutationLoading) return;
+
+        setTagMutationLoading(true);
+        setTagActionError('');
+        try {
+            await submarinesApi.addSubmarineTag(externalId, tagId);
+            const updated = await submarinesApi.getSubmarine(externalId);
+            setSubmarine(updated);
+            setSelectedTag('');
+            setIsAddingTag(false);
+        } catch (err) {
+            setTagActionError(err?.message || 'Не удалось добавить тег');
+        } finally {
+            setTagMutationLoading(false);
+        }
+    };
+
+    const handleRemoveTag = async (tagId) => {
+        const normalizedTagId = String(tagId || '').trim();
+        if (!normalizedTagId || tagMutationLoading) return;
+
+        setTagMutationLoading(true);
+        setTagActionError('');
+        try {
+            await submarinesApi.removeSubmarineTag(externalId, normalizedTagId);
+            const updated = await submarinesApi.getSubmarine(externalId);
+            setSubmarine(updated);
+        } catch (err) {
+            setTagActionError(err?.message || 'Не удалось удалить тег');
+        } finally {
+            setTagMutationLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="page">
@@ -95,6 +215,12 @@ export default function SubmarinePage() {
     }
 
     const statusLabel = submarine.blocked ? 'BLOCKED' : submarine.active ? 'ACTIVE' : 'UNKNOWN';
+    const mainImage = submarine.main_image || submarine.mainImage;
+    const additionalImages = Array.isArray(submarine.additional_images)
+        ? submarine.additional_images
+        : Array.isArray(submarine.additionalImages)
+            ? submarine.additionalImages
+            : [];
 
     return (
         <div className="page submarine-page">
@@ -112,6 +238,22 @@ export default function SubmarinePage() {
 
                 <div className="submarine-layout">
                     <main className="submarine-main">
+                        {(mainImage || additionalImages.length > 0) && (
+                            <Suspense fallback={(
+                                <section className="submarine-section glass-card">
+                                    <h2>Галерея</h2>
+                                    <p className="submarine-gallery-loading">Загрузка галереи...</p>
+                                </section>
+                            )}
+                            >
+                                <LazySubmarineGallery
+                                    title={submarine.title}
+                                    main_image={mainImage}
+                                    additional_images={additionalImages}
+                                />
+                            </Suspense>
+                        )}
+
                         <section className="submarine-section glass-card">
                             <h2>Базовые характеристики</h2>
                             <div className="submarine-metrics-grid">
@@ -179,7 +321,73 @@ export default function SubmarinePage() {
 
                         <section className="submarine-section glass-card">
                             <h2>Теги</h2>
-                            <TagChips tags={Array.isArray(submarine.tags) ? submarine.tags : []} />
+                            <TagChips
+                                tags={submarineTags}
+                                onRemove={canManageTags ? handleRemoveTag : undefined}
+                                showRemoveButton={canManageTags}
+                            />
+                            {canManageTags && (
+                                <div className="submarine-tag-editor">
+                                    {!isAddingTag ? (
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => {
+                                                setTagActionError('');
+                                                setIsAddingTag(true);
+                                            }}
+                                        >
+                                            + Добавить тег
+                                        </button>
+                                    ) : (
+                                        <div className="submarine-tag-editor-controls">
+                                            <label htmlFor="submarine-tag-select">Выберите тег</label>
+                                            <select
+                                                id="submarine-tag-select"
+                                                aria-label="Выберите тег"
+                                                value={selectedTag}
+                                                onChange={(event) => setSelectedTag(event.target.value)}
+                                                disabled={tagMutationLoading || tagsLoading || selectableTags.length === 0}
+                                            >
+                                                <option value="">Выберите тег</option>
+                                                {selectableTags.map((tag) => (
+                                                    <option key={tag.id} value={tag.id}>
+                                                        {tag.name || tag.slug || tag.id}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <div className="submarine-tag-editor-actions">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={handleAddTag}
+                                                    disabled={!selectedTag || tagMutationLoading}
+                                                >
+                                                    Добавить
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-ghost btn-sm"
+                                                    onClick={() => {
+                                                        setTagActionError('');
+                                                        setSelectedTag('');
+                                                        setIsAddingTag(false);
+                                                    }}
+                                                    disabled={tagMutationLoading}
+                                                >
+                                                    Отмена
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {tagsLoading && <p className="submarine-tag-meta">Загрузка тегов...</p>}
+                                    {!tagsLoading && isAddingTag && selectableTags.length === 0 && (
+                                        <p className="submarine-tag-meta">Все доступные теги уже добавлены.</p>
+                                    )}
+                                    {tagsError && <p className="submarine-tag-error">{tagsError}</p>}
+                                    {tagActionError && <p className="submarine-tag-error">{tagActionError}</p>}
+                                </div>
+                            )}
                         </section>
                     </aside>
                 </div>

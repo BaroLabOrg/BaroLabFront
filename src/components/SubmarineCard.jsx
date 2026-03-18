@@ -26,10 +26,27 @@ function getStatusLabel(submarine) {
 
 export default function SubmarineCard({ submarine }) {
     const externalId = submarine.externalId ?? submarine.external_id;
+    const mainImage = submarine.main_image || submarine.mainImage;
     const statusLabel = getStatusLabel(submarine);
+    const previewAlt = submarine.title ? `${submarine.title} preview` : 'Submarine preview';
 
     return (
         <Link to={`/submarines/${externalId}`} className="submarine-card glass-card">
+            {mainImage ? (
+                <div className="submarine-card-preview">
+                    <img
+                        className="submarine-card-preview-image"
+                        src={mainImage}
+                        alt={previewAlt}
+                        loading="lazy"
+                    />
+                </div>
+            ) : (
+                <div className="submarine-card-preview submarine-card-preview-empty" aria-hidden="true">
+                    <span>🚢</span>
+                </div>
+            )}
+
             <div className="submarine-card-head">
                 <div>
                     <h3 className="submarine-card-title">{submarine.title}</h3>
