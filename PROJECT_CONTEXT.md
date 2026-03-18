@@ -11,7 +11,8 @@
 - создание/просмотр/редактирование руководств (Markdown);
 - комментарии к модам;
 - каталог и создание тегов;
-- административную модерацию (пользователи, моды, руководства, комментарии).
+- административную модерацию (пользователи, моды, руководства, комментарии);
+- административный контроль синхронизации Steam Workshop (start/stop/reset/status).
 
 Основной сценарий: пользователь авторизуется (обычно или через Google OAuth), работает с контентом; администраторы модерируют сущности.
 
@@ -61,6 +62,7 @@ src/
     api.js             # базовый request + auth/users/comments/mods(admin)
     mods.js            # mod-domain API (search/create/subscribe/tags)
     modGuides.js       # guides API
+    steamSync.js       # admin steam-sync API
     submarines.js      # submarine-domain API + нормализация
     tags.js            # tags API
     tagErrorMapper.js
@@ -146,6 +148,7 @@ src/
 
 - вход в `/admin` разрешен только `isAdmin`;
 - вкладка управления пользователями в админке — только для `SUPER_ADMIN`;
+- вкладка `Steam Sync` в админке доступна ролям `ADMIN` и `SUPER_ADMIN`;
 - добавление/удаление тегов у мода: добавление для авторизованных, удаление для админа;
 - создание модов, подлодок, комментариев, гайдов — для авторизованных.
 
@@ -223,6 +226,13 @@ Tags:
 - `GET /api/tags/:tagId`
 - `POST /api/tags`
 
+Steam Sync (admin):
+
+- `POST /api/admin/steam-sync/start`
+- `POST /api/admin/steam-sync/stop`
+- `POST /api/admin/steam-sync/reset`
+- `GET /api/admin/steam-sync/status`
+
 ### 7.3 Нормализация данных
 
 - В проекте активно смешаны `snake_case` и `camelCase`.
@@ -288,10 +298,11 @@ Tags:
 
 `AdminPage`:
 
-- вкладки `Users` (только `SUPER_ADMIN`), `Mods`, `Guides`;
+- вкладки `Users` (только `SUPER_ADMIN`), `Mods`, `Guides`, `Steam Sync`;
 - активация/блокировка пользователей, модов, комментариев, гайдов;
 - смена роли пользователя;
-- отдельная пагинация комментариев внутри карточки мода.
+- отдельная пагинация комментариев внутри карточки мода;
+- управление steam-синхронизацией: start/resume, graceful stop, reset progress + polling статуса (`IDLE`/`RUNNING`/`STOPPING`) и вывод последних parser errors.
 
 ## 9. Компоненты
 
@@ -340,8 +351,8 @@ Tags:
 
 Build-метрики:
 
-- `dist/assets/index-BNknhChl.js`: **506.33 kB** (gzip **150.50 kB**)
-- `dist/assets/index-CX-6g57F.css`: **47.00 kB** (gzip **8.72 kB**)
+- `dist/assets/index-DBepPFmI.js`: **510.22 kB** (gzip **151.52 kB**)
+- `dist/assets/index-DEVzx9zP.css`: **49.22 kB** (gzip **9.09 kB**)
 - Vite warning: чанк JS > 500 kB.
 
 ## 12. Риски и техдолг
@@ -354,15 +365,15 @@ Build-метрики:
 6. Тестами не покрыты `AuthContext`, `ProtectedRoute`, `AdminPage`, `GuidesSection`/`ModGuideEditor`.
 7. Нет `lint`/`format` скриптов в `package.json`.
 8. Роль `SUPERUSER` есть в UI, но не учитывается в `isAdmin` (возможный бизнес-рассинхрон).
-9. Монолитный JS-бандл (506 kB до gzip) уже превышает warning-порог.
+9. Монолитный JS-бандл (510 kB до gzip) уже превышает warning-порог.
 
 ## 13. Что важно новому разработчику
 
 1. Источник истины по auth — `AuthContext` + JWT в `localStorage`.
-2. Есть историческое расслоение API: базовый `api.js` и доменные обертки (`mods.js`, `submarines.js`, `modGuides.js`, `tags.js`).
+2. Есть историческое расслоение API: базовый `api.js` и доменные обертки (`mods.js`, `submarines.js`, `modGuides.js`, `tags.js`, `steamSync.js`).
 3. Нормализация `snake_case`/`camelCase` критична для стабильности UI.
 4. Подлодки — отдельный крупный домен (собственный API, карточки, расширенный поиск, отдельные тесты).
-5. Самые чувствительные к изменениям модули: `ModsListPage`, `SubmarinesListPage`, `AdminPage`, `AuthContext`.
+5. Самые чувствительные к изменениям модули: `ModsListPage`, `SubmarinesListPage`, `AdminPage`, `SteamSyncTab`, `AuthContext`.
 
 ## 14. Рекомендуемый план стабилизации
 
@@ -384,4 +395,8 @@ Build-метрики:
    - добавлены тесты на подлодки;
    - общее покрытие выросло с 16 до 29 тестов.
 3. Обновился фактический размер фронтенд-бандла:
-   - JS вырос до ~506 kB (до gzip), появился warning по chunk size.
+   - JS вырос до ~510 kB (до gzip), появился warning по chunk size.
+4. Добавлен отдельный admin-домен для Steam Sync:
+   - API (`src/api/steamSync.js`);
+   - UI-вкладка `Steam Sync` в `AdminPage`;
+   - статусный polling и операции `start/stop/reset`.
