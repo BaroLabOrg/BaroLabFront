@@ -1,19 +1,30 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
 
-import AdminPage from './pages/AdminPage';
-import ModsListPage from './pages/ModsListPage';
-import ModPage from './pages/ModPage';
-import SubmarinesListPage from './pages/SubmarinesListPage';
-import SubmarinePage from './pages/SubmarinePage';
-import ModGuidePage from './pages/ModGuidePage';
-import GuidesListPage from './pages/GuidesListPage';
-import ModGuideEditor from './pages/ModGuideEditor';
-import TagsPage from './pages/TagsPage';
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignUpPage = lazy(() => import('./pages/SignUpPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const ModsListPage = lazy(() => import('./pages/ModsListPage'));
+const ModPage = lazy(() => import('./pages/ModPage'));
+const SubmarinesListPage = lazy(() => import('./pages/SubmarinesListPage'));
+const SubmarinePage = lazy(() => import('./pages/SubmarinePage'));
+const ModGuidePage = lazy(() => import('./pages/ModGuidePage'));
+const GuidesListPage = lazy(() => import('./pages/GuidesListPage'));
+const ModGuideEditor = lazy(() => import('./pages/ModGuideEditor'));
+const TagsPage = lazy(() => import('./pages/TagsPage'));
+
+function RouteFallback() {
+    return (
+        <div className="page">
+            <main className="container">
+                <p>Loading page...</p>
+            </main>
+        </div>
+    );
+}
 
 export default function App() {
     const { isAuthenticated } = useAuth();
@@ -21,81 +32,83 @@ export default function App() {
     return (
         <>
             <Navbar />
-            <Routes>
-                {/* Public */}
-                <Route
-                    path="/login"
-                    element={isAuthenticated ? <Navigate to="/mods" replace /> : <LoginPage />}
-                />
-                <Route
-                    path="/sign-up"
-                    element={isAuthenticated ? <Navigate to="/mods" replace /> : <SignUpPage />}
-                />
+            <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                    {/* Public */}
+                    <Route
+                        path="/login"
+                        element={isAuthenticated ? <Navigate to="/mods" replace /> : <LoginPage />}
+                    />
+                    <Route
+                        path="/sign-up"
+                        element={isAuthenticated ? <Navigate to="/mods" replace /> : <SignUpPage />}
+                    />
 
-                {/* Protected / Public Mix */}
-                <Route
-                    path="/"
-                    element={<Navigate to="/mods" replace />}
-                />
+                    {/* Protected / Public Mix */}
+                    <Route
+                        path="/"
+                        element={<Navigate to="/mods" replace />}
+                    />
 
-                {/* Mods */}
-                <Route
-                    path="/mods"
-                    element={<ModsListPage />}
-                />
-                <Route
-                    path="/submarines"
-                    element={<SubmarinesListPage />}
-                />
-                <Route
-                    path="/submarines/:externalId"
-                    element={<SubmarinePage />}
-                />
-                <Route
-                    path="/guides"
-                    element={<GuidesListPage />}
-                />
-                <Route
-                    path="/tags"
-                    element={<TagsPage />}
-                />
-                <Route
-                    path="/mod/:externalId"
-                    element={<ModPage />}
-                />
-                <Route
-                    path="/mod/:id/guides/:guideId"
-                    element={<ModGuidePage />}
-                />
+                    {/* Mods */}
+                    <Route
+                        path="/mods"
+                        element={<ModsListPage />}
+                    />
+                    <Route
+                        path="/submarines"
+                        element={<SubmarinesListPage />}
+                    />
+                    <Route
+                        path="/submarines/:externalId"
+                        element={<SubmarinePage />}
+                    />
+                    <Route
+                        path="/guides"
+                        element={<GuidesListPage />}
+                    />
+                    <Route
+                        path="/tags"
+                        element={<TagsPage />}
+                    />
+                    <Route
+                        path="/mod/:externalId"
+                        element={<ModPage />}
+                    />
+                    <Route
+                        path="/mod/:id/guides/:guideId"
+                        element={<ModGuidePage />}
+                    />
 
-                <Route
-                    path="/admin"
-                    element={
-                        <ProtectedRoute adminOnly>
-                            <AdminPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/mod/:id/guides/new"
-                    element={
-                        <ProtectedRoute>
-                            <ModGuideEditor />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/mod/:id/guides/:guideId/edit"
-                    element={
-                        <ProtectedRoute>
-                            <ModGuideEditor />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute adminOnly>
+                                <AdminPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/mod/:id/guides/new"
+                        element={
+                            <ProtectedRoute>
+                                <ModGuideEditor />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/mod/:id/guides/:guideId/edit"
+                        element={
+                            <ProtectedRoute>
+                                <ModGuideEditor />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to={isAuthenticated ? '/mods' : '/login'} replace />} />
-            </Routes>
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to={isAuthenticated ? '/mods' : '/login'} replace />} />
+                </Routes>
+            </Suspense>
         </>
     );
 }
