@@ -238,21 +238,19 @@ export default function SubmarinePage() {
 
                 <div className="submarine-layout">
                     <main className="submarine-main">
-                        {(mainImage || additionalImages.length > 0) && (
-                            <Suspense fallback={(
-                                <section className="submarine-section glass-card">
-                                    <h2>Галерея</h2>
-                                    <p className="submarine-gallery-loading">Загрузка галереи...</p>
-                                </section>
-                            )}
-                            >
-                                <LazySubmarineGallery
-                                    title={submarine.title}
-                                    main_image={mainImage}
-                                    additional_images={additionalImages}
-                                />
-                            </Suspense>
+                        <Suspense fallback={(
+                            <section className="submarine-section glass-card">
+                                <h2>Галерея</h2>
+                                <p className="submarine-gallery-loading">Загрузка галереи...</p>
+                            </section>
                         )}
+                        >
+                            <LazySubmarineGallery
+                                title={submarine.title}
+                                main_image={mainImage}
+                                additional_images={additionalImages}
+                            />
+                        </Suspense>
 
                         <section className="submarine-section glass-card">
                             <h2>Базовые характеристики</h2>

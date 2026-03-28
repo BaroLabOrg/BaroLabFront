@@ -91,6 +91,21 @@ describe('SubmarinePage', () => {
         expect(screen.queryByRole('button', { name: '+ Добавить тег' })).not.toBeInTheDocument();
     });
 
+    it('shows gallery placeholder when images are missing', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+            main_image: '',
+            additional_images: [],
+        }));
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+        expect(screen.getByText('Изображения отсутствуют.')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /Показать изображение/i })).not.toBeInTheDocument();
+    });
+
     it('shows tag editor for admins and supports add/remove', async () => {
         const user = userEvent.setup();
         authState = {

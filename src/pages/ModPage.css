@@ -15,6 +15,11 @@
     overflow: hidden;
 }
 
+.mod-media-gallery {
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
 .mod-media-placeholder {
     width: 100%;
     aspect-ratio: 16 / 9;
