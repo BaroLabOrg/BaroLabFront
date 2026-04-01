@@ -193,6 +193,79 @@
     font-size: 0.72rem;
 }
 
+.encyclopedia-crafting-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.encyclopedia-crafting-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    padding: 0.7rem;
+}
+
+.encyclopedia-crafting-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.45rem;
+}
+
+.encyclopedia-crafting-subline {
+    margin: 0 0 0.65rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.encyclopedia-crafting-ingredient-item {
+    align-items: center;
+}
+
+.encyclopedia-crafting-ingredient-text {
+    color: var(--text-primary);
+}
+
+.encyclopedia-crafting-chip {
+    color: var(--accent);
+    font-size: 0.76rem;
+    border: 1px solid rgba(59, 77, 74, 0.6);
+    border-radius: 999px;
+    padding: 0.1rem 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.encyclopedia-armament-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.encyclopedia-armament-meta p {
+    margin: 0;
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+}
+
+.encyclopedia-armament-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.encyclopedia-armament-heading {
+    margin: 0 0 0.45rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 .encyclopedia-properties-table-wrap {
     overflow-x: auto;
 }
@@ -324,5 +397,9 @@
 @media (max-width: 768px) {
     .encyclopedia-detail-hero-main h1 {
         font-size: 1.55rem;
+    }
+
+    .encyclopedia-armament-grid {
+        grid-template-columns: 1fr;
     }
 }

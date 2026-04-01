@@ -5,10 +5,13 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import EncyclopediaEditorPage from './EncyclopediaEditorPage';
 import * as encyclopediaApi from '../api/encyclopedia';
 
+let authState = { isAdmin: true };
+
 vi.mock('../api/encyclopedia', () => ({
     ENCYCLOPEDIA_ENTITY_TYPES: ['ITEM', 'AFFLICTION', 'CREATURE'],
     ENCYCLOPEDIA_RELATION_TYPES: ['RELATED', 'CAUSES'],
     archiveEncyclopediaArticle: vi.fn(),
+    autoGenerateAndPublishEncyclopediaArticles: vi.fn(),
     createEncyclopediaArticle: vi.fn(),
     getAvailableEncyclopediaEntities: vi.fn(),
     getEncyclopediaEditor: vi.fn(),
@@ -19,6 +22,10 @@ vi.mock('../api/encyclopedia', () => ({
     updateEncyclopediaInfobox: vi.fn(),
     updateEncyclopediaMetadata: vi.fn(),
     updateEncyclopediaRelations: vi.fn(),
+}));
+
+vi.mock('../context/AuthContext', () => ({
+    useAuth: () => authState,
 }));
 
 function buildEditorResponse(overrides = {}) {
@@ -49,6 +56,7 @@ function buildEditorResponse(overrides = {}) {
 describe('EncyclopediaEditorPage', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
+        authState = { isAdmin: true };
         encyclopediaApi.getAvailableEncyclopediaEntities.mockResolvedValue({
             items: [
                 {
@@ -77,6 +85,16 @@ describe('EncyclopediaEditorPage', () => {
         encyclopediaApi.archiveEncyclopediaArticle.mockResolvedValue(buildEditorResponse({
             article: { ...buildEditorResponse().article, articleStatus: 'ARCHIVED' },
         }));
+        encyclopediaApi.autoGenerateAndPublishEncyclopediaArticles.mockResolvedValue({
+            totalChecked: 10,
+            created: 4,
+            updated: 2,
+            published: 6,
+            skippedManual: 3,
+            skippedUnchanged: 1,
+            failed: 0,
+            errors: [],
+        });
         encyclopediaApi.saveEncyclopediaDraft.mockResolvedValue(buildEditorResponse({
             article: { ...buildEditorResponse().article, draftMarkdown: '## Updated draft' },
         }));
@@ -96,10 +114,10 @@ describe('EncyclopediaEditorPage', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Husk Infection husk-infection AFFLICTION' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /Husk Infection/i })).toBeInTheDocument();
         });
         expect(encyclopediaApi.getAvailableEncyclopediaEntities).toHaveBeenCalled();
-        await user.click(screen.getByRole('button', { name: 'Husk Infection husk-infection AFFLICTION' }));
+        await user.click(screen.getByRole('button', { name: /Husk Infection/i }));
 
         await user.type(screen.getByLabelText('Summary'), ' test summary ');
         await user.type(screen.getByLabelText('Draft markdown'), '# Initial');
@@ -138,5 +156,68 @@ describe('EncyclopediaEditorPage', () => {
         await waitFor(() => {
             expect(encyclopediaApi.saveEncyclopediaDraft).toHaveBeenCalledWith('entity-1', '## Updated draft');
         });
+    });
+
+    it('runs batch auto-generate action and renders stats', async () => {
+        const user = userEvent.setup();
+
+        render(
+            <MemoryRouter initialEntries={['/admin/encyclopedia/new']}>
+                <Routes>
+                    <Route path="/admin/encyclopedia/new" element={<EncyclopediaEditorPage />} />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' }));
+
+        await waitFor(() => {
+            expect(encyclopediaApi.autoGenerateAndPublishEncyclopediaArticles).toHaveBeenCalledTimes(1);
+        });
+
+        expect(screen.getByText(/Проверено:/)).toBeInTheDocument();
+        expect(screen.getByText(/Создано:/)).toBeInTheDocument();
+        expect(screen.getByText(/Пропущено \(manual\):/)).toBeInTheDocument();
+    });
+
+    it('hides batch auto-generate button for non-admin users', async () => {
+        authState = { isAdmin: false };
+
+        render(
+            <MemoryRouter initialEntries={['/admin/encyclopedia/new']}>
+                <Routes>
+                    <Route path="/admin/encyclopedia/new" element={<EncyclopediaEditorPage />} />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: 'Создать' })).toBeInTheDocument();
+        });
+        expect(screen.queryByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeNull();
+    });
+
+    it('shows batch auto-generate error when endpoint fails', async () => {
+        const user = userEvent.setup();
+        encyclopediaApi.autoGenerateAndPublishEncyclopediaArticles.mockRejectedValue(new Error('Batch failed'));
+
+        render(
+            <MemoryRouter initialEntries={['/admin/encyclopedia/new']}>
+                <Routes>
+                    <Route path="/admin/encyclopedia/new" element={<EncyclopediaEditorPage />} />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' }));
+        expect(await screen.findByText('Batch failed')).toBeInTheDocument();
     });
 });

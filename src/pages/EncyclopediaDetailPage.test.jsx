@@ -39,6 +39,8 @@ function buildDetail(overrides = {}) {
         importedProperties: [
             { propertyKey: 'max_strength', propertyValue: '85', valueType: 'INTEGER', origin: 'IMPORTED' },
         ],
+        crafting: null,
+        armament: null,
         ...overrides,
     };
 }
@@ -144,5 +146,127 @@ describe('EncyclopediaDetailPage', () => {
 
         expect(await screen.findByText('Not found')).toBeInTheDocument();
         expect(screen.getByRole('link', { name: '← Назад к энциклопедии' })).toBeInTheDocument();
+    });
+
+    it('renders crafting section for items and uses encyclopedia links for ingredients', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            slug: 'bandage',
+            title: 'Bandage',
+            crafting: {
+                hasRecipe: true,
+                recipes: [
+                    {
+                        recipeType: 'FABRICATE',
+                        fabricationTime: '10',
+                        outputCount: '2',
+                        requiredStations: ['fabricator'],
+                        ingredients: [
+                            {
+                                itemIdentifier: 'organicfiber',
+                                amount: '1',
+                                title: 'Organic Fiber',
+                                slug: 'organic-fiber',
+                                isLinkable: true,
+                            },
+                        ],
+                    },
+                ],
+            },
+        }));
+
+        renderPage('/encyclopedia/bandage');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Bandage' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByRole('heading', { name: 'Крафт' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Organic Fiber' })).toHaveAttribute(
+            'href',
+            '/encyclopedia/organic-fiber',
+        );
+        expect(screen.getByText('x1')).toBeInTheDocument();
+    });
+
+    it('renders ingredient as plain text when slug is missing', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            slug: 'bandage',
+            title: 'Bandage',
+            crafting: {
+                hasRecipe: true,
+                recipes: [
+                    {
+                        recipeType: 'FABRICATE',
+                        ingredients: [
+                            {
+                                itemIdentifier: 'organicfiber',
+                                amount: '1',
+                                title: 'Organic Fiber',
+                                slug: null,
+                                isLinkable: false,
+                            },
+                        ],
+                    },
+                ],
+            },
+        }));
+
+        renderPage('/encyclopedia/bandage');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Bandage' })).toBeInTheDocument();
+        });
+
+        const ingredientText = screen.getByText('Organic Fiber');
+        expect(ingredientText).toBeInTheDocument();
+        expect(ingredientText.closest('a')).toBeNull();
+    });
+
+    it('renders empty crafting text for items without recipe', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            slug: 'wrench',
+            title: 'Wrench',
+            crafting: {
+                hasRecipe: false,
+                recipes: [],
+            },
+        }));
+
+        renderPage('/encyclopedia/wrench');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Wrench' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByText('Крафт отсутствует.')).toBeInTheDocument();
+    });
+
+    it('renders armament section for submarines', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'SUBMARINE',
+            slug: 'orca',
+            title: 'Orca',
+            armament: {
+                turretSlotCount: 2,
+                largeTurretSlotCount: 1,
+                defaultTurretWeapons: ['coilgun', 'doublecoilgun'],
+                defaultLargeTurretWeapons: ['railgun'],
+            },
+        }));
+
+        renderPage('/encyclopedia/orca');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByRole('heading', { name: 'Вооружение' })).toBeInTheDocument();
+        expect(screen.getByText(/Малые слоты турелей:/)).toBeInTheDocument();
+        expect(screen.getByText(/Большие слоты турелей:/)).toBeInTheDocument();
+        expect(screen.getByText('Coilgun')).toBeInTheDocument();
+        expect(screen.getByText('Railgun')).toBeInTheDocument();
     });
 });

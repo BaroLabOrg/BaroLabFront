@@ -4,6 +4,7 @@ import {
     ENCYCLOPEDIA_ENTITY_TYPES,
     ENCYCLOPEDIA_RELATION_TYPES,
     archiveEncyclopediaArticle,
+    autoGenerateAndPublishEncyclopediaArticles,
     createEncyclopediaArticle,
     getAvailableEncyclopediaEntities,
     getEncyclopediaEditor,
@@ -15,6 +16,7 @@ import {
     updateEncyclopediaMetadata,
     updateEncyclopediaRelations,
 } from '../api/encyclopedia';
+import { useAuth } from '../context/AuthContext';
 import './EncyclopediaEditorPage.css';
 
 function buildEmptyInfoboxField(sortOrder = 0) {
@@ -62,12 +64,16 @@ function formatDate(value) {
 export default function EncyclopediaEditorPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isAdmin } = useAuth();
     const isCreateMode = !id;
 
     const [loading, setLoading] = useState(!isCreateMode);
     const [actionLoading, setActionLoading] = useState(false);
+    const [batchActionLoading, setBatchActionLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [batchError, setBatchError] = useState('');
+    const [batchResult, setBatchResult] = useState(null);
 
     const [createEntityId, setCreateEntityId] = useState('');
     const [createSummary, setCreateSummary] = useState('');
@@ -212,6 +218,22 @@ export default function EncyclopediaEditorPage() {
             setError(err?.message || 'Не удалось создать страницу энциклопедии');
         } finally {
             setActionLoading(false);
+        }
+    };
+
+    const handleAutoGenerateAndPublish = async () => {
+        if (!isAdmin) return;
+
+        setBatchActionLoading(true);
+        setBatchError('');
+        setBatchResult(null);
+        try {
+            const result = await autoGenerateAndPublishEncyclopediaArticles();
+            setBatchResult(result);
+        } catch (err) {
+            setBatchError(err?.message || 'Не удалось выполнить авто-генерацию и публикацию статей');
+        } finally {
+            setBatchActionLoading(false);
         }
     };
 
@@ -391,6 +413,42 @@ export default function EncyclopediaEditorPage() {
                         <p className="encyclopedia-editor-muted">
                             Сначала выберите ванильную сущность без статьи, затем создайте черновик.
                         </p>
+                        {isAdmin && (
+                            <div className="encyclopedia-batch-block">
+                                <div className="encyclopedia-batch-header">
+                                    <h2>Массовое заполнение энциклопедии</h2>
+                                    <button
+                                        className="btn btn-primary"
+                                        type="button"
+                                        onClick={handleAutoGenerateAndPublish}
+                                        disabled={batchActionLoading}
+                                    >
+                                        {batchActionLoading
+                                            ? 'Обработка...'
+                                            : 'Авто-создать и опубликовать статьи'}
+                                    </button>
+                                </div>
+                                {batchError && <div className="auth-error">{batchError}</div>}
+                                {batchResult && (
+                                    <div className="encyclopedia-batch-result">
+                                        <p><strong>Проверено:</strong> {batchResult.totalChecked}</p>
+                                        <p><strong>Создано:</strong> {batchResult.created}</p>
+                                        <p><strong>Обновлено:</strong> {batchResult.updated}</p>
+                                        <p><strong>Опубликовано:</strong> {batchResult.published}</p>
+                                        <p><strong>Пропущено (manual):</strong> {batchResult.skippedManual}</p>
+                                        <p><strong>Пропущено (без изменений):</strong> {batchResult.skippedUnchanged}</p>
+                                        <p><strong>Ошибок:</strong> {batchResult.failed}</p>
+                                        {Array.isArray(batchResult.errors) && batchResult.errors.length > 0 && (
+                                            <div className="encyclopedia-batch-errors">
+                                                {batchResult.errors.map((entry, index) => (
+                                                    <p key={`${entry}-${index}`}>{entry}</p>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <form className="encyclopedia-create-form" onSubmit={handleCreate}>
                             <div className="available-entities-block">

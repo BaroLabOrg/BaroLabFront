@@ -21,6 +21,8 @@ function buildDemoDetail({
     backlinks = [],
     relatedMods = [],
     importedProperties = [],
+    crafting = null,
+    armament = null,
     subtype = null,
 }) {
     return {
@@ -43,6 +45,8 @@ function buildDemoDetail({
         backlinks,
         relatedMods,
         importedProperties,
+        crafting,
+        armament,
         isDemo: true,
     };
 }
@@ -141,6 +145,27 @@ Endworm представляет угрозу на поздних этапах �
             { fieldKey: 'slot', fieldLabel: 'Категория', fieldValue: 'Medical item', sortOrder: 0 },
             { fieldKey: 'usage', fieldLabel: 'Применение', fieldValue: 'Первая помощь', sortOrder: 1 },
         ],
+        crafting: {
+            hasRecipe: true,
+            recipes: [
+                {
+                    recipeType: 'FABRICATE',
+                    fabricationTime: '6',
+                    outputCount: '1',
+                    requiredStations: ['fabricator'],
+                    requiredSkills: [{ identifier: 'medical', level: '15' }],
+                    ingredients: [
+                        {
+                            itemIdentifier: 'organicfiber',
+                            amount: '1',
+                            title: 'Organic Fiber',
+                            slug: 'organic-fiber',
+                            isLinkable: true,
+                        },
+                    ],
+                },
+            ],
+        },
     }),
     'blood-pack': buildDemoDetail({
         slug: 'blood-pack',
@@ -190,6 +215,12 @@ Orca подходит для сбалансированного стиля иг�
             { fieldKey: 'crew', fieldLabel: 'Экипаж', fieldValue: '3-5', sortOrder: 1 },
             { fieldKey: 'strength', fieldLabel: 'Сильная сторона', fieldValue: 'Универсальность', sortOrder: 2 },
         ],
+        armament: {
+            turretSlotCount: 2,
+            largeTurretSlotCount: 1,
+            defaultTurretWeapons: ['coilgun', 'doublecoilgun'],
+            defaultLargeTurretWeapons: ['railgun'],
+        },
     }),
     captain: buildDemoDetail({
         slug: 'captain',
@@ -282,6 +313,37 @@ function getDemoDetail(slug) {
 
 function ensureDetailCollections(detail) {
     if (!detail || typeof detail !== 'object') return detail;
+
+    const craftingRaw = detail.crafting && typeof detail.crafting === 'object' ? detail.crafting : null;
+    const recipes = craftingRaw && Array.isArray(craftingRaw.recipes) ? craftingRaw.recipes : [];
+    const recipe = craftingRaw ? (craftingRaw.recipe || recipes[0] || null) : null;
+    const crafting = craftingRaw
+        ? {
+            ...craftingRaw,
+            hasRecipe: Boolean(craftingRaw.hasRecipe ?? craftingRaw.has_recipe ?? recipes.length > 0),
+            recipes,
+            recipe,
+        }
+        : null;
+
+    const armamentRaw = detail.armament && typeof detail.armament === 'object' ? detail.armament : null;
+    const armament = armamentRaw
+        ? {
+            ...armamentRaw,
+            turretSlotCount: Number(armamentRaw.turretSlotCount ?? armamentRaw.turret_slot_count ?? 0) || 0,
+            largeTurretSlotCount:
+                Number(armamentRaw.largeTurretSlotCount ?? armamentRaw.large_turret_slot_count ?? 0) || 0,
+            defaultTurretWeapons: Array.isArray(armamentRaw.defaultTurretWeapons)
+                ? armamentRaw.defaultTurretWeapons
+                : (Array.isArray(armamentRaw.default_turret_weapons) ? armamentRaw.default_turret_weapons : []),
+            defaultLargeTurretWeapons: Array.isArray(armamentRaw.defaultLargeTurretWeapons)
+                ? armamentRaw.defaultLargeTurretWeapons
+                : (Array.isArray(armamentRaw.default_large_turret_weapons)
+                    ? armamentRaw.default_large_turret_weapons
+                    : []),
+        }
+        : null;
+
     return {
         ...detail,
         infobox: Array.isArray(detail.infobox) ? detail.infobox : [],
@@ -289,6 +351,8 @@ function ensureDetailCollections(detail) {
         backlinks: Array.isArray(detail.backlinks) ? detail.backlinks : [],
         relatedMods: Array.isArray(detail.relatedMods) ? detail.relatedMods : [],
         importedProperties: Array.isArray(detail.importedProperties) ? detail.importedProperties : [],
+        crafting,
+        armament,
     };
 }
 
@@ -301,6 +365,23 @@ function formatDate(value) {
         month: 'short',
         year: 'numeric',
     });
+}
+
+function humanizeIdentifier(value) {
+    const normalized = String(value || '').trim();
+    if (!normalized) return '';
+    return normalized
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function ingredientLabel(ingredient) {
+    return ingredient?.title
+        || humanizeIdentifier(ingredient?.itemIdentifier)
+        || humanizeIdentifier(ingredient?.itemTag)
+        || 'Unknown ingredient';
 }
 
 function SectionTitle({ children }) {
@@ -460,6 +541,11 @@ export default function EncyclopediaDetailPage() {
 
     const hasArticleMarkdown = Boolean(articleMarkdown.trim().length > 0);
     const hasArticleHtml = Boolean(detail.renderedHtml && detail.renderedHtml.trim().length > 0);
+    const craftingRecipes = detail.crafting?.recipes?.length
+        ? detail.crafting.recipes
+        : (detail.crafting?.recipe ? [detail.crafting.recipe] : []);
+    const hasCraftRecipe = detail.entityType === 'ITEM'
+        && Boolean(detail.crafting?.hasRecipe ?? detail.crafting?.has_recipe ?? craftingRecipes.length > 0);
 
     return (
         <div className="page encyclopedia-detail-page">
@@ -531,6 +617,132 @@ export default function EncyclopediaDetailPage() {
                                 </ul>
                             )}
                         </section>
+
+                        {detail.entityType === 'ITEM' && (
+                            <section className="encyclopedia-detail-section glass-card">
+                                <SectionTitle>Крафт</SectionTitle>
+                                {!hasCraftRecipe ? (
+                                    <p className="encyclopedia-empty-text">Крафт отсутствует.</p>
+                                ) : (
+                                    <div className="encyclopedia-crafting-stack">
+                                        {craftingRecipes.map((recipe, recipeIndex) => (
+                                            <article
+                                                className="encyclopedia-crafting-card"
+                                                key={`${recipe.recipeType || 'recipe'}-${recipeIndex}`}
+                                            >
+                                                <div className="encyclopedia-crafting-card-meta">
+                                                    <span>
+                                                        <strong>Тип:</strong> {recipe.recipeType || 'FABRICATE'}
+                                                    </span>
+                                                    {recipe.fabricationTime && (
+                                                        <span>
+                                                            <strong>Время:</strong> {recipe.fabricationTime}
+                                                        </span>
+                                                    )}
+                                                    {recipe.outputCount && (
+                                                        <span>
+                                                            <strong>Выход:</strong> {recipe.outputCount}
+                                                        </span>
+                                                    )}
+                                                    {Array.isArray(recipe.requiredStations) && recipe.requiredStations.length > 0 && (
+                                                        <span>
+                                                            <strong>Станция:</strong> {recipe.requiredStations.join(', ')}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {Array.isArray(recipe.requiredSkills) && recipe.requiredSkills.length > 0 && (
+                                                    <p className="encyclopedia-crafting-subline">
+                                                        <strong>Требуемые навыки:</strong>{' '}
+                                                        {recipe.requiredSkills
+                                                            .map((skill) => `${humanizeIdentifier(skill.identifier)} ${skill.level || ''}`.trim())
+                                                            .join(', ')}
+                                                    </p>
+                                                )}
+
+                                                {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+                                                    <ul className="encyclopedia-compact-list">
+                                                        {recipe.ingredients.map((ingredient, ingredientIndex) => (
+                                                            <li
+                                                                key={`${ingredient.itemIdentifier || ingredient.itemTag || 'ingredient'}-${ingredientIndex}`}
+                                                                className="encyclopedia-crafting-ingredient-item"
+                                                            >
+                                                                {ingredient.slug && ingredient.isLinkable ? (
+                                                                    <Link to={`/encyclopedia/${ingredient.slug}`}>
+                                                                        {ingredientLabel(ingredient)}
+                                                                    </Link>
+                                                                ) : (
+                                                                    <span className="encyclopedia-crafting-ingredient-text">
+                                                                        {ingredientLabel(ingredient)}
+                                                                    </span>
+                                                                )}
+                                                                {ingredient.amount && (
+                                                                    <span className="encyclopedia-crafting-chip">
+                                                                        x{ingredient.amount}
+                                                                    </span>
+                                                                )}
+                                                                {ingredient.minCondition && (
+                                                                    <small>min condition: {ingredient.minCondition}</small>
+                                                                )}
+                                                                {ingredient.useCondition && (
+                                                                    <small>use condition: {ingredient.useCondition}</small>
+                                                                )}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <p className="encyclopedia-empty-text">Ингредиенты не указаны.</p>
+                                                )}
+                                            </article>
+                                        ))}
+                                    </div>
+                                )}
+                            </section>
+                        )}
+
+                        {detail.entityType === 'SUBMARINE' && (
+                            <section className="encyclopedia-detail-section glass-card">
+                                <SectionTitle>Вооружение</SectionTitle>
+                                <div className="encyclopedia-armament-meta">
+                                    <p><strong>Малые слоты турелей:</strong> {detail.armament?.turretSlotCount ?? 0}</p>
+                                    <p><strong>Большие слоты турелей:</strong> {detail.armament?.largeTurretSlotCount ?? 0}</p>
+                                </div>
+                                <div className="encyclopedia-armament-grid">
+                                    <div>
+                                        <p className="encyclopedia-armament-heading">Малые турели</p>
+                                        {detail.armament?.defaultTurretWeapons?.length ? (
+                                            <ul className="encyclopedia-compact-list">
+                                                {detail.armament.defaultTurretWeapons.map((weapon, index) => (
+                                                    <li key={`small-${weapon}-${index}`}>
+                                                        <span className="encyclopedia-crafting-ingredient-text">
+                                                            {humanizeIdentifier(weapon)}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="encyclopedia-empty-text">Нет данных.</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <p className="encyclopedia-armament-heading">Большие турели</p>
+                                        {detail.armament?.defaultLargeTurretWeapons?.length ? (
+                                            <ul className="encyclopedia-compact-list">
+                                                {detail.armament.defaultLargeTurretWeapons.map((weapon, index) => (
+                                                    <li key={`large-${weapon}-${index}`}>
+                                                        <span className="encyclopedia-crafting-ingredient-text">
+                                                            {humanizeIdentifier(weapon)}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="encyclopedia-empty-text">Нет данных.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </section>
+                        )}
 
                         <section className="encyclopedia-detail-section glass-card">
                             <SectionTitle>Backlinks</SectionTitle>

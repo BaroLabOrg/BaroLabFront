@@ -293,6 +293,163 @@ function normalizeProperty(property) {
     };
 }
 
+function normalizeStringList(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map((entry) => (entry === undefined || entry === null ? '' : String(entry).trim()))
+            .filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        if (trimmed.includes(',')) {
+            return trimmed.split(',').map((entry) => entry.trim()).filter(Boolean);
+        }
+        return [trimmed];
+    }
+    return [];
+}
+
+function normalizeCraftSkill(skill) {
+    if (!skill || typeof skill !== 'object') return null;
+
+    const identifier = firstDefined(skill.identifier);
+    const level = firstDefined(skill.level);
+
+    return {
+        ...skill,
+        identifier,
+        level,
+    };
+}
+
+function normalizeCraftIngredient(ingredient) {
+    if (!ingredient || typeof ingredient !== 'object') return null;
+
+    const itemIdentifier = firstDefined(ingredient.itemIdentifier, ingredient.item_identifier);
+    const itemTag = firstDefined(ingredient.itemTag, ingredient.item_tag);
+    const amount = firstDefined(ingredient.amount);
+    const minCondition = firstDefined(ingredient.minCondition, ingredient.min_condition);
+    const maxCondition = firstDefined(ingredient.maxCondition, ingredient.max_condition);
+    const useCondition = firstDefined(ingredient.useCondition, ingredient.use_condition);
+    const description = firstDefined(ingredient.description);
+    const title = firstDefined(ingredient.title);
+    const slug = firstDefined(ingredient.slug);
+    const isLinkable = Boolean(firstDefined(ingredient.isLinkable, ingredient.is_linkable, Boolean(slug)));
+
+    return {
+        ...ingredient,
+        itemIdentifier,
+        item_identifier: itemIdentifier,
+        itemTag,
+        item_tag: itemTag,
+        amount,
+        minCondition,
+        min_condition: minCondition,
+        maxCondition,
+        max_condition: maxCondition,
+        useCondition,
+        use_condition: useCondition,
+        description,
+        title,
+        slug,
+        isLinkable,
+        is_linkable: isLinkable,
+    };
+}
+
+function normalizeCraftRecipe(recipe) {
+    if (!recipe || typeof recipe !== 'object') return null;
+
+    const recipeType = firstDefined(recipe.recipeType, recipe.recipe_type);
+    const fabricationTime = firstDefined(recipe.fabricationTime, recipe.fabrication_time);
+    const outputCount = firstDefined(recipe.outputCount, recipe.output_count);
+    const requiredStations = normalizeStringList(
+        firstDefined(recipe.requiredStations, recipe.required_stations, recipe.requiredStation, recipe.required_station),
+    );
+    const requiredSkills = normalizeArray(
+        firstDefined(recipe.requiredSkills, recipe.required_skills),
+        normalizeCraftSkill,
+    );
+    const ingredients = normalizeArray(recipe.ingredients, normalizeCraftIngredient);
+    const requiresRecipe = firstDefined(recipe.requiresRecipe, recipe.requires_recipe);
+    const displayName = firstDefined(recipe.displayName, recipe.display_name);
+    const requiredMoney = firstDefined(recipe.requiredMoney, recipe.required_money);
+    const fabricationLimitMin = firstDefined(recipe.fabricationLimitMin, recipe.fabrication_limit_min);
+    const fabricationLimitMax = firstDefined(recipe.fabricationLimitMax, recipe.fabrication_limit_max);
+
+    return {
+        ...recipe,
+        recipeType,
+        recipe_type: recipeType,
+        fabricationTime,
+        fabrication_time: fabricationTime,
+        outputCount,
+        output_count: outputCount,
+        requiredStations,
+        required_stations: requiredStations,
+        requiredSkills,
+        required_skills: requiredSkills,
+        ingredients,
+        requiresRecipe: requiresRecipe === undefined || requiresRecipe === null ? null : Boolean(requiresRecipe),
+        requires_recipe: requiresRecipe === undefined || requiresRecipe === null ? null : Boolean(requiresRecipe),
+        displayName,
+        display_name: displayName,
+        requiredMoney,
+        required_money: requiredMoney,
+        fabricationLimitMin,
+        fabrication_limit_min: fabricationLimitMin,
+        fabricationLimitMax,
+        fabrication_limit_max: fabricationLimitMax,
+    };
+}
+
+function normalizeCrafting(crafting) {
+    if (!crafting || typeof crafting !== 'object') return null;
+
+    const hasRecipe = Boolean(firstDefined(crafting.hasRecipe, crafting.has_recipe, false));
+    const recipe = normalizeCraftRecipe(firstDefined(crafting.recipe));
+    const recipes = normalizeArray(firstDefined(crafting.recipes), normalizeCraftRecipe);
+    const recipesFinal = recipes.length > 0 ? recipes : (recipe ? [recipe] : []);
+    const primaryRecipe = recipe || recipesFinal[0] || null;
+    const hasRecipeFinal = hasRecipe || recipesFinal.length > 0;
+
+    return {
+        ...crafting,
+        hasRecipe: hasRecipeFinal,
+        has_recipe: hasRecipeFinal,
+        recipe: primaryRecipe,
+        recipes: recipesFinal,
+    };
+}
+
+function normalizeArmament(armament) {
+    if (!armament || typeof armament !== 'object') return null;
+
+    const turretSlotCount = Number(firstDefined(armament.turretSlotCount, armament.turret_slot_count, 0)) || 0;
+    const largeTurretSlotCount = Number(
+        firstDefined(armament.largeTurretSlotCount, armament.large_turret_slot_count, 0),
+    ) || 0;
+    const defaultTurretWeapons = normalizeStringList(
+        firstDefined(armament.defaultTurretWeapons, armament.default_turret_weapons),
+    );
+    const defaultLargeTurretWeapons = normalizeStringList(
+        firstDefined(armament.defaultLargeTurretWeapons, armament.default_large_turret_weapons),
+    );
+
+    return {
+        ...armament,
+        turretSlotCount,
+        turret_slot_count: turretSlotCount,
+        largeTurretSlotCount,
+        large_turret_slot_count: largeTurretSlotCount,
+        defaultTurretWeapons,
+        default_turret_weapons: defaultTurretWeapons,
+        defaultLargeTurretWeapons,
+        default_large_turret_weapons: defaultLargeTurretWeapons,
+    };
+}
+
 function normalizeArticleState(article) {
     if (!article || typeof article !== 'object') {
         return {
@@ -442,6 +599,8 @@ function normalizeDetail(detail) {
         firstDefined(detail.relatedMods, detail.related_mods),
         normalizeModRelation,
     );
+    const crafting = normalizeCrafting(firstDefined(detail.crafting));
+    const armament = normalizeArmament(firstDefined(detail.armament));
     const importedProperties = normalizeArray(
         firstDefined(detail.importedProperties, detail.imported_properties),
         normalizeProperty,
@@ -478,6 +637,8 @@ function normalizeDetail(detail) {
         backlinks,
         relatedMods,
         related_mods: relatedMods,
+        crafting,
+        armament,
         importedProperties,
         imported_properties: importedProperties,
     };
@@ -562,6 +723,50 @@ function normalizePreviewResponse(response) {
         renderedHtml,
         rendered_html: renderedHtml,
         links,
+    };
+}
+
+function normalizeAutoGeneratePublishResult(response) {
+    if (!response || typeof response !== 'object') {
+        return {
+            totalChecked: 0,
+            total_checked: 0,
+            created: 0,
+            updated: 0,
+            published: 0,
+            skippedManual: 0,
+            skipped_manual: 0,
+            skippedUnchanged: 0,
+            skipped_unchanged: 0,
+            failed: 0,
+            errors: [],
+        };
+    }
+
+    const totalChecked = Number(firstDefined(response.totalChecked, response.total_checked, 0)) || 0;
+    const created = Number(firstDefined(response.created, 0)) || 0;
+    const updated = Number(firstDefined(response.updated, 0)) || 0;
+    const published = Number(firstDefined(response.published, 0)) || 0;
+    const skippedManual = Number(firstDefined(response.skippedManual, response.skipped_manual, 0)) || 0;
+    const skippedUnchanged = Number(firstDefined(response.skippedUnchanged, response.skipped_unchanged, 0)) || 0;
+    const failed = Number(firstDefined(response.failed, 0)) || 0;
+    const errors = Array.isArray(response.errors)
+        ? response.errors.map((error) => String(error || '').trim()).filter(Boolean)
+        : [];
+
+    return {
+        ...response,
+        totalChecked,
+        total_checked: totalChecked,
+        created,
+        updated,
+        published,
+        skippedManual,
+        skipped_manual: skippedManual,
+        skippedUnchanged,
+        skipped_unchanged: skippedUnchanged,
+        failed,
+        errors,
     };
 }
 
@@ -751,4 +956,11 @@ export async function archiveEncyclopediaArticle(entityId) {
         method: 'PUT',
     });
     return normalizeEditorResponse(response);
+}
+
+export async function autoGenerateAndPublishEncyclopediaArticles() {
+    const response = await request('/api/admin/encyclopedia/auto-generate-and-publish', {
+        method: 'POST',
+    });
+    return normalizeAutoGeneratePublishResult(response);
 }

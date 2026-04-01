@@ -9,6 +9,8 @@ import './EncyclopediaListPage.css';
 const PAGE_SIZE = 12;
 const DEFAULT_SORT_BY = 'publishedAt';
 const DEFAULT_DIRECTION = 'desc';
+const MAX_PRIMARY_BLOCKS_PER_SECTION = 8;
+const MAX_QUICK_LINKS_PER_SECTION = 10;
 const SORT_OPTIONS = ['publishedAt', 'updatedAt', 'title'];
 const DIRECTION_OPTIONS = ['desc', 'asc'];
 
@@ -482,6 +484,654 @@ const DEMO_ITEM_POOL = {
     ],
 };
 
+const ITEM_CANONICAL_PRIMARY_GROUPS = [
+    { key: 'Medical', label: 'Медицина', identities: new Set(['medical']) },
+    { key: 'Weapons', label: 'Оружие', identities: new Set(['weapon', 'weapons', 'machine']) },
+    { key: 'Tools', label: 'Инструменты', identities: new Set(['equipment', 'electrical', 'diving', 'fuel']) },
+    { key: 'Materials', label: 'Материалы', identities: new Set(['material']) },
+    {
+        key: 'Other',
+        label: 'Прочее',
+        identities: new Set(['misc', 'decorative', 'wrecked', 'alien', 'legacy', 'hidden', 'thalamus']),
+    },
+];
+
+const TECHNICAL_CATEGORY_IDENTITIES = new Set([
+    'hidden',
+    'legacy',
+]);
+
+const TECHNICAL_CATEGORY_PATTERNS = [
+    /^tier[\s_-]*\d+$/i,
+];
+
+const NON_ITEM_PRIMARY_ALIAS_CONFIG = {
+    AFFLICTION: {
+        injury: 'Injuries',
+        injuries: 'Injuries',
+        infection: 'Infections',
+        infections: 'Infections',
+        psychological: 'Psychological',
+    },
+    CHARACTER: {
+        crew: 'Crew Characters',
+        'crew characters': 'Crew Characters',
+        npc: 'Neutral NPCs',
+        npcs: 'Neutral NPCs',
+        neutral: 'Neutral NPCs',
+        story: 'Story Characters',
+        'story characters': 'Story Characters',
+    },
+    FACTION: {
+        major: 'Major Factions',
+        'major factions': 'Major Factions',
+        local: 'Local Groups',
+        'local groups': 'Local Groups',
+        hostile: 'Hostile Forces',
+        'hostile forces': 'Hostile Forces',
+    },
+    LOCATION: {
+        outpost: 'Outposts',
+        outposts: 'Outposts',
+        ruin: 'Ruins',
+        ruins: 'Ruins',
+        transit: 'Transit Points',
+        'transit points': 'Transit Points',
+    },
+    SUBMARINE: {
+        transport: 'Transport',
+        attack: 'Attack',
+        scout: 'Scout',
+    },
+    CREATURE: {
+        monster: 'Monsters',
+        monsters: 'Monsters',
+        humanoid: 'Humanoids',
+        humanoids: 'Humanoids',
+        pet: 'Pets',
+        pets: 'Pets',
+    },
+    BIOME: {
+        shallow: 'Shallow Regions',
+        'shallow regions': 'Shallow Regions',
+        middle: 'Middle Regions',
+        'middle regions': 'Middle Regions',
+        abyss: 'Abyss Regions',
+        'abyss regions': 'Abyss Regions',
+    },
+    TALENT: {
+        captain: 'Captain Tree',
+        engineer: 'Engineer Tree',
+        mechanic: 'Mechanic Tree',
+        security: 'Security Tree',
+        medical: 'Medical Tree',
+        assistant: 'Assistant Tree',
+    },
+    JOB: {
+        role: 'Crew Roles',
+        roles: 'Crew Roles',
+        crew: 'Crew Roles',
+        specialization: 'Specializations',
+        specializations: 'Specializations',
+    },
+    OTHER: {
+        mechanic: 'Mechanics',
+        mechanics: 'Mechanics',
+        ui: 'UI & Symbols',
+        symbol: 'UI & Symbols',
+        symbols: 'UI & Symbols',
+        meta: 'Meta Systems',
+        system: 'Meta Systems',
+    },
+};
+
+function normalizeCategoryValue(value) {
+    return String(value || '').trim();
+}
+
+function categoryIdentity(value) {
+    return normalizeCategoryValue(value).toLocaleLowerCase('en-US');
+}
+
+function humanizeCategoryLabel(value) {
+    const normalized = normalizeCategoryValue(value)
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (!normalized) return '';
+
+    return normalized
+        .split(' ')
+        .map((word) => {
+            if (!word) return '';
+            if (word.length <= 2 && /^[A-Z0-9]+$/.test(word)) {
+                return word;
+            }
+            if (/[A-Z]/.test(word) && /[a-z]/.test(word)) {
+                return word;
+            }
+            if (/^[a-z]/.test(word)) {
+                return `${word[0].toUpperCase()}${word.slice(1)}`;
+            }
+            return word;
+        })
+        .join(' ');
+}
+
+function isTechnicalCategory(value) {
+    const identity = categoryIdentity(value);
+    if (!identity) return true;
+    if (TECHNICAL_CATEGORY_IDENTITIES.has(identity)) return true;
+    return TECHNICAL_CATEGORY_PATTERNS.some((pattern) => pattern.test(String(value || '')));
+}
+
+function buildDemoPrimaryKeySetByType() {
+    const byType = {};
+    DEMO_TYPE_SECTIONS.forEach((section) => {
+        byType[section.key] = new Set((section.primaryBlocks || []).map((block) => block.key));
+    });
+    return byType;
+}
+
+function buildBlueprintPrimaryIdentityMapByType() {
+    const byType = {};
+
+    DEMO_TYPE_SECTIONS.forEach((section) => {
+        const keyByIdentity = {};
+        (section.primaryBlocks || []).forEach((primaryBlock) => {
+            const keyIdentity = categoryIdentity(primaryBlock.key);
+            const labelIdentity = categoryIdentity(primaryBlock.label);
+            if (keyIdentity) keyByIdentity[keyIdentity] = primaryBlock.key;
+            if (labelIdentity) keyByIdentity[labelIdentity] = primaryBlock.key;
+        });
+
+        const aliases = NON_ITEM_PRIMARY_ALIAS_CONFIG[section.key] || {};
+        Object.entries(aliases).forEach(([alias, canonicalKey]) => {
+            const aliasIdentity = categoryIdentity(alias);
+            if (!aliasIdentity || !canonicalKey) return;
+            keyByIdentity[aliasIdentity] = canonicalKey;
+        });
+
+        byType[section.key] = keyByIdentity;
+    });
+
+    return byType;
+}
+
+function buildDemoPrimaryLabelMap() {
+    const byType = {};
+    DEMO_TYPE_SECTIONS.forEach((section) => {
+        byType[section.key] = {};
+        (section.primaryBlocks || []).forEach((primaryBlock) => {
+            const key = categoryIdentity(primaryBlock.key);
+            if (!key) return;
+            byType[section.key][key] = primaryBlock.label || primaryBlock.key;
+        });
+    });
+    return byType;
+}
+
+function buildDemoSecondaryLabelMap() {
+    const byTypePrimary = {};
+    DEMO_TYPE_SECTIONS.forEach((section) => {
+        (section.primaryBlocks || []).forEach((primaryBlock) => {
+            const primaryKey = categoryIdentity(primaryBlock.key);
+            if (!primaryKey) return;
+            const storageKey = `${section.key}|${primaryKey}`;
+            byTypePrimary[storageKey] = {};
+            (primaryBlock.secondaryBlocks || []).forEach((secondaryBlock) => {
+                const secondaryKey = categoryIdentity(secondaryBlock.key);
+                if (!secondaryKey) return;
+                byTypePrimary[storageKey][secondaryKey] = secondaryBlock.label || secondaryBlock.key;
+            });
+        });
+    });
+    return byTypePrimary;
+}
+
+const DEMO_PRIMARY_LABELS_BY_TYPE = buildDemoPrimaryLabelMap();
+const DEMO_SECONDARY_LABELS_BY_TYPE_PRIMARY = buildDemoSecondaryLabelMap();
+const DEMO_PRIMARY_KEY_SET_BY_TYPE = buildDemoPrimaryKeySetByType();
+const BLUEPRINT_PRIMARY_KEY_BY_TYPE_IDENTITY = buildBlueprintPrimaryIdentityMapByType();
+
+function resolvePrimaryBlockLabel(entityType, primaryKey) {
+    const identity = categoryIdentity(primaryKey);
+    const labelFromDemo = DEMO_PRIMARY_LABELS_BY_TYPE[entityType]?.[identity];
+    return labelFromDemo || humanizeCategoryLabel(primaryKey) || primaryKey;
+}
+
+function resolveSecondaryBlockLabel(entityType, primaryKey, secondaryKey) {
+    const storageKey = `${entityType}|${categoryIdentity(primaryKey)}`;
+    const secondaryIdentity = categoryIdentity(secondaryKey);
+    const labelFromDemo = DEMO_SECONDARY_LABELS_BY_TYPE_PRIMARY[storageKey]?.[secondaryIdentity];
+    return labelFromDemo || humanizeCategoryLabel(secondaryKey) || secondaryKey;
+}
+
+function resolveItemCanonicalPrimaryGroup(rawPrimaryKey) {
+    const identity = categoryIdentity(rawPrimaryKey);
+    if (!identity) {
+        return ITEM_CANONICAL_PRIMARY_GROUPS[ITEM_CANONICAL_PRIMARY_GROUPS.length - 1];
+    }
+    for (const group of ITEM_CANONICAL_PRIMARY_GROUPS) {
+        if (group.identities.has(identity)) {
+            return group;
+        }
+    }
+    return ITEM_CANONICAL_PRIMARY_GROUPS[ITEM_CANONICAL_PRIMARY_GROUPS.length - 1];
+}
+
+function buildItemPrimaryBlocks(rawPrimaryBlocks) {
+    const groups = ITEM_CANONICAL_PRIMARY_GROUPS.map((group) => ({
+        key: group.key,
+        label: group.label,
+        count: 0,
+        secondaryBlocks: [],
+        queryPrimaryCategory: '',
+        fallbackPrimaryQuery: '',
+    }));
+    const byKey = new Map(groups.map((group) => [group.key, group]));
+
+    (Array.isArray(rawPrimaryBlocks) ? rawPrimaryBlocks : []).forEach((rawPrimaryBlock) => {
+        if (!rawPrimaryBlock?.key || Number(rawPrimaryBlock?.count || 0) <= 0) {
+            return;
+        }
+        const group = resolveItemCanonicalPrimaryGroup(rawPrimaryBlock.key);
+        const target = byKey.get(group.key);
+        if (!target) return;
+
+        target.count += Number(rawPrimaryBlock.count || 0);
+        target.fallbackPrimaryQuery = target.fallbackPrimaryQuery || rawPrimaryBlock.key;
+
+        if (!isTechnicalCategory(rawPrimaryBlock.key)) {
+            target.secondaryBlocks.push({
+                key: rawPrimaryBlock.key,
+                label: rawPrimaryBlock.label,
+                count: Number(rawPrimaryBlock.count || 0),
+                queryPrimaryCategory: rawPrimaryBlock.key,
+                querySecondaryCategory: '',
+            });
+        }
+    });
+
+    return groups
+        .map((group) => {
+            if (group.secondaryBlocks.length === 1) {
+                const onlySecondary = group.secondaryBlocks[0];
+                return {
+                    ...group,
+                    secondaryBlocks: [],
+                    queryPrimaryCategory: onlySecondary.queryPrimaryCategory,
+                };
+            }
+            if (group.secondaryBlocks.length === 0) {
+                return {
+                    ...group,
+                    queryPrimaryCategory: group.queryPrimaryCategory || group.fallbackPrimaryQuery || group.key,
+                };
+            }
+            return {
+                ...group,
+                secondaryBlocks: group.secondaryBlocks.sort(sortByCountDescThenLabelAsc),
+            };
+        })
+        .filter((group) => group.count > 0);
+}
+
+function resolveCanonicalPrimaryKey(entityType, rawPrimaryKey) {
+    if (entityType === 'ITEM') {
+        return resolveItemCanonicalPrimaryGroup(rawPrimaryKey).key;
+    }
+
+    const identity = categoryIdentity(rawPrimaryKey);
+    if (!identity) return rawPrimaryKey;
+
+    const byIdentity = BLUEPRINT_PRIMARY_KEY_BY_TYPE_IDENTITY[entityType];
+    if (!byIdentity) return rawPrimaryKey;
+    return byIdentity[identity] || rawPrimaryKey;
+}
+
+function dedupeSecondaryBlocks(secondaryBlocks) {
+    const byIdentity = new Map();
+
+    (Array.isArray(secondaryBlocks) ? secondaryBlocks : []).forEach((secondaryBlock) => {
+        const queryPrimaryIdentity = categoryIdentity(
+            secondaryBlock?.queryPrimaryCategory || secondaryBlock?.key,
+        );
+        const querySecondaryIdentity = categoryIdentity(secondaryBlock?.querySecondaryCategory || '');
+        const labelIdentity = categoryIdentity(secondaryBlock?.label || secondaryBlock?.key);
+        if (!queryPrimaryIdentity || !labelIdentity) return;
+
+        const storageIdentity = `${queryPrimaryIdentity}|${querySecondaryIdentity}|${labelIdentity}`;
+        const existing = byIdentity.get(storageIdentity);
+        if (!existing || Number(secondaryBlock?.count || 0) > Number(existing.count || 0)) {
+            byIdentity.set(storageIdentity, secondaryBlock);
+        }
+    });
+
+    return Array.from(byIdentity.values()).sort(sortByCountDescThenLabelAsc);
+}
+
+function buildNonItemPrimaryBlocks(entityType, rawPrimaryBlocks) {
+    const blueprintPrimaryKeys = DEMO_PRIMARY_KEY_SET_BY_TYPE[entityType];
+    if (!blueprintPrimaryKeys) {
+        return Array.isArray(rawPrimaryBlocks) ? rawPrimaryBlocks.slice().sort(sortByCountDescThenLabelAsc) : [];
+    }
+
+    const groupsByKey = new Map();
+    const extras = [];
+
+    (Array.isArray(rawPrimaryBlocks) ? rawPrimaryBlocks : []).forEach((rawPrimaryBlock) => {
+        if (!rawPrimaryBlock?.key || Number(rawPrimaryBlock?.count || 0) <= 0) return;
+
+        const canonicalPrimaryKey = resolveCanonicalPrimaryKey(entityType, rawPrimaryBlock.key);
+        if (!blueprintPrimaryKeys.has(canonicalPrimaryKey)) {
+            extras.push(rawPrimaryBlock);
+            return;
+        }
+
+        const target = groupsByKey.get(canonicalPrimaryKey) || {
+            key: canonicalPrimaryKey,
+            label: resolvePrimaryBlockLabel(entityType, canonicalPrimaryKey),
+            count: 0,
+            secondaryBlocks: [],
+            queryPrimaryCategory: '',
+            fallbackPrimaryQuery: '',
+        };
+
+        target.count += Number(rawPrimaryBlock.count || 0);
+        target.fallbackPrimaryQuery = target.fallbackPrimaryQuery || rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+
+        const canonicalIdentity = categoryIdentity(canonicalPrimaryKey);
+        const rawPrimaryIdentity = categoryIdentity(rawPrimaryBlock.key);
+        const rawSecondaryBlocks = Array.isArray(rawPrimaryBlock.secondaryBlocks)
+            ? rawPrimaryBlock.secondaryBlocks
+            : [];
+
+        if (rawSecondaryBlocks.length > 0) {
+            rawSecondaryBlocks.forEach((rawSecondaryBlock) => {
+                const secondaryKey = normalizeCategoryValue(rawSecondaryBlock?.key);
+                const secondaryCount = Number(rawSecondaryBlock?.count || 0);
+                if (!secondaryKey || secondaryCount <= 0) return;
+                if (isTechnicalCategory(secondaryKey)) return;
+
+                const queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+                target.secondaryBlocks.push({
+                    key: `${queryPrimaryCategory}::${secondaryKey}`,
+                    label: rawSecondaryBlock.label || resolveSecondaryBlockLabel(entityType, rawPrimaryBlock.key, secondaryKey),
+                    count: secondaryCount,
+                    queryPrimaryCategory,
+                    querySecondaryCategory: secondaryKey,
+                });
+            });
+        } else if (rawPrimaryIdentity === canonicalIdentity) {
+            if (!target.queryPrimaryCategory) {
+                target.queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+            }
+        } else {
+            const queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+            target.secondaryBlocks.push({
+                key: queryPrimaryCategory,
+                label: rawPrimaryBlock.label || resolvePrimaryBlockLabel(entityType, rawPrimaryBlock.key),
+                count: Number(rawPrimaryBlock.count || 0),
+                queryPrimaryCategory,
+                querySecondaryCategory: '',
+            });
+        }
+
+        groupsByKey.set(canonicalPrimaryKey, target);
+    });
+
+    const groupedBlocks = Array.from(groupsByKey.values())
+        .map((group) => {
+            const secondaryBlocks = dedupeSecondaryBlocks(group.secondaryBlocks).filter((secondaryBlock) => {
+                const secondaryIdentity = categoryIdentity(
+                    secondaryBlock?.querySecondaryCategory || secondaryBlock?.key,
+                );
+                if (!secondaryIdentity) return false;
+                return secondaryIdentity !== categoryIdentity(group.key);
+            });
+
+            if (secondaryBlocks.length === 1 && !secondaryBlocks[0].querySecondaryCategory) {
+                return {
+                    key: group.key,
+                    label: group.label,
+                    count: group.count,
+                    secondaryBlocks: [],
+                    queryPrimaryCategory: secondaryBlocks[0].queryPrimaryCategory,
+                };
+            }
+
+            return {
+                key: group.key,
+                label: group.label,
+                count: group.count,
+                secondaryBlocks,
+                queryPrimaryCategory: group.queryPrimaryCategory || group.fallbackPrimaryQuery || group.key,
+            };
+        })
+        .filter((group) => group.count > 0)
+        .sort(sortByCountDescThenLabelAsc);
+
+    const normalizedExtras = extras
+        .map((extraBlock) => ({
+            ...extraBlock,
+            secondaryBlocks: dedupeSecondaryBlocks(extraBlock.secondaryBlocks),
+        }))
+        .filter((extraBlock) => Number(extraBlock.count || 0) > 0)
+        .sort(sortByCountDescThenLabelAsc);
+
+    return [...groupedBlocks, ...normalizedExtras];
+}
+
+function buildCanonicalPrimaryBlocks(entityType, rawPrimaryBlocks) {
+    if (entityType === 'ITEM') {
+        return buildItemPrimaryBlocks(rawPrimaryBlocks);
+    }
+    return buildNonItemPrimaryBlocks(entityType, rawPrimaryBlocks);
+}
+
+function buildDemoPrimaryPlaceholderBlock(entityType, demoPrimaryBlock) {
+    const key = normalizeCategoryValue(demoPrimaryBlock?.key);
+    if (!key) return null;
+
+    return {
+        key,
+        label: demoPrimaryBlock?.label || resolvePrimaryBlockLabel(entityType, key),
+        count: 0,
+        secondaryBlocks: [],
+        queryPrimaryCategory: key,
+    };
+}
+
+function mergePrimaryBlocksWithBlueprint(entityType, livePrimaryBlocks, demoPrimaryBlocks) {
+    const liveBlocks = Array.isArray(livePrimaryBlocks) ? livePrimaryBlocks : [];
+    const liveByIdentity = new Map();
+    liveBlocks.forEach((livePrimaryBlock) => {
+        const identity = categoryIdentity(livePrimaryBlock?.key);
+        if (!identity || liveByIdentity.has(identity)) return;
+        liveByIdentity.set(identity, livePrimaryBlock);
+    });
+
+    const merged = [];
+    const consumed = new Set();
+
+    (Array.isArray(demoPrimaryBlocks) ? demoPrimaryBlocks : []).forEach((demoPrimaryBlock) => {
+        const demoIdentity = categoryIdentity(demoPrimaryBlock?.key);
+        if (!demoIdentity) return;
+
+        const liveMatch = liveByIdentity.get(demoIdentity);
+        if (liveMatch) {
+            merged.push(liveMatch);
+            consumed.add(demoIdentity);
+            return;
+        }
+
+        const placeholder = buildDemoPrimaryPlaceholderBlock(entityType, demoPrimaryBlock);
+        if (!placeholder) return;
+        merged.push(placeholder);
+        consumed.add(demoIdentity);
+    });
+
+    const extraLiveBlocks = liveBlocks
+        .filter((livePrimaryBlock) => {
+            const identity = categoryIdentity(livePrimaryBlock?.key);
+            return identity && !consumed.has(identity);
+        })
+        .sort(sortByCountDescThenLabelAsc);
+
+    return [...merged, ...extraLiveBlocks];
+}
+
+export function mergeSectionsWithBlueprint(liveSections) {
+    const liveByKey = new Map((Array.isArray(liveSections) ? liveSections : [])
+        .map((section) => [section.key, section]));
+
+    const merged = [];
+
+    DEMO_TYPE_SECTIONS.forEach((demoSection) => {
+        const liveSection = liveByKey.get(demoSection.key);
+        if (!liveSection) {
+            merged.push({
+                key: demoSection.key,
+                label: demoSection.label,
+                count: 0,
+                primaryBlocks: mergePrimaryBlocksWithBlueprint(
+                    demoSection.key,
+                    [],
+                    demoSection.primaryBlocks,
+                ),
+            });
+            return;
+        }
+
+        merged.push({
+            ...liveSection,
+            label: demoSection.label || liveSection.label,
+            primaryBlocks: mergePrimaryBlocksWithBlueprint(
+                demoSection.key,
+                liveSection.primaryBlocks,
+                demoSection.primaryBlocks,
+            ),
+        });
+        liveByKey.delete(demoSection.key);
+    });
+
+    const extraSections = Array.from(liveByKey.values()).sort(sortByCountDescThenLabelAsc);
+    return [...merged, ...extraSections];
+}
+
+function normalizeNavigationSecondaryBlocks(entityType, primaryKey, secondaryCategories) {
+    const primaryIdentity = categoryIdentity(primaryKey);
+    const byIdentity = new Map();
+
+    (Array.isArray(secondaryCategories) ? secondaryCategories : []).forEach((secondaryNode) => {
+        const key = normalizeCategoryValue(secondaryNode?.secondaryCategory);
+        const count = Number(secondaryNode?.total || 0);
+        if (!key || count <= 0) return;
+        if (entityType !== 'ITEM' && isTechnicalCategory(key)) return;
+
+        const identity = categoryIdentity(key);
+        if (!identity || identity === primaryIdentity) return;
+
+        const existing = byIdentity.get(identity);
+        if (!existing) {
+            byIdentity.set(identity, {
+                key,
+                label: resolveSecondaryBlockLabel(entityType, primaryKey, key),
+                count,
+                queryPrimaryCategory: primaryKey,
+                querySecondaryCategory: key,
+            });
+            return;
+        }
+
+        existing.count += count;
+    });
+
+    return Array.from(byIdentity.values()).sort(sortByCountDesc);
+}
+
+function normalizeNavigationPrimaryBlocks(entityType, primaryCategories) {
+    const byIdentity = new Map();
+
+    (Array.isArray(primaryCategories) ? primaryCategories : []).forEach((primaryNode) => {
+        const key = normalizeCategoryValue(primaryNode?.primaryCategory);
+        const count = Number(primaryNode?.total || 0);
+        if (!key || count <= 0) return;
+        if (entityType !== 'ITEM' && isTechnicalCategory(key)) return;
+
+        const identity = categoryIdentity(key);
+        if (!identity) return;
+
+        const secondaryCategories = Array.isArray(primaryNode?.secondaryCategories)
+            ? primaryNode.secondaryCategories
+            : [];
+        const existing = byIdentity.get(identity);
+        if (!existing) {
+            byIdentity.set(identity, {
+                key,
+                label: resolvePrimaryBlockLabel(entityType, key),
+                count,
+                queryPrimaryCategory: key,
+                rawSecondaryCategories: secondaryCategories.slice(),
+            });
+            return;
+        }
+
+        existing.count += count;
+        existing.rawSecondaryCategories.push(...secondaryCategories);
+    });
+
+    return Array.from(byIdentity.values())
+        .map((block) => ({
+            key: block.key,
+            label: block.label,
+            count: block.count,
+            queryPrimaryCategory: block.queryPrimaryCategory,
+            secondaryBlocks: normalizeNavigationSecondaryBlocks(
+                entityType,
+                block.key,
+                block.rawSecondaryCategories,
+            ),
+        }))
+        .sort(sortByCountDesc);
+}
+
+export function mapNavigationTypesToSections(types) {
+    return (Array.isArray(types) ? types : [])
+        .map((typeNode) => {
+            const key = typeNode?.entityType;
+            const count = Number(typeNode?.total || 0);
+            if (!key || count <= 0) return null;
+
+            const rawPrimaryBlocks = normalizeNavigationPrimaryBlocks(key, typeNode?.primaryCategories);
+            const primaryBlocks = buildCanonicalPrimaryBlocks(key, rawPrimaryBlocks);
+            const primaryIdentities = new Set(primaryBlocks.map((primaryBlock) => categoryIdentity(primaryBlock?.key)));
+            const normalizedPrimaryBlocks = primaryBlocks.map((primaryBlock) => {
+                const secondaryBlocks = (Array.isArray(primaryBlock.secondaryBlocks) ? primaryBlock.secondaryBlocks : [])
+                    .filter((secondaryBlock) => {
+                        const identity = categoryIdentity(secondaryBlock?.key || secondaryBlock?.label);
+                        if (!identity) return false;
+                        return !primaryIdentities.has(identity);
+                    });
+
+                return {
+                    ...primaryBlock,
+                    secondaryBlocks,
+                };
+            });
+
+            return {
+                key,
+                label: ENTITY_LABELS[key] || key,
+                count,
+                primaryBlocks: normalizedPrimaryBlocks,
+            };
+        })
+        .filter((entry) => entry && entry.key && entry.count > 0)
+        .sort(sortByCountDesc);
+}
+
 function normalizeQuery(value) {
     return String(value || '').trim();
 }
@@ -520,36 +1170,76 @@ function sortByCountDesc(a, b) {
     return b.count - a.count;
 }
 
-function buildSectionQuickLinks(section, maxLinks = 10) {
+function sortByCountDescThenLabelAsc(a, b) {
+    const countDelta = Number(b.count || 0) - Number(a.count || 0);
+    if (countDelta !== 0) return countDelta;
+    return String(a.label || '').localeCompare(String(b.label || ''), 'ru-RU');
+}
+
+function buildSectionQuickLinks(section, maxLinks = MAX_QUICK_LINKS_PER_SECTION) {
     if (!section || !Array.isArray(section.primaryBlocks)) return [];
 
-    const links = [];
+    const visiblePrimaryBlocks = section.primaryBlocks.slice(0, MAX_PRIMARY_BLOCKS_PER_SECTION);
+    const hiddenPrimaryBlocks = section.primaryBlocks.slice(MAX_PRIMARY_BLOCKS_PER_SECTION);
+    const visiblePrimaryIdentities = new Set(visiblePrimaryBlocks.map((block) => categoryIdentity(block?.key)));
+    const linksByIdentity = new Map();
+
+    hiddenPrimaryBlocks.forEach((primaryBlock) => {
+        if (!primaryBlock?.key) return;
+        const primaryCount = Number(primaryBlock.count || 0);
+        if (primaryCount <= 0) return;
+        const identity = categoryIdentity(primaryBlock.key);
+        if (!identity) return;
+        const nextCandidate = {
+            key: primaryBlock.key,
+            label: primaryBlock.label,
+            primaryKey: primaryBlock.key,
+            secondaryKey: '',
+            count: primaryCount,
+        };
+        const existing = linksByIdentity.get(identity);
+        if (!existing || nextCandidate.count > existing.count) {
+            linksByIdentity.set(identity, nextCandidate);
+        }
+    });
+
     section.primaryBlocks.forEach((primaryBlock) => {
+        if (!primaryBlock?.key) return;
         const secondaryBlocks = Array.isArray(primaryBlock.secondaryBlocks)
             ? primaryBlock.secondaryBlocks
             : [];
 
         if (secondaryBlocks.length > 0) {
             secondaryBlocks.forEach((secondaryBlock) => {
-                links.push({
+                if (!secondaryBlock?.key) return;
+                const secondaryCount = Number(secondaryBlock.count || 0);
+                if (secondaryCount <= 0) return;
+                const labelIdentity = categoryIdentity(secondaryBlock.label || secondaryBlock.key);
+                const keyIdentity = categoryIdentity(secondaryBlock.key);
+                if (!labelIdentity || !keyIdentity) return;
+                if (visiblePrimaryIdentities.has(labelIdentity) || visiblePrimaryIdentities.has(keyIdentity)) {
+                    return;
+                }
+
+                const nextCandidate = {
                     key: `${primaryBlock.key}-${secondaryBlock.key}`,
                     label: secondaryBlock.label,
                     primaryKey: primaryBlock.key,
                     secondaryKey: secondaryBlock.key,
-                });
+                    count: secondaryCount,
+                };
+                const existing = linksByIdentity.get(labelIdentity);
+                if (!existing || nextCandidate.count > existing.count) {
+                    linksByIdentity.set(labelIdentity, nextCandidate);
+                }
             });
             return;
         }
-
-        links.push({
-            key: primaryBlock.key,
-            label: primaryBlock.label,
-            primaryKey: primaryBlock.key,
-            secondaryKey: '',
-        });
     });
 
-    return links.slice(0, maxLinks);
+    return Array.from(linksByIdentity.values())
+        .sort(sortByCountDescThenLabelAsc)
+        .slice(0, maxLinks);
 }
 
 function buildBlockMonogram(label) {
@@ -606,6 +1296,7 @@ export default function EncyclopediaListPage() {
     const secondaryLevel = Boolean(entityType && primaryCategory && !secondaryCategory);
 
     const [typeSections, setTypeSections] = useState([]);
+    const [hasLiveSections, setHasLiveSections] = useState(false);
 
     const [loadingHub, setLoadingHub] = useState(true);
     const [hubError, setHubError] = useState('');
@@ -654,34 +1345,17 @@ export default function EncyclopediaListPage() {
             try {
                 const navigationData = await getEncyclopediaNavigation();
                 const types = Array.isArray(navigationData?.types) ? navigationData.types : [];
-                const sections = types.map((typeNode) => ({
-                    key: typeNode.entityType,
-                    label: ENTITY_LABELS[typeNode.entityType] || typeNode.entityType,
-                    count: Number(typeNode.total || 0),
-                    primaryBlocks: (Array.isArray(typeNode.primaryCategories) ? typeNode.primaryCategories : [])
-                        .map((primaryNode) => ({
-                            key: primaryNode.primaryCategory,
-                            label: primaryNode.primaryCategory,
-                            count: Number(primaryNode.total || 0),
-                            secondaryBlocks: (Array.isArray(primaryNode.secondaryCategories) ? primaryNode.secondaryCategories : [])
-                                .map((secondaryNode) => ({
-                                    key: secondaryNode.secondaryCategory,
-                                    label: secondaryNode.secondaryCategory,
-                                    count: Number(secondaryNode.total || 0),
-                                }))
-                                .filter((entry) => entry.key && entry.count > 0)
-                                .sort(sortByCountDesc),
-                        }))
-                        .filter((entry) => entry.key && entry.count > 0)
-                        .sort(sortByCountDesc),
-                }));
+                const liveSections = mapNavigationTypesToSections(types);
+                const sections = mergeSectionsWithBlueprint(liveSections);
 
                 if (!cancelled) {
-                    setTypeSections(sections.filter((entry) => entry.key && entry.count > 0).sort(sortByCountDesc));
+                    setTypeSections(sections);
+                    setHasLiveSections(liveSections.length > 0);
                 }
             } catch (error) {
                 if (!cancelled) {
                     setTypeSections([]);
+                    setHasLiveSections(false);
                     setHubError(mapPaginationError(error, 'Не удалось загрузить структуру энциклопедии'));
                 }
             } finally {
@@ -695,19 +1369,28 @@ export default function EncyclopediaListPage() {
 
     const selectedTypeSection = useMemo(
         () => {
-            const demoMode = !loadingHub && !hubError && typeSections.length === 0;
+            const demoMode = !loadingHub && !hubError && !hasLiveSections;
             const source = demoMode ? DEMO_TYPE_SECTIONS : typeSections;
             return source.find((section) => section.key === entityType) || null;
         },
-        [typeSections, entityType, loadingHub, hubError],
+        [typeSections, entityType, loadingHub, hubError, hasLiveSections],
     );
 
-    const demoMode = !loadingHub && !hubError && typeSections.length === 0;
+    const demoMode = !loadingHub && !hubError && !hasLiveSections;
     const visibleTypeSections = demoMode ? DEMO_TYPE_SECTIONS : typeSections;
     const primaryBlocks = selectedTypeSection?.primaryBlocks || [];
     const selectedPrimaryBlock = primaryBlocks.find((block) => block.key === primaryCategory) || null;
     const effectiveSecondaryBlocks = selectedPrimaryBlock?.secondaryBlocks || [];
+    const selectedSecondaryBlock = effectiveSecondaryBlocks.find((block) => block.key === secondaryCategory) || null;
     const effectiveLoadingSecondary = false;
+    const effectivePrimaryCategoryForQuery = selectedSecondaryBlock?.queryPrimaryCategory
+        || selectedPrimaryBlock?.queryPrimaryCategory
+        || primaryCategory;
+    const effectiveSecondaryCategoryForQuery = selectedSecondaryBlock?.querySecondaryCategory !== undefined
+        ? selectedSecondaryBlock.querySecondaryCategory
+        : selectedPrimaryBlock?.querySecondaryCategory !== undefined
+            ? selectedPrimaryBlock.querySecondaryCategory
+        : secondaryCategory;
     const showEntries = Boolean(
         entityType
         && primaryCategory
@@ -748,8 +1431,8 @@ export default function EncyclopediaListPage() {
                 const data = await getEncyclopediaList({
                     q,
                     entityType,
-                    primaryCategory,
-                    secondaryCategory: secondaryCategory || undefined,
+                    primaryCategory: effectivePrimaryCategoryForQuery,
+                    secondaryCategory: effectiveSecondaryCategoryForQuery || undefined,
                     page,
                     size: PAGE_SIZE,
                     sortBy,
@@ -778,7 +1461,19 @@ export default function EncyclopediaListPage() {
 
         loadEntries();
         return () => { cancelled = true; };
-    }, [showEntries, demoMode, q, entityType, primaryCategory, secondaryCategory, page, sortBy, direction]);
+    }, [
+        showEntries,
+        demoMode,
+        q,
+        entityType,
+        primaryCategory,
+        secondaryCategory,
+        effectivePrimaryCategoryForQuery,
+        effectiveSecondaryCategoryForQuery,
+        page,
+        sortBy,
+        direction,
+    ]);
 
     return (
         <div className="page">
@@ -876,7 +1571,7 @@ export default function EncyclopediaListPage() {
                                         ) : (
                                             <>
                                                 <div className="encyclopedia-hub-grid">
-                                                    {section.primaryBlocks.slice(0, 12).map((block) => (
+                                                    {section.primaryBlocks.slice(0, MAX_PRIMARY_BLOCKS_PER_SECTION).map((block) => (
                                                         <button
                                                             key={`${section.key}-${block.key}`}
                                                             className="encyclopedia-hub-item"
@@ -897,7 +1592,7 @@ export default function EncyclopediaListPage() {
                                                     ))}
                                                 </div>
                                                 <div className="encyclopedia-hub-links">
-                                                    {buildSectionQuickLinks(section).map((quickLink) => (
+                                                    {buildSectionQuickLinks(section, MAX_QUICK_LINKS_PER_SECTION).map((quickLink) => (
                                                         <button
                                                             key={`${section.key}-${quickLink.key}`}
                                                             className="encyclopedia-hub-link-btn"
@@ -965,7 +1660,7 @@ export default function EncyclopediaListPage() {
                     <section className="encyclopedia-groups-panel glass-card">
                         <div className="encyclopedia-panel-titleline">
                             <span className="encyclopedia-panel-titleline-bar" />
-                            <h2>{primaryCategory}: подподгруппы</h2>
+                            <h2>{selectedPrimaryBlock?.label || primaryCategory}: подподгруппы</h2>
                             <span className="encyclopedia-panel-titleline-bar" />
                         </div>
                         {effectiveLoadingSecondary ? (
