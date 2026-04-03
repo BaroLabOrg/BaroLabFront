@@ -175,11 +175,11 @@ describe('EncyclopediaListPage hub structure', () => {
 
         expect(encyclopediaApi.getEncyclopediaNavigation).toHaveBeenCalledTimes(1);
         expect(encyclopediaApi.getEncyclopediaList).not.toHaveBeenCalled();
-        expect(screen.getByRole('heading', { name: 'Существа' })).toBeInTheDocument();
-        expect(screen.getByRole('heading', { name: 'Профессии' })).toBeInTheDocument();
-        expect(screen.getByRole('heading', { name: 'Подлодки' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Creatures' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Jobs' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Submarines' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Creatures 5 статей' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Транспортные 0 статей' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Transport 0 статей' })).toBeInTheDocument();
         expect(screen.queryByLabelText('Поиск в выбранной подгруппе')).not.toBeInTheDocument();
     });
 
@@ -188,13 +188,13 @@ describe('EncyclopediaListPage hub structure', () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Открыть раздел Существа' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Открыть раздел Creatures' })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: 'Открыть раздел Существа' }));
+        await user.click(screen.getByRole('button', { name: 'Открыть раздел Creatures' }));
 
         await waitFor(() => {
-            expect(screen.getByRole('heading', { name: 'Существа: подгруппы' })).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: 'Creatures: подгруппы' })).toBeInTheDocument();
         });
 
         expect(screen.getByRole('button', { name: 'Creatures 5 статей' })).toBeInTheDocument();
@@ -261,17 +261,17 @@ describe('EncyclopediaListPage hub structure', () => {
         });
 
         const expectedSections = [
-            'Предметы',
-            'Аффликты',
-            'Персонажи',
-            'Фракции',
-            'Локации',
-            'Подлодки',
-            'Существа',
-            'Биомы',
-            'Таланты',
-            'Профессии',
-            'Прочее',
+            'Items',
+            'Afflictions',
+            'Characters',
+            'Factions',
+            'Locations',
+            'Submarines',
+            'Creatures',
+            'Biomes',
+            'Talents',
+            'Jobs',
+            'Other',
         ];
 
         expectedSections.forEach((sectionName) => {
@@ -302,10 +302,10 @@ describe('EncyclopediaListPage hub structure', () => {
         renderPage('/encyclopedia?entityType=ITEM');
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Прочее 79 статей' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Other 79 статей' })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: 'Прочее 79 статей' }));
+        await user.click(screen.getByRole('button', { name: 'Other 79 статей' }));
 
         await waitFor(() => {
             expect(screen.getByLabelText('Поиск в выбранной подгруппе')).toBeInTheDocument();
@@ -357,37 +357,49 @@ describe('mapNavigationTypesToSections', () => {
 
         expect(sections).toHaveLength(1);
         expect(sections[0].primaryBlocks.map((block) => block.key)).toEqual([
+            'Weaponry',
             'Medical',
-            'Weapons',
+            'Machines',
             'Other',
         ]);
         expect(sections[0].primaryBlocks[0]).toMatchObject({
+            key: 'Weaponry',
+            label: 'Weaponry',
+            count: 116,
+            secondaryBlocks: [
+                {
+                    key: 'Weapon::Alien',
+                    label: 'Alien',
+                    count: 3,
+                    queryPrimaryCategory: 'Weapon',
+                    querySecondaryCategory: 'Alien',
+                },
+            ],
+        });
+        expect(sections[0].primaryBlocks[1]).toMatchObject({
             key: 'Medical',
-            label: 'Медицина',
+            label: 'Medical',
             count: 55,
-            queryPrimaryCategory: 'Medical',
+            secondaryBlocks: [
+                {
+                    key: 'Medical::Treatment',
+                    label: 'Treatment',
+                    count: 4,
+                    queryPrimaryCategory: 'Medical',
+                    querySecondaryCategory: 'Treatment',
+                },
+            ],
+        });
+        expect(sections[0].primaryBlocks[2]).toMatchObject({
+            key: 'Machines',
+            label: 'Machines',
+            count: 47,
+            queryPrimaryCategory: 'Machine',
             secondaryBlocks: [],
         });
-        expect(sections[0].primaryBlocks[1].count).toBe(163);
-        expect(sections[0].primaryBlocks[1].secondaryBlocks).toEqual([
-            {
-                key: 'Weapon',
-                label: 'Weapon',
-                count: 116,
-                queryPrimaryCategory: 'Weapon',
-                querySecondaryCategory: '',
-            },
-            {
-                key: 'Machine',
-                label: 'Machine',
-                count: 47,
-                queryPrimaryCategory: 'Machine',
-                querySecondaryCategory: '',
-            },
-        ]);
-        expect(sections[0].primaryBlocks[2]).toMatchObject({
+        expect(sections[0].primaryBlocks[3]).toMatchObject({
             key: 'Other',
-            label: 'Прочее',
+            label: 'Other',
             count: 36,
             queryPrimaryCategory: 'Misc',
             secondaryBlocks: [],
@@ -489,6 +501,142 @@ describe('mapNavigationTypesToSections', () => {
             secondaryBlocks: [],
         });
     });
+
+    it('maps TALENT slug-like primary categories to curated labels and keeps raw query keys', () => {
+        const sections = mapNavigationTypesToSections([
+            {
+                entityType: 'TALENT',
+                total: 12,
+                primaryCategories: [
+                    {
+                        primaryCategory: 'captain',
+                        total: 4,
+                        secondaryCategories: [],
+                    },
+                    {
+                        primaryCategory: 'medicaldoctor',
+                        total: 4,
+                        secondaryCategories: [],
+                },
+                {
+                    primaryCategory: 'securityofficer',
+                    total: 4,
+                    secondaryCategories: [
+                        { secondaryCategory: 'security_primary', total: 2 },
+                        { secondaryCategory: 'weaponsengineer', total: 2 },
+                    ],
+                },
+            ],
+        },
+    ]);
+
+        const talentSection = sections.find((section) => section.key === 'TALENT');
+        expect(talentSection).toBeTruthy();
+
+        const captainBlock = talentSection.primaryBlocks.find((block) => block.key === 'Captain Tree');
+        expect(captainBlock).toMatchObject({
+            key: 'Captain Tree',
+            label: 'Captain Tree',
+            queryPrimaryCategory: 'captain',
+            secondaryBlocks: [],
+        });
+
+        const medicalBlock = talentSection.primaryBlocks.find((block) => block.key === 'Medical Tree');
+        expect(medicalBlock).toMatchObject({
+            key: 'Medical Tree',
+            label: 'Medical Tree',
+            queryPrimaryCategory: 'medicaldoctor',
+            secondaryBlocks: [],
+        });
+
+        const securityBlock = talentSection.primaryBlocks.find((block) => block.key === 'Security Tree');
+        expect(securityBlock).toMatchObject({
+            key: 'Security Tree',
+            label: 'Security Tree',
+            queryPrimaryCategory: 'securityofficer',
+        });
+        expect(securityBlock.secondaryBlocks).toEqual([
+            expect.objectContaining({
+                key: 'securityofficer::security_primary',
+                label: 'Security Primary',
+                queryPrimaryCategory: 'securityofficer',
+                querySecondaryCategory: 'security_primary',
+            }),
+            expect.objectContaining({
+                key: 'securityofficer::weaponsengineer',
+                label: 'Weapons Engineer',
+                queryPrimaryCategory: 'securityofficer',
+                querySecondaryCategory: 'weaponsengineer',
+            }),
+        ]);
+    });
+
+    it('keeps fallback humanized labels for unknown primary categories', () => {
+        const sections = mapNavigationTypesToSections([
+            {
+                entityType: 'TALENT',
+                total: 3,
+                primaryCategories: [
+                    {
+                        primaryCategory: 'mystery_branch',
+                        total: 3,
+                        secondaryCategories: [],
+                    },
+                ],
+            },
+        ]);
+
+        const talentSection = sections.find((section) => section.key === 'TALENT');
+        expect(talentSection).toBeTruthy();
+
+        const fallbackBlock = talentSection.primaryBlocks.find((block) => block.key === 'mystery_branch');
+        expect(fallbackBlock).toMatchObject({
+            key: 'mystery_branch',
+            label: 'Mystery Branch',
+            queryPrimaryCategory: 'mystery_branch',
+            secondaryBlocks: [],
+        });
+    });
+
+    it('beautifies non-canonical affliction slugs without changing query keys', () => {
+        const sections = mapNavigationTypesToSections([
+            {
+                entityType: 'AFFLICTION',
+                total: 9,
+                primaryCategories: [
+                    {
+                        primaryCategory: 'geneticmaterialbuff',
+                        total: 5,
+                        secondaryCategories: [],
+                    },
+                    {
+                        primaryCategory: 'bloodloss',
+                        total: 4,
+                        secondaryCategories: [],
+                    },
+                ],
+            },
+        ]);
+
+        const afflictionSection = sections.find((section) => section.key === 'AFFLICTION');
+        expect(afflictionSection).toBeTruthy();
+
+        const geneticBuff = afflictionSection.primaryBlocks.find((block) => block.key === 'geneticmaterialbuff');
+        expect(geneticBuff).toMatchObject({
+            key: 'geneticmaterialbuff',
+            label: 'Genetic Material Buff',
+            queryPrimaryCategory: 'geneticmaterialbuff',
+            secondaryBlocks: [],
+        });
+
+        const bloodLoss = afflictionSection.primaryBlocks.find((block) => block.key === 'bloodloss');
+        expect(bloodLoss).toMatchObject({
+            key: 'bloodloss',
+            label: 'Blood Loss',
+            queryPrimaryCategory: 'bloodloss',
+            secondaryBlocks: [],
+        });
+    });
 });
 
 describe('mergeSectionsWithBlueprint', () => {
@@ -496,7 +644,7 @@ describe('mergeSectionsWithBlueprint', () => {
         const merged = mergeSectionsWithBlueprint([
             {
                 key: 'CREATURE',
-                label: 'Существа',
+                label: 'Creatures',
                 count: 5,
                 primaryBlocks: [
                     {
@@ -510,7 +658,7 @@ describe('mergeSectionsWithBlueprint', () => {
             },
             {
                 key: 'JOB',
-                label: 'Профессии',
+                label: 'Jobs',
                 count: 2,
                 primaryBlocks: [
                     {
@@ -541,7 +689,7 @@ describe('mergeSectionsWithBlueprint', () => {
         const submarineSection = merged.find((section) => section.key === 'SUBMARINE');
         expect(submarineSection).toMatchObject({
             key: 'SUBMARINE',
-            label: 'Подлодки',
+            label: 'Submarines',
             count: 0,
         });
         expect(submarineSection.primaryBlocks.map((block) => block.key)).toEqual([

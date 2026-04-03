@@ -45,6 +45,26 @@ function firstDefined(...values) {
     return undefined;
 }
 
+function resolvePrimaryCategory(value) {
+    if (!value || typeof value !== 'object') return undefined;
+    return firstDefined(
+        value.canonicalPrimaryCategory,
+        value.canonical_primary_category,
+        value.primaryCategory,
+        value.primary_category,
+    );
+}
+
+function resolveSecondaryCategory(value) {
+    if (!value || typeof value !== 'object') return undefined;
+    return firstDefined(
+        value.canonicalSecondaryCategory,
+        value.canonical_secondary_category,
+        value.secondaryCategory,
+        value.secondary_category,
+    );
+}
+
 function resolveMediaUrl(url) {
     const value = firstDefined(url);
     if (!value || typeof value !== 'string') return value;
@@ -77,8 +97,8 @@ function normalizeArray(values, mapper) {
 function normalizeCategoryCounter(counter) {
     if (!counter || typeof counter !== 'object') return null;
 
-    const primaryCategory = firstDefined(counter.primaryCategory, counter.primary_category);
-    const secondaryCategory = firstDefined(counter.secondaryCategory, counter.secondary_category);
+    const primaryCategory = resolvePrimaryCategory(counter);
+    const secondaryCategory = resolveSecondaryCategory(counter);
     const total = Number(firstDefined(counter.total, 0)) || 0;
 
     return {
@@ -94,7 +114,7 @@ function normalizeCategoryCounter(counter) {
 function normalizeNavigationSecondaryCategory(category) {
     if (!category || typeof category !== 'object') return null;
 
-    const secondaryCategory = firstDefined(category.secondaryCategory, category.secondary_category);
+    const secondaryCategory = resolveSecondaryCategory(category);
     const total = Number(firstDefined(category.total, 0)) || 0;
 
     return {
@@ -108,7 +128,7 @@ function normalizeNavigationSecondaryCategory(category) {
 function normalizeNavigationPrimaryCategory(category) {
     if (!category || typeof category !== 'object') return null;
 
-    const primaryCategory = firstDefined(category.primaryCategory, category.primary_category);
+    const primaryCategory = resolvePrimaryCategory(category);
     const total = Number(firstDefined(category.total, 0)) || 0;
     const secondaryCategories = normalizeArray(
         firstDefined(category.secondaryCategories, category.secondary_categories),
@@ -507,8 +527,8 @@ function normalizeListItem(item) {
     const slug = firstDefined(item.slug);
     const title = firstDefined(item.title);
     const entityType = firstDefined(item.entityType, item.entity_type);
-    const primaryCategory = firstDefined(item.primaryCategory, item.primary_category);
-    const secondaryCategory = firstDefined(item.secondaryCategory, item.secondary_category);
+    const primaryCategory = resolvePrimaryCategory(item);
+    const secondaryCategory = resolveSecondaryCategory(item);
     const shortDescription = firstDefined(item.shortDescription, item.short_description);
     const summary = firstDefined(item.summary);
     const primaryImageUrl = resolveMediaUrl(firstDefined(item.primaryImageUrl, item.primary_image_url));
@@ -545,8 +565,8 @@ function normalizeAvailableEntity(entity) {
     const title = firstDefined(entity.title);
     const slug = firstDefined(entity.slug);
     const entityType = firstDefined(entity.entityType, entity.entity_type);
-    const primaryCategory = firstDefined(entity.primaryCategory, entity.primary_category);
-    const secondaryCategory = firstDefined(entity.secondaryCategory, entity.secondary_category);
+    const primaryCategory = resolvePrimaryCategory(entity);
+    const secondaryCategory = resolveSecondaryCategory(entity);
     const shortDescription = firstDefined(entity.shortDescription, entity.short_description);
     const sourceIdentifier = firstDefined(entity.sourceIdentifier, entity.source_identifier);
     const primaryImageUrl = resolveMediaUrl(firstDefined(entity.primaryImageUrl, entity.primary_image_url));
@@ -579,8 +599,8 @@ function normalizeDetail(detail) {
     const title = firstDefined(detail.title);
     const entityType = firstDefined(detail.entityType, detail.entity_type);
     const subtype = firstDefined(detail.subtype);
-    const primaryCategory = firstDefined(detail.primaryCategory, detail.primary_category);
-    const secondaryCategory = firstDefined(detail.secondaryCategory, detail.secondary_category);
+    const primaryCategory = resolvePrimaryCategory(detail);
+    const secondaryCategory = resolveSecondaryCategory(detail);
     const shortDescription = firstDefined(detail.shortDescription, detail.short_description);
     const sourceGameVersion = firstDefined(detail.sourceGameVersion, detail.source_game_version);
     const publishedMarkdown = firstDefined(detail.publishedMarkdown, detail.published_markdown, '');
@@ -652,8 +672,8 @@ function normalizeEditorResponse(response) {
     const title = firstDefined(response.title);
     const entityType = firstDefined(response.entityType, response.entity_type);
     const subtype = firstDefined(response.subtype);
-    const primaryCategory = firstDefined(response.primaryCategory, response.primary_category);
-    const secondaryCategory = firstDefined(response.secondaryCategory, response.secondary_category);
+    const primaryCategory = resolvePrimaryCategory(response);
+    const secondaryCategory = resolveSecondaryCategory(response);
     const shortDescription = firstDefined(response.shortDescription, response.short_description);
     const article = normalizeArticleState(response.article);
     const infobox = normalizeArray(response.infobox, normalizeInfoboxField);

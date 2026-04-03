@@ -15,17 +15,17 @@ const SORT_OPTIONS = ['publishedAt', 'updatedAt', 'title'];
 const DIRECTION_OPTIONS = ['desc', 'asc'];
 
 const ENTITY_LABELS = {
-    ITEM: 'Предметы',
-    AFFLICTION: 'Аффликты',
-    CHARACTER: 'Персонажи',
-    FACTION: 'Фракции',
-    LOCATION: 'Локации',
-    SUBMARINE: 'Подлодки',
-    CREATURE: 'Существа',
-    BIOME: 'Биомы',
-    TALENT: 'Таланты',
-    JOB: 'Профессии',
-    OTHER: 'Прочее',
+    ITEM: 'Items',
+    AFFLICTION: 'Afflictions',
+    CHARACTER: 'Characters',
+    FACTION: 'Factions',
+    LOCATION: 'Locations',
+    SUBMARINE: 'Submarines',
+    CREATURE: 'Creatures',
+    BIOME: 'Biomes',
+    TALENT: 'Talents',
+    JOB: 'Jobs',
+    OTHER: 'Other',
 };
 
 const DEMO_TYPE_SECTIONS = [
@@ -35,31 +35,77 @@ const DEMO_TYPE_SECTIONS = [
         count: 42,
         primaryBlocks: [
             {
-                key: 'Medical',
-                label: 'Медицина',
-                count: 10,
+                key: 'Weaponry',
+                label: 'Weaponry',
+                count: 12,
                 secondaryBlocks: [
-                    { key: 'Treatment', label: 'Лечение', count: 5 },
-                    { key: 'Antidotes', label: 'Антидоты', count: 5 },
+                    { key: 'Firearms', label: 'Firearms', count: 4 },
+                    { key: 'Melee', label: 'Melee', count: 2 },
+                    { key: 'Ammunition', label: 'Ammunition', count: 3 },
+                    { key: 'Explosives', label: 'Explosives', count: 1 },
+                    { key: 'Turrets', label: 'Turrets', count: 1 },
+                    { key: 'Turret Ammo', label: 'Turret Ammo', count: 1 },
                 ],
             },
             {
-                key: 'Weapons',
-                label: 'Оружие',
-                count: 12,
-                secondaryBlocks: [],
+                key: 'Medical',
+                label: 'Medical',
+                count: 7,
+                secondaryBlocks: [
+                    { key: 'Medicines', label: 'Medicines', count: 4 },
+                    { key: 'Poisons', label: 'Poisons', count: 1 },
+                    { key: 'Medical Tools', label: 'Medical Tools', count: 2 },
+                ],
             },
             {
                 key: 'Tools',
-                label: 'Инструменты',
-                count: 10,
-                secondaryBlocks: [],
+                label: 'Tools',
+                count: 6,
+                secondaryBlocks: [
+                    { key: 'Standard Tools', label: 'Standard Tools', count: 3 },
+                    { key: 'Scientific', label: 'Scientific', count: 2 },
+                    { key: 'Consumables', label: 'Consumables', count: 1 },
+                ],
+            },
+            {
+                key: 'Equipment',
+                label: 'Equipment',
+                count: 7,
+                secondaryBlocks: [
+                    { key: 'Diving', label: 'Diving', count: 2 },
+                    { key: 'Clothing', label: 'Clothing', count: 2 },
+                    { key: 'Armor', label: 'Armor', count: 1 },
+                    { key: 'Storage', label: 'Storage', count: 2 },
+                ],
+            },
+            {
+                key: 'Electrical & Logic',
+                label: 'Electrical & Logic',
+                count: 4,
+                secondaryBlocks: [
+                    { key: 'Wires', label: 'Wires', count: 1 },
+                    { key: 'Logic', label: 'Logic', count: 2 },
+                    { key: 'Power', label: 'Power', count: 1 },
+                ],
             },
             {
                 key: 'Materials',
-                label: 'Материалы',
-                count: 10,
-                secondaryBlocks: [],
+                label: 'Materials',
+                count: 4,
+                secondaryBlocks: [
+                    { key: 'Ores', label: 'Ores', count: 2 },
+                    { key: 'Materials', label: 'Materials', count: 1 },
+                    { key: 'Fuel', label: 'Fuel', count: 1 },
+                ],
+            },
+            {
+                key: 'Machines',
+                label: 'Machines',
+                count: 2,
+                secondaryBlocks: [
+                    { key: 'Fabricator', label: 'Fabricator', count: 1 },
+                    { key: 'Deconstructor', label: 'Deconstructor', count: 1 },
+                ],
             },
         ],
     },
@@ -345,14 +391,14 @@ const DEMO_TYPE_SECTIONS = [
 ];
 
 const DEMO_ITEM_POOL = {
-    'ITEM|Medical|Treatment': [
+    'ITEM|Medical|Medicines': [
         {
             id: 'demo-item-med-1',
             slug: 'bandage',
             title: 'Bandage',
             entityType: 'ITEM',
             primaryCategory: 'Medical',
-            secondaryCategory: 'Treatment',
+            secondaryCategory: 'Medicines',
             summary: 'Базовое средство для остановки кровотечения.',
             shortDescription: 'Базовое средство для остановки кровотечения.',
             primaryImageUrl: null,
@@ -363,7 +409,7 @@ const DEMO_ITEM_POOL = {
             title: 'Blood Pack',
             entityType: 'ITEM',
             primaryCategory: 'Medical',
-            secondaryCategory: 'Treatment',
+            secondaryCategory: 'Medicines',
             summary: 'Используется для переливания крови.',
             shortDescription: 'Используется для переливания крови.',
             primaryImageUrl: null,
@@ -485,13 +531,109 @@ const DEMO_ITEM_POOL = {
 };
 
 const ITEM_CANONICAL_PRIMARY_GROUPS = [
-    { key: 'Medical', label: 'Медицина', identities: new Set(['medical']) },
-    { key: 'Weapons', label: 'Оружие', identities: new Set(['weapon', 'weapons', 'machine']) },
-    { key: 'Tools', label: 'Инструменты', identities: new Set(['equipment', 'electrical', 'diving', 'fuel']) },
-    { key: 'Materials', label: 'Материалы', identities: new Set(['material']) },
+    {
+        key: 'Weaponry',
+        label: 'Weaponry',
+        identities: new Set([
+            'weaponry',
+            'weapon',
+            'weapons',
+            'firearm',
+            'firearms',
+            'melee',
+            'ammunition',
+            'ammo',
+            'explosive',
+            'explosives',
+            'turret',
+            'turrets',
+            'turret ammo',
+            'turretammo',
+        ]),
+    },
+    {
+        key: 'Medical',
+        label: 'Medical',
+        identities: new Set([
+            'medical',
+            'medicine',
+            'medicines',
+            'poison',
+            'poisons',
+            'medical tool',
+            'medical tools',
+            'medicaltool',
+            'medicaltools',
+        ]),
+    },
+    {
+        key: 'Tools',
+        label: 'Tools',
+        identities: new Set([
+            'tool',
+            'tools',
+            'standard tool',
+            'standard tools',
+            'standardtool',
+            'standardtools',
+            'scientific',
+            'consumable',
+            'consumables',
+        ]),
+    },
+    {
+        key: 'Equipment',
+        label: 'Equipment',
+        identities: new Set([
+            'equipment',
+            'diving',
+            'clothing',
+            'armor',
+            'storage',
+        ]),
+    },
+    {
+        key: 'Electrical & Logic',
+        label: 'Electrical & Logic',
+        identities: new Set([
+            'electrical & logic',
+            'electrical and logic',
+            'electricallogic',
+            'electrical',
+            'logic',
+            'wire',
+            'wires',
+            'power',
+        ]),
+    },
+    {
+        key: 'Materials',
+        label: 'Materials',
+        identities: new Set([
+            'material',
+            'materials',
+            'ore',
+            'ores',
+            'fuel',
+        ]),
+    },
+    {
+        key: 'Machines',
+        label: 'Machines',
+        identities: new Set([
+            'machine',
+            'machines',
+            'fabricator',
+            'deconstructor',
+            'medical fabricator',
+            'medicalfabricator',
+            'research station',
+            'researchstation',
+        ]),
+    },
     {
         key: 'Other',
-        label: 'Прочее',
+        label: 'Other',
         identities: new Set(['misc', 'decorative', 'wrecked', 'alien', 'legacy', 'hidden', 'thalamus']),
     },
 ];
@@ -561,11 +703,32 @@ const NON_ITEM_PRIMARY_ALIAS_CONFIG = {
     },
     TALENT: {
         captain: 'Captain Tree',
+        'captain tree': 'Captain Tree',
+        captaintree: 'Captain Tree',
         engineer: 'Engineer Tree',
+        'engineer tree': 'Engineer Tree',
+        engineertree: 'Engineer Tree',
         mechanic: 'Mechanic Tree',
+        'mechanic tree': 'Mechanic Tree',
+        mechanictree: 'Mechanic Tree',
         security: 'Security Tree',
+        'security tree': 'Security Tree',
+        securitytree: 'Security Tree',
+        'security officer': 'Security Tree',
+        securityofficer: 'Security Tree',
+        'security_officer': 'Security Tree',
+        'security-officer': 'Security Tree',
         medical: 'Medical Tree',
+        'medical tree': 'Medical Tree',
+        medicaltree: 'Medical Tree',
+        doctor: 'Medical Tree',
+        'medical doctor': 'Medical Tree',
+        medicaldoctor: 'Medical Tree',
+        'medical_doctor': 'Medical Tree',
+        'medical-doctor': 'Medical Tree',
         assistant: 'Assistant Tree',
+        'assistant tree': 'Assistant Tree',
+        assistanttree: 'Assistant Tree',
     },
     JOB: {
         role: 'Crew Roles',
@@ -582,6 +745,64 @@ const NON_ITEM_PRIMARY_ALIAS_CONFIG = {
         symbols: 'UI & Symbols',
         meta: 'Meta Systems',
         system: 'Meta Systems',
+    },
+};
+
+const PRIMARY_DISPLAY_LABEL_OVERRIDES_BY_TYPE = {
+    ITEM: {
+        weaponry: 'Weaponry',
+        medical: 'Medical',
+        tools: 'Tools',
+        equipment: 'Equipment',
+        'electrical & logic': 'Electrical & Logic',
+        electricallogic: 'Electrical & Logic',
+        materials: 'Materials',
+        machines: 'Machines',
+    },
+    AFFLICTION: {
+        affliction: 'Affliction',
+        alieninfection: 'Alien Infection',
+        bloodloss: 'Blood Loss',
+        disguiseasanother: 'Disguise As Another',
+        disguiseashusk: 'Disguise As Husk',
+        doomofjove: 'Doom Of Jove',
+        durationincrease: 'Duration Increase',
+        geneticmaterialbuff: 'Genetic Material Buff',
+        geneticmaterialdebuff: 'Genetic Material Debuff',
+        invertcontrols: 'Invert Controls',
+        oxygenlow: 'Low Oxygen',
+        psychoclown: 'Psycho Clown',
+        recoilstabilized: 'Recoil Stabilized',
+        respawnpenalty: 'Respawn Penalty',
+        spaceherpes: 'Space Herpes',
+        strengthbuff: 'Strength Buff',
+        talentbuff: 'Talent Buff',
+        visionbuff: 'Vision Buff',
+    },
+    CREATURE: {
+        ancientalien: 'Ancient Alien',
+    },
+    JOB: {
+        npc: 'NPC',
+    },
+};
+
+const SECONDARY_DISPLAY_LABEL_OVERRIDES_BY_TYPE = {
+    ITEM: {
+        turretammo: 'Turret Ammo',
+        medicaltools: 'Medical Tools',
+        standardtools: 'Standard Tools',
+        medicalfabricator: 'Medical Fabricator',
+        researchstation: 'Research Station',
+    },
+    TALENT: {
+        assistant_primary: 'Assistant Primary',
+        captain_primary: 'Captain Primary',
+        engineer_primary: 'Engineer Primary',
+        mechanic_primary: 'Mechanic Primary',
+        medical_primary: 'Medical Primary',
+        security_primary: 'Security Primary',
+        weaponsengineer: 'Weapons Engineer',
     },
 };
 
@@ -696,15 +917,16 @@ const BLUEPRINT_PRIMARY_KEY_BY_TYPE_IDENTITY = buildBlueprintPrimaryIdentityMapB
 
 function resolvePrimaryBlockLabel(entityType, primaryKey) {
     const identity = categoryIdentity(primaryKey);
-    const labelFromDemo = DEMO_PRIMARY_LABELS_BY_TYPE[entityType]?.[identity];
-    return labelFromDemo || humanizeCategoryLabel(primaryKey) || primaryKey;
+    const labelOverride = PRIMARY_DISPLAY_LABEL_OVERRIDES_BY_TYPE[entityType]?.[identity];
+    if (labelOverride) return labelOverride;
+    return humanizeCategoryLabel(primaryKey) || primaryKey;
 }
 
 function resolveSecondaryBlockLabel(entityType, primaryKey, secondaryKey) {
-    const storageKey = `${entityType}|${categoryIdentity(primaryKey)}`;
     const secondaryIdentity = categoryIdentity(secondaryKey);
-    const labelFromDemo = DEMO_SECONDARY_LABELS_BY_TYPE_PRIMARY[storageKey]?.[secondaryIdentity];
-    return labelFromDemo || humanizeCategoryLabel(secondaryKey) || secondaryKey;
+    const labelOverride = SECONDARY_DISPLAY_LABEL_OVERRIDES_BY_TYPE[entityType]?.[secondaryIdentity];
+    if (labelOverride) return labelOverride;
+    return humanizeCategoryLabel(secondaryKey) || secondaryKey;
 }
 
 function resolveItemCanonicalPrimaryGroup(rawPrimaryKey) {
@@ -740,14 +962,50 @@ function buildItemPrimaryBlocks(rawPrimaryBlocks) {
         if (!target) return;
 
         target.count += Number(rawPrimaryBlock.count || 0);
-        target.fallbackPrimaryQuery = target.fallbackPrimaryQuery || rawPrimaryBlock.key;
+        target.fallbackPrimaryQuery = target.fallbackPrimaryQuery
+            || rawPrimaryBlock.queryPrimaryCategory
+            || rawPrimaryBlock.key;
+
+        const rawSecondaryBlocks = Array.isArray(rawPrimaryBlock.secondaryBlocks)
+            ? rawPrimaryBlock.secondaryBlocks
+            : [];
+        if (rawSecondaryBlocks.length > 0) {
+            rawSecondaryBlocks.forEach((rawSecondaryBlock) => {
+                const secondaryKey = normalizeCategoryValue(
+                    rawSecondaryBlock?.querySecondaryCategory || rawSecondaryBlock?.key,
+                );
+                const secondaryCount = Number(rawSecondaryBlock?.count || 0);
+                if (!secondaryKey || secondaryCount <= 0) return;
+                if (isTechnicalCategory(secondaryKey)) return;
+
+                const queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+                target.secondaryBlocks.push({
+                    key: `${queryPrimaryCategory}::${secondaryKey}`,
+                    label: rawSecondaryBlock.label || resolveSecondaryBlockLabel('ITEM', rawPrimaryBlock.key, secondaryKey),
+                    count: secondaryCount,
+                    queryPrimaryCategory,
+                    querySecondaryCategory: secondaryKey,
+                });
+            });
+            return;
+        }
+
+        const canonicalIdentity = categoryIdentity(group.key);
+        const rawPrimaryIdentity = categoryIdentity(rawPrimaryBlock.key);
+        if (rawPrimaryIdentity === canonicalIdentity) {
+            if (!target.queryPrimaryCategory) {
+                target.queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
+            }
+            return;
+        }
 
         if (!isTechnicalCategory(rawPrimaryBlock.key)) {
+            const queryPrimaryCategory = rawPrimaryBlock.queryPrimaryCategory || rawPrimaryBlock.key;
             target.secondaryBlocks.push({
-                key: rawPrimaryBlock.key,
-                label: rawPrimaryBlock.label,
+                key: queryPrimaryCategory,
+                label: rawPrimaryBlock.label || resolvePrimaryBlockLabel('ITEM', rawPrimaryBlock.key),
                 count: Number(rawPrimaryBlock.count || 0),
-                queryPrimaryCategory: rawPrimaryBlock.key,
+                queryPrimaryCategory,
                 querySecondaryCategory: '',
             });
         }
@@ -755,15 +1013,23 @@ function buildItemPrimaryBlocks(rawPrimaryBlocks) {
 
     return groups
         .map((group) => {
-            if (group.secondaryBlocks.length === 1) {
-                const onlySecondary = group.secondaryBlocks[0];
+            const secondaryBlocks = dedupeSecondaryBlocks(group.secondaryBlocks).filter((secondaryBlock) => {
+                const secondaryIdentity = categoryIdentity(
+                    secondaryBlock?.querySecondaryCategory || secondaryBlock?.key,
+                );
+                if (!secondaryIdentity) return false;
+                return secondaryIdentity !== categoryIdentity(group.key);
+            });
+
+            if (secondaryBlocks.length === 1 && !secondaryBlocks[0].querySecondaryCategory) {
+                const onlySecondary = secondaryBlocks[0];
                 return {
                     ...group,
                     secondaryBlocks: [],
                     queryPrimaryCategory: onlySecondary.queryPrimaryCategory,
                 };
             }
-            if (group.secondaryBlocks.length === 0) {
+            if (secondaryBlocks.length === 0) {
                 return {
                     ...group,
                     queryPrimaryCategory: group.queryPrimaryCategory || group.fallbackPrimaryQuery || group.key,
@@ -771,7 +1037,7 @@ function buildItemPrimaryBlocks(rawPrimaryBlocks) {
             }
             return {
                 ...group,
-                secondaryBlocks: group.secondaryBlocks.sort(sortByCountDescThenLabelAsc),
+                secondaryBlocks,
             };
         })
         .filter((group) => group.count > 0);
@@ -936,7 +1202,7 @@ function buildDemoPrimaryPlaceholderBlock(entityType, demoPrimaryBlock) {
 
     return {
         key,
-        label: demoPrimaryBlock?.label || resolvePrimaryBlockLabel(entityType, key),
+        label: resolvePrimaryBlockLabel(entityType, key),
         count: 0,
         secondaryBlocks: [],
         queryPrimaryCategory: key,
@@ -993,7 +1259,7 @@ export function mergeSectionsWithBlueprint(liveSections) {
         if (!liveSection) {
             merged.push({
                 key: demoSection.key,
-                label: demoSection.label,
+                label: ENTITY_LABELS[demoSection.key] || demoSection.label || demoSection.key,
                 count: 0,
                 primaryBlocks: mergePrimaryBlocksWithBlueprint(
                     demoSection.key,
@@ -1006,7 +1272,7 @@ export function mergeSectionsWithBlueprint(liveSections) {
 
         merged.push({
             ...liveSection,
-            label: demoSection.label || liveSection.label,
+            label: ENTITY_LABELS[demoSection.key] || liveSection.label || demoSection.label || demoSection.key,
             primaryBlocks: mergePrimaryBlocksWithBlueprint(
                 demoSection.key,
                 liveSection.primaryBlocks,
@@ -1753,7 +2019,11 @@ export default function EncyclopediaListPage() {
                                         <div className="encyclopedia-card-body">
                                             <p className="encyclopedia-card-meta">
                                                 <span>{item.entityType || 'OTHER'}</span>
-                                                <span>{item.primaryCategory || 'Без категории'}</span>
+                                                <span>
+                                                    {item.primaryCategory
+                                                        ? resolvePrimaryBlockLabel(item.entityType || 'OTHER', item.primaryCategory)
+                                                        : 'Без категории'}
+                                                </span>
                                             </p>
                                             <h2 className="encyclopedia-card-title">
                                                 <Link to={`/encyclopedia/${item.slug}`}>{item.title}</Link>
