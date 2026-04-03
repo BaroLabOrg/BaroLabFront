@@ -22,7 +22,7 @@ export default function SignUpPage() {
             await signUp(login, email, username, password);
             navigate('/mods');
         } catch (err) {
-            setError(err.message || 'Ошибка регистрации');
+            setError(err.message || 'Sign-up error');
         } finally {
             setLoading(false);
         }
@@ -35,14 +35,14 @@ export default function SignUpPage() {
             await loginWithGoogle(credentialResponse.credential);
             navigate('/mods');
         } catch (err) {
-            setError(err.message || 'Ошибка регистрации через Google');
+            setError(err.message || 'Google sign-up error');
         } finally {
             setLoading(false);
         }
     };
 
     const handleGoogleError = () => {
-        setError('Не удалось войти через Google. Попробуйте ещё раз.');
+        setError('Google login failed. Please try again.');
     };
 
     return (
@@ -52,21 +52,21 @@ export default function SignUpPage() {
                 <div className="auth-card glass-card">
                     <div className="auth-header">
                         <span className="auth-logo">◆</span>
-                        <h1 className="auth-title">Создать аккаунт</h1>
-                        <p className="auth-subtitle">Присоединяйтесь к сообществу BaroLab</p>
+                        <h1 className="auth-title">Create account</h1>
+                        <p className="auth-subtitle">Join the BaroLab community</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="auth-form">
                         {error && <div className="auth-error">{error}</div>}
 
                         <div className="form-group">
-                            <label className="form-label">Логин</label>
+                            <label className="form-label">Login</label>
                             <input
                                 id="signup-login"
                                 type="text"
                                 value={login}
                                 onChange={(e) => setLogin(e.target.value)}
-                                placeholder="Придумайте логин"
+                                placeholder="Choose a login"
                                 required
                                 autoFocus
                             />
@@ -85,25 +85,25 @@ export default function SignUpPage() {
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Имя пользователя (никнейм)</label>
+                            <label className="form-label">Username (nickname)</label>
                             <input
                                 id="signup-username"
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Отображаемое имя"
+                                placeholder="Display name"
                                 required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Пароль</label>
+                            <label className="form-label">Password</label>
                             <input
                                 id="signup-password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Минимум 6 символов"
+                                placeholder="At least 6 characters"
                                 required
                             />
                         </div>
@@ -114,12 +114,12 @@ export default function SignUpPage() {
                             className="btn btn-primary auth-submit"
                             disabled={loading}
                         >
-                            {loading ? 'Создание...' : 'Зарегистрироваться'}
+                            {loading ? 'Creating...' : 'Sign up'}
                         </button>
                     </form>
 
                     <div className="auth-divider">
-                        <span>или</span>
+                        <span>or</span>
                     </div>
 
                     <div className="google-login-wrapper">
@@ -131,13 +131,13 @@ export default function SignUpPage() {
                             width="100%"
                             text="signup_with"
                             shape="rectangular"
-                            locale="ru"
+                            locale="en"
                         />
                     </div>
 
                     <div className="auth-footer">
-                        <span>Уже есть аккаунт?</span>
-                        <Link to="/login">Войти</Link>
+                        <span>Already have an account?</span>
+                        <Link to="/login">Log in</Link>
                     </div>
                 </div>
             </div>

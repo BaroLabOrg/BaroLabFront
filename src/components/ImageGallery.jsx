@@ -49,9 +49,9 @@ export default function ImageGallery({
     additionalImages = [],
     includeMainImage = true,
     showEmptyPlaceholder = false,
-    emptyPlaceholderText = 'Изображения отсутствуют.',
-    previewAlt = (index) => `Изображение ${index + 1}`,
-    thumbnailAriaLabel = (index) => `Показать изображение ${index + 1}`,
+    emptyPlaceholderText = 'No images available.',
+    previewAlt = (index) => `Image ${index + 1}`,
+    thumbnailAriaLabel = (index) => `Show image ${index + 1}`,
 }) {
     const images = normalizeImages(mainImage, additionalImages, includeMainImage);
     const imagesKey = images.join('|');
@@ -94,7 +94,7 @@ export default function ImageGallery({
                                     thumbnailAriaLabel,
                                     index,
                                     image,
-                                    `Показать изображение ${index + 1}`,
+                                    `Show image ${index + 1}`,
                                 )}
                                 style={{
                                     backgroundImage: `url(${image})`,

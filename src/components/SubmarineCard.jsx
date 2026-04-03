@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import TagChips from './TagChips';
 import './SubmarineCard.css';
 
@@ -6,7 +6,7 @@ function formatNumber(value, fractionDigits = 0) {
     if (value === undefined || value === null || Number.isNaN(Number(value))) {
         return '—';
     }
-    return Number(value).toLocaleString('ru-RU', {
+    return Number(value).toLocaleString('en-US', {
         minimumFractionDigits: fractionDigits,
         maximumFractionDigits: fractionDigits,
     });
@@ -64,14 +64,14 @@ export default function SubmarineCard({ submarine }) {
             <p className="submarine-card-description">
                 {submarine.description?.length > 140
                     ? `${submarine.description.slice(0, 140)}…`
-                    : submarine.description || 'Нет описания'}
+                    : submarine.description || 'No description'}
             </p>
 
             <div className="submarine-card-metrics">
                 <span>💰 {formatNumber(submarine.price)} mk</span>
                 <span>👥 {formatCrew(submarine)}</span>
                 <span>📦 {formatNumber(submarine.cargoCapacity)}</span>
-                <span>↔ {formatNumber(submarine.maxHorizontalSpeedKph, 1)} км/ч</span>
+                <span>↔ {formatNumber(submarine.maxHorizontalSpeedKph, 1)} km/h</span>
                 <span>🔫 {formatNumber(submarine.turretSlotCount)}</span>
                 <span>🛠 {submarine.fabricationType || '—'}</span>
             </div>
@@ -80,7 +80,8 @@ export default function SubmarineCard({ submarine }) {
                 <TagChips tags={Array.isArray(submarine.tags) ? submarine.tags : []} />
             </div>
 
-            <div className="submarine-card-footer">Подробнее →</div>
+            <div className="submarine-card-footer">Read more →</div>
         </Link>
     );
 }
+

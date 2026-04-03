@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react';
+﻿import { useEffect, useEffectEvent, useState } from 'react';
 import { getSteamSyncStatus, resetSteamSync, startSteamSync, stopSteamSync } from '../api/steamSync';
 
 const POLL_INTERVAL_MS = 3000;
@@ -31,7 +31,7 @@ function toErrorMessage(error) {
     if (error?.message) {
         return error.message;
     }
-    return 'Не удалось выполнить запрос синхронизации Steam Workshop';
+    return 'Failed to run Steam Workshop sync request';
 }
 
 export default function SteamSyncTab() {
@@ -133,15 +133,15 @@ export default function SteamSyncTab() {
             <div className="steam-sync-stats-grid">
                 <article className="glass-card steam-sync-stat-card">
                     <p>Total Processed</p>
-                    <strong>{syncStatus.total_processed.toLocaleString('ru-RU')}</strong>
+                    <strong>{syncStatus.total_processed.toLocaleString('en-US')}</strong>
                 </article>
                 <article className="glass-card steam-sync-stat-card">
                     <p>New Added</p>
-                    <strong>{syncStatus.new_added.toLocaleString('ru-RU')}</strong>
+                    <strong>{syncStatus.new_added.toLocaleString('en-US')}</strong>
                 </article>
                 <article className="glass-card steam-sync-stat-card">
                     <p>Updated</p>
-                    <strong>{syncStatus.updated_count.toLocaleString('ru-RU')}</strong>
+                    <strong>{syncStatus.updated_count.toLocaleString('en-US')}</strong>
                 </article>
             </div>
 
@@ -162,3 +162,4 @@ export default function SteamSyncTab() {
         </div>
     );
 }
+

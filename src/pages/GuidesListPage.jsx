@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as guideApi from '../api/modGuides';
@@ -47,7 +47,7 @@ export default function GuidesListPage() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(mapPaginationError(err, 'Не удалось загрузить руководства'));
+            setError(mapPaginationError(err, 'Failed to load guides'));
         } finally {
             setLoading(false);
         }
@@ -68,7 +68,7 @@ export default function GuidesListPage() {
                 const activeMods = data.items.filter((m) => m.status === 'ACTIVE');
                 setMods(activeMods);
             } catch (err) {
-                setModsError(mapPaginationError(err, 'Не удалось загрузить список модов'));
+                setModsError(mapPaginationError(err, 'Failed to load mods list'));
             } finally {
                 setLoadingMods(false);
             }
@@ -95,7 +95,7 @@ export default function GuidesListPage() {
         return (
             <div className="page fade-in">
                 <main className="container guides-page">
-                    <div className="error-message">Ошибка: {error}</div>
+                    <div className="error-message">Error: {error}</div>
                 </main>
             </div>
         );
@@ -105,20 +105,20 @@ export default function GuidesListPage() {
         <div className="page fade-in">
             <main className="container guides-page">
                 <div className="guides-header-box glass-card shine">
-                    <h1 className="guides-title">📚 Библиотека Руководств</h1>
+                    <h1 className="guides-title">📚 Guides Library</h1>
                     <p className="guides-subtitle">
-                        Полезные гайды, советы и инструкции по модам от нашего сообщества. Всего: {totalGuides}
+                        Helpful guides, tips, and instructions from the community. Total: {totalGuides}
                     </p>
                     {isAuthenticated ? (
                         <div className="guides-actions" style={{ marginTop: '1.5rem' }}>
                             <button className="btn btn-primary" onClick={handleOpenModal}>
-                                ✍️ Создать руководство
+                                ✍️ Create guide
                             </button>
                         </div>
                     ) : (
                         <p className="auth-prompt" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
-                            <Link to="/login" className="auth-link">Войдите в аккаунт</Link> или{' '}
-                            <Link to="/sign-up" className="auth-link">зарегистрируйтесь</Link>, чтобы создавать руководства.
+                            <Link to="/login" className="auth-link">Log in</Link> or{' '}
+                            <Link to="/sign-up" className="auth-link">sign up</Link> to create guides.
                         </p>
                     )}
                 </div>
@@ -126,7 +126,7 @@ export default function GuidesListPage() {
                 <div className="guides-grid">
                     {guides.length === 0 ? (
                         <div className="no-guides-message">
-                            На этой странице нет доступных руководств.
+                            No guides available on this page.
                         </div>
                     ) : (
                         guides.map((guide) => (
@@ -153,13 +153,13 @@ export default function GuidesListPage() {
                                         to={`/mod/${guide.modId || guide.mod_id}`}
                                         className="guide-card-mod-link"
                                     >
-                                        К моду 🎮
+                                        To mod 🎮
                                     </Link>
                                     <Link
                                         to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}`}
                                         className="btn btn-outline btn-sm"
                                     >
-                                        Читать
+                                        Read
                                     </Link>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@ export default function GuidesListPage() {
                     <div className="modal-overlay" onClick={() => setShowModal(false)}>
                         <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h3>Выберите мод для руководства</h3>
+                                <h3>Select a mod for the guide</h3>
                                 <button className="btn-close" onClick={() => setShowModal(false)}>✕</button>
                             </div>
                             <div className="modal-body">
@@ -189,9 +189,9 @@ export default function GuidesListPage() {
                                         <div className="loading-spinner" />
                                     </div>
                                 ) : modsError ? (
-                                    <div className="error-message">Ошибка: {modsError}</div>
+                                    <div className="error-message">Error: {modsError}</div>
                                 ) : mods.length === 0 ? (
-                                    <div className="no-guides-message">Нет доступных модов. Вы можете добавить мод на странице "Моды".</div>
+                                    <div className="no-guides-message">No available mods. You can add a mod on the \"Mods\" page.</div>
                                 ) : (
                                     <div className="mods-list">
                                         {mods.map(mod => (
@@ -216,7 +216,7 @@ export default function GuidesListPage() {
                                                             👤 {mod.author?.username || mod.author_username || 'Unknown'}
                                                         </span>
                                                         <span className="mod-card-date">
-                                                            {new Date(mod.createdAt || mod.created_at).toLocaleDateString('ru-RU', {
+                                                            {new Date(mod.createdAt || mod.created_at).toLocaleDateString('en-US', {
                                                                 day: 'numeric',
                                                                 month: 'short',
                                                                 year: 'numeric',
@@ -224,10 +224,10 @@ export default function GuidesListPage() {
                                                         </span>
                                                     </div>
                                                     <div className="mod-card-stats">
-                                                        <span className="mod-card-transitions" title="Переходы">
+                                                        <span className="mod-card-transitions" title="Visits">
                                                             🔗 {mod.popularity ?? 0}
                                                         </span>
-                                                        <span className="mod-card-read">Создать руководство →</span>
+                                                        <span className="mod-card-read">Create guide →</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -242,3 +242,4 @@ export default function GuidesListPage() {
         </div>
     );
 }
+

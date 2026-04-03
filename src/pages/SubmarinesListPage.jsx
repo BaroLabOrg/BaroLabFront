@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as tagsApi from '../api/tags';
@@ -168,17 +168,17 @@ function setParam(params, key, value) {
 function parseRequiredNumber(rawValue, label, { integer = true, min } = {}) {
     const value = String(rawValue || '').trim().replace(',', '.');
     if (!value) {
-        throw new Error(`Поле "${label}" обязательно`);
+        throw new Error(`Field "${label}" is required`);
     }
     const parsed = Number(value);
     if (!Number.isFinite(parsed)) {
-        throw new Error(`Поле "${label}" должно быть числом`);
+        throw new Error(`Field "${label}" must be a number`);
     }
     if (integer && !Number.isInteger(parsed)) {
-        throw new Error(`Поле "${label}" должно быть целым числом`);
+        throw new Error(`Field "${label}" must be an integer`);
     }
     if (min !== undefined && parsed < min) {
-        throw new Error(`Поле "${label}" должно быть не меньше ${min}`);
+        throw new Error(`Field "${label}" must be at least ${min}`);
     }
     return parsed;
 }
@@ -188,10 +188,10 @@ function parseOptionalNumber(rawValue, label, { integer = false } = {}) {
     if (!value) return undefined;
     const parsed = Number(value);
     if (!Number.isFinite(parsed)) {
-        throw new Error(`Поле "${label}" должно быть числом`);
+        throw new Error(`Field "${label}" must be a number`);
     }
     if (integer && !Number.isInteger(parsed)) {
-        throw new Error(`Поле "${label}" должно быть целым числом`);
+        throw new Error(`Field "${label}" must be an integer`);
     }
     return parsed;
 }
@@ -200,7 +200,7 @@ function formatDate(value) {
     if (!value) return '—';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '—';
-    return date.toLocaleDateString('ru-RU', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -417,7 +417,7 @@ export default function SubmarinesListPage() {
             setTotalPages(0);
             setHasNext(false);
             setHasPrevious(false);
-            setLoadingError(mapPaginationError(error, 'Не удалось загрузить подлодки'));
+            setLoadingError(mapPaginationError(error, 'Failed to load submarines'));
         } finally {
             setLoading(false);
         }
@@ -484,7 +484,7 @@ export default function SubmarinesListPage() {
             } catch (error) {
                 if (!cancelled) {
                     setAllTags([]);
-                    setTagsError(mapPaginationError(error, 'Не удалось загрузить теги'));
+                    setTagsError(mapPaginationError(error, 'Failed to load tags'));
                 }
             } finally {
                 if (!cancelled) {
@@ -617,42 +617,42 @@ export default function SubmarinesListPage() {
             const title = createForm.title.trim();
             const description = createForm.description.trim();
             if (!title) {
-                throw new Error('Поле "Название" обязательно');
+                throw new Error('Field "Title" is required');
             }
             if (!description) {
-                throw new Error('Поле "Описание" обязательно');
+                throw new Error('Field "Description" is required');
             }
 
             const tierValue = parseRequiredNumber(createForm.tier, 'Tier', { integer: true, min: 1 });
-            const priceValue = parseRequiredNumber(createForm.price, 'Цена', { integer: true, min: 0 });
-            const crewMinValue = parseRequiredNumber(createForm.recommendedCrewMin, 'Мин. экипаж', { integer: true, min: 1 });
-            const crewMaxValue = parseRequiredNumber(createForm.recommendedCrewMax, 'Макс. экипаж', { integer: true, min: 1 });
-            const cargoValue = parseRequiredNumber(createForm.cargoCapacity, 'Грузоподъёмность', { integer: true, min: 0 });
-            const speedValue = parseRequiredNumber(createForm.maxHorizontalSpeedKph, 'Макс. горизонтальная скорость', {
+            const priceValue = parseRequiredNumber(createForm.price, 'Price', { integer: true, min: 0 });
+            const crewMinValue = parseRequiredNumber(createForm.recommendedCrewMin, 'Min crew', { integer: true, min: 1 });
+            const crewMaxValue = parseRequiredNumber(createForm.recommendedCrewMax, 'Max crew', { integer: true, min: 1 });
+            const cargoValue = parseRequiredNumber(createForm.cargoCapacity, 'Cargo capacity', { integer: true, min: 0 });
+            const speedValue = parseRequiredNumber(createForm.maxHorizontalSpeedKph, 'Max horizontal speed', {
                 integer: false,
                 min: 0.000001,
             });
-            const turretSlotsValue = parseRequiredNumber(createForm.turretSlotCount, 'Обычных слотов турелей', {
+            const turretSlotsValue = parseRequiredNumber(createForm.turretSlotCount, 'Regular turret slots', {
                 integer: true,
                 min: 0,
             });
-            const largeTurretSlotsValue = parseRequiredNumber(createForm.largeTurretSlotCount, 'Крупных слотов турелей', {
+            const largeTurretSlotsValue = parseRequiredNumber(createForm.largeTurretSlotCount, 'Large turret slots', {
                 integer: true,
                 min: 0,
             });
-            const lengthMetersValue = parseOptionalNumber(createForm.lengthMeters, 'Длина, м');
-            const heightMetersValue = parseOptionalNumber(createForm.heightMeters, 'Высота, м');
-            const maxDescentSpeedValue = parseOptionalNumber(createForm.maxDescentSpeedKph, 'Макс. скорость погружения, км/ч');
-            const maxReactorOutputValue = parseOptionalNumber(createForm.maxReactorOutputKw, 'Макс. мощность реактора, кВт');
+            const lengthMetersValue = parseOptionalNumber(createForm.lengthMeters, 'Length, m');
+            const heightMetersValue = parseOptionalNumber(createForm.heightMeters, 'Height, m');
+            const maxDescentSpeedValue = parseOptionalNumber(createForm.maxDescentSpeedKph, 'Max descent speed, km/h');
+            const maxReactorOutputValue = parseOptionalNumber(createForm.maxReactorOutputKw, 'Max reactor output, kW');
 
             if (crewMinValue > crewMaxValue) {
-                throw new Error('Минимальный экипаж должен быть меньше или равен максимальному');
+                throw new Error('Minimum crew must be less than or equal to maximum crew');
             }
             if (createForm.defaultTurretWeapons.length > turretSlotsValue) {
-                throw new Error('Количество обычных орудий не может превышать число обычных слотов');
+                throw new Error('Number of regular weapons cannot exceed regular turret slots');
             }
             if (createForm.defaultLargeTurretWeapons.length > largeTurretSlotsValue) {
-                throw new Error('Количество крупных орудий не может превышать число крупных слотов');
+                throw new Error('Number of large weapons cannot exceed large turret slots');
             }
 
             const created = await submarinesApi.createSubmarine({
@@ -690,7 +690,7 @@ export default function SubmarinesListPage() {
                 updateSearch({ page: 0 });
             }
         } catch (error) {
-            setCreateError(error?.message || 'Не удалось создать подлодку');
+            setCreateError(error?.message || 'Failed to create submarine');
         } finally {
             setCreating(false);
         }
@@ -747,9 +747,9 @@ export default function SubmarinesListPage() {
         <div className="page">
             <div className="container submarines-page">
                 <section className="submarines-header-box glass-card shine">
-                    <h1 className="submarines-title">Подлодки</h1>
+                    <h1 className="submarines-title">Submarines</h1>
                     <p className="submarines-subtitle">
-                        Каталог подлодок сообщества. Всего: {totalSubmarines}
+                        Community submarine catalog. Total: {totalSubmarines}
                     </p>
                     {isAuthenticated ? (
                         <div className="submarines-actions">
@@ -758,30 +758,30 @@ export default function SubmarinesListPage() {
                                 onClick={() => setShowForm((prev) => !prev)}
                                 id="create-submarine-toggle"
                             >
-                                {showForm ? 'Закрыть форму' : 'Добавить подлодку'}
+                                {showForm ? 'Close form' : 'Add submarine'}
                             </button>
                         </div>
                     ) : (
                         <p className="auth-prompt submarine-auth-prompt">
-                            <Link to="/login" className="auth-link">Войдите в аккаунт</Link> или{' '}
-                            <Link to="/sign-up" className="auth-link">зарегистрируйтесь</Link>, чтобы добавлять подлодки.
+                            <Link to="/login" className="auth-link">Log in</Link> or{' '}
+                            <Link to="/sign-up" className="auth-link">sign up</Link>, to add submarines.
                         </p>
                     )}
                 </section>
 
                 <section className="submarines-filters glass-card">
                     <form className="submarines-search-form" onSubmit={handleSearchSubmit}>
-                        <label htmlFor="submarines-search-input">Поиск по названию</label>
+                        <label htmlFor="submarines-search-input">Search by title</label>
                         <div className="submarines-search-row">
                             <input
                                 id="submarines-search-input"
                                 value={searchInput}
                                 onChange={(event) => setSearchInput(event.target.value)}
-                                placeholder="Введите название подлодки"
+                                placeholder="Enter submarine title"
                                 autoComplete="off"
                             />
                             <button className="btn btn-primary" type="submit" disabled={loading || creating}>
-                                Найти
+                                Search
                             </button>
                             <button
                                 className="btn btn-ghost"
@@ -789,7 +789,7 @@ export default function SubmarinesListPage() {
                                 onClick={handleResetFilters}
                                 disabled={!hasActiveFilters || loading || creating}
                             >
-                                Сбросить
+                                Reset
                             </button>
                         </div>
                         <div className="submarines-advanced-toggle">
@@ -800,7 +800,7 @@ export default function SubmarinesListPage() {
                                 aria-expanded={showAdvancedSearch}
                                 aria-controls="submarines-advanced-search"
                             >
-                                {showAdvancedSearch ? 'Скрыть расширенный поиск' : 'Расширенный поиск'}
+                                {showAdvancedSearch ? 'Hide advanced search' : 'Advanced search'}
                             </button>
                         </div>
                     </form>
@@ -809,15 +809,15 @@ export default function SubmarinesListPage() {
                         <div id="submarines-advanced-search" className="submarines-advanced-search">
                             <div className="submarines-filter-grid">
                         <div className="submarines-filter-group">
-                            <h3>Класс и сборка</h3>
+                            <h3>Class and build</h3>
                             <label>
-                                Класс
+                                Class
                                 <select
-                                    aria-label="Класс подлодки"
+                                    aria-label="Submarine class"
                                     value={submarineClass}
                                     onChange={(event) => handleFieldChange('submarineClass', event.target.value)}
                                 >
-                                    <option value="">Любой</option>
+                                    <option value="">Any</option>
                                     {submarinesApi.SUBMARINE_CLASS_VALUES.map((value) => (
                                         <option key={value} value={value}>{CLASS_LABELS[value] || value}</option>
                                     ))}
@@ -834,13 +834,13 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Тип изготовления
+                                Fabrication type
                                 <select
-                                    aria-label="Тип изготовления"
+                                    aria-label="Fabrication type"
                                     value={fabricationType}
                                     onChange={(event) => handleFieldChange('fabricationType', event.target.value)}
                                 >
-                                    <option value="">Любой</option>
+                                    <option value="">Any</option>
                                     {submarinesApi.FABRICATION_TYPE_VALUES.map((value) => (
                                         <option key={value} value={value}>{FABRICATION_LABELS[value] || value}</option>
                                     ))}
@@ -849,12 +849,12 @@ export default function SubmarinesListPage() {
                         </div>
 
                         <div className="submarines-filter-group">
-                            <h3>Экономика и экипаж</h3>
+                            <h3>Economy and crew</h3>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. цена
+                                    Min price
                                     <input
-                                        aria-label="Мин. цена"
+                                        aria-label="Min price"
                                         type="number"
                                         min="0"
                                         value={priceMin ?? ''}
@@ -862,9 +862,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. цена
+                                    Max price
                                     <input
-                                        aria-label="Макс. цена"
+                                        aria-label="Max price"
                                         type="number"
                                         min="0"
                                         value={priceMax ?? ''}
@@ -874,9 +874,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. экипаж
+                                    Min crew
                                     <input
-                                        aria-label="Мин. экипаж"
+                                        aria-label="Min crew"
                                         type="number"
                                         min="1"
                                         value={recommendedCrewMin ?? ''}
@@ -884,9 +884,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. экипаж
+                                    Max crew
                                     <input
-                                        aria-label="Макс. экипаж"
+                                        aria-label="Max crew"
                                         type="number"
                                         min="1"
                                         value={recommendedCrewMax ?? ''}
@@ -896,9 +896,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. грузоподъёмность
+                                    Min cargo capacity
                                     <input
-                                        aria-label="Мин. грузоподъёмность"
+                                        aria-label="Min cargo capacity"
                                         type="number"
                                         min="0"
                                         value={cargoCapacityMin ?? ''}
@@ -906,9 +906,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. грузоподъёмность
+                                    Max cargo capacity
                                     <input
-                                        aria-label="Макс. грузоподъёмность"
+                                        aria-label="Max cargo capacity"
                                         type="number"
                                         min="0"
                                         value={cargoCapacityMax ?? ''}
@@ -919,12 +919,12 @@ export default function SubmarinesListPage() {
                         </div>
 
                         <div className="submarines-filter-group">
-                            <h3>Скорости и реактор</h3>
+                            <h3>Speeds and reactor</h3>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. скорость (гориз.)
+                                    Min speed (horizontal)
                                     <input
-                                        aria-label="Мин. скорость (гориз.)"
+                                        aria-label="Min speed (horizontal)"
                                         type="number"
                                         step="0.1"
                                         value={maxHorizontalSpeedKphMin ?? ''}
@@ -932,9 +932,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. скорость (гориз.)
+                                    Max speed (horizontal)
                                     <input
-                                        aria-label="Макс. скорость (гориз.)"
+                                        aria-label="Max speed (horizontal)"
                                         type="number"
                                         step="0.1"
                                         value={maxHorizontalSpeedKphMax ?? ''}
@@ -944,9 +944,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. скорость погружения
+                                    Min descent speed
                                     <input
-                                        aria-label="Мин. скорость погружения"
+                                        aria-label="Min descent speed"
                                         type="number"
                                         step="0.1"
                                         value={maxDescentSpeedKphMin ?? ''}
@@ -954,9 +954,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. скорость погружения
+                                    Max descent speed
                                     <input
-                                        aria-label="Макс. скорость погружения"
+                                        aria-label="Max descent speed"
                                         type="number"
                                         step="0.1"
                                         value={maxDescentSpeedKphMax ?? ''}
@@ -966,9 +966,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. реактор, кВт
+                                    Min reactor, kW
                                     <input
-                                        aria-label="Мин. реактор, кВт"
+                                        aria-label="Min reactor, kW"
                                         type="number"
                                         step="0.1"
                                         value={maxReactorOutputKwMin ?? ''}
@@ -976,9 +976,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. реактор, кВт
+                                    Max reactor, kW
                                     <input
-                                        aria-label="Макс. реактор, кВт"
+                                        aria-label="Max reactor, kW"
                                         type="number"
                                         step="0.1"
                                         value={maxReactorOutputKwMax ?? ''}
@@ -989,12 +989,12 @@ export default function SubmarinesListPage() {
                         </div>
 
                         <div className="submarines-filter-group">
-                            <h3>Размеры и вооружение</h3>
+                            <h3>Dimensions and weapons</h3>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. длина, м
+                                    Min length, m
                                     <input
-                                        aria-label="Мин. длина, м"
+                                        aria-label="Min length, m"
                                         type="number"
                                         step="0.1"
                                         value={lengthMetersMin ?? ''}
@@ -1002,9 +1002,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. длина, м
+                                    Max length, m
                                     <input
-                                        aria-label="Макс. длина, м"
+                                        aria-label="Max length, m"
                                         type="number"
                                         step="0.1"
                                         value={lengthMetersMax ?? ''}
@@ -1014,9 +1014,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Мин. высота, м
+                                    Min height, m
                                     <input
-                                        aria-label="Мин. высота, м"
+                                        aria-label="Min height, m"
                                         type="number"
                                         step="0.1"
                                         value={heightMetersMin ?? ''}
@@ -1024,9 +1024,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Макс. высота, м
+                                    Max height, m
                                     <input
-                                        aria-label="Макс. высота, м"
+                                        aria-label="Max height, m"
                                         type="number"
                                         step="0.1"
                                         value={heightMetersMax ?? ''}
@@ -1036,9 +1036,9 @@ export default function SubmarinesListPage() {
                             </div>
                             <div className="submarines-range-row">
                                 <label>
-                                    Слотов турелей
+                                    Turret slots
                                     <input
-                                        aria-label="Слотов турелей"
+                                        aria-label="Turret slots"
                                         type="number"
                                         min="0"
                                         value={turretSlotCount ?? ''}
@@ -1046,9 +1046,9 @@ export default function SubmarinesListPage() {
                                     />
                                 </label>
                                 <label>
-                                    Крупных слотов турелей
+                                    Large turret slots
                                     <input
-                                        aria-label="Крупных слотов турелей"
+                                        aria-label="Large turret slots"
                                         type="number"
                                         min="0"
                                         value={largeTurretSlotCount ?? ''}
@@ -1060,16 +1060,16 @@ export default function SubmarinesListPage() {
                     </div>
 
                     <div className="submarines-tags-filter">
-                        <label htmlFor="submarines-tag-select">Фильтр по тегам</label>
+                        <label htmlFor="submarines-tag-select">Filter by tags</label>
                         <div className="submarines-tag-row">
                             <select
                                 id="submarines-tag-select"
-                                aria-label="Фильтр по тегам"
+                                aria-label="Filter by tags"
                                 value={tagToAdd}
                                 onChange={(event) => setTagToAdd(event.target.value)}
                                 disabled={tagsLoading || selectableTags.length === 0}
                             >
-                                <option value="">Выберите тег</option>
+                                <option value="">Select tag</option>
                                 {selectableTags.map((tag) => {
                                     const value = getTagFilterValue(tag);
                                     return (
@@ -1085,10 +1085,10 @@ export default function SubmarinesListPage() {
                                 onClick={handleAddTagFilter}
                                 disabled={!tagToAdd || loading || creating}
                             >
-                                Добавить тег
+                                Add tag
                             </button>
                         </div>
-                        {tagsLoading && <p className="submarines-tags-meta">Загрузка тегов...</p>}
+                        {tagsLoading && <p className="submarines-tags-meta">Loading tags...</p>}
                         {tagsError && <p className="submarines-tags-error">{tagsError}</p>}
                         <TagChips
                             tags={selectedTagObjects}
@@ -1099,9 +1099,9 @@ export default function SubmarinesListPage() {
 
                     <div className="submarines-sort-controls">
                         <label>
-                            Сортировка
+                            Sorting
                             <select
-                                aria-label="Сортировка подлодок"
+                                aria-label="Submarine sorting"
                                 value={sortBy}
                                 onChange={(event) => handleSortChange(event.target.value)}
                             >
@@ -1113,9 +1113,9 @@ export default function SubmarinesListPage() {
                             </select>
                         </label>
                         <label>
-                            Направление
+                            Direction
                             <select
-                                aria-label="Направление сортировки"
+                                aria-label="Sort direction"
                                 value={direction}
                                 onChange={(event) => handleDirectionChange(event.target.value)}
                             >
@@ -1125,9 +1125,9 @@ export default function SubmarinesListPage() {
                             </select>
                         </label>
                         <label>
-                            Размер страницы
+                            Page size
                             <select
-                                aria-label="Размер страницы"
+                                aria-label="Page size"
                                 value={size}
                                 onChange={(event) => handleSizeChange(event.target.value)}
                             >
@@ -1145,12 +1145,12 @@ export default function SubmarinesListPage() {
                     <form
                         className="create-submarine-form glass-card fade-in"
                         onSubmit={handleCreateSubmarine}
-                        aria-label="Форма создания подлодки"
+                        aria-label="Submarine creation form"
                     >
-                        <h2>Новая подлодка</h2>
+                        <h2>New submarine</h2>
                         <div className="create-submarine-grid">
                             <label>
-                                Название
+                                Title
                                 <input
                                     id="submarine-title-input"
                                     value={createForm.title}
@@ -1158,7 +1158,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Класс
+                                Class
                                 <select
                                     id="submarine-class-input"
                                     value={createForm.submarineClass}
@@ -1180,7 +1180,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Цена
+                                Price
                                 <input
                                     id="submarine-price-input"
                                     type="number"
@@ -1190,7 +1190,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Мин. экипаж
+                                Min crew
                                 <input
                                     id="submarine-crew-min-input"
                                     type="number"
@@ -1200,7 +1200,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Макс. экипаж
+                                Max crew
                                 <input
                                     id="submarine-crew-max-input"
                                     type="number"
@@ -1210,7 +1210,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Грузоподъёмность
+                                Cargo capacity
                                 <input
                                     id="submarine-cargo-input"
                                     type="number"
@@ -1220,7 +1220,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Макс. скорость (гориз.), км/ч
+                                Max speed (horizontal), km/h
                                 <input
                                     id="submarine-speed-input"
                                     type="number"
@@ -1231,7 +1231,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Слотов турелей
+                                Turret slots
                                 <input
                                     id="submarine-turret-slots-input"
                                     type="number"
@@ -1241,7 +1241,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Крупных слотов турелей
+                                Large turret slots
                                 <input
                                     id="submarine-large-turret-slots-input"
                                     type="number"
@@ -1251,7 +1251,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Длина, м
+                                Length, m
                                 <input
                                     id="submarine-length-input"
                                     type="number"
@@ -1261,7 +1261,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Высота, м
+                                Height, m
                                 <input
                                     id="submarine-height-input"
                                     type="number"
@@ -1271,7 +1271,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Макс. скорость погружения, км/ч
+                                Max descent speed, km/h
                                 <input
                                     id="submarine-descent-speed-input"
                                     type="number"
@@ -1281,7 +1281,7 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Макс. мощность реактора, кВт
+                                Max reactor output, kW
                                 <input
                                     id="submarine-reactor-output-input"
                                     type="number"
@@ -1291,13 +1291,13 @@ export default function SubmarinesListPage() {
                                 />
                             </label>
                             <label>
-                                Тип изготовления
+                                Fabrication type
                                 <select
                                     id="submarine-fabrication-input"
                                     value={createForm.fabricationType}
                                     onChange={(event) => handleCreateFieldChange('fabricationType', event.target.value)}
                                 >
-                                    <option value="">Не указан</option>
+                                    <option value="">Not specified</option>
                                     {submarinesApi.FABRICATION_TYPE_VALUES.map((value) => (
                                         <option key={value} value={value}>{FABRICATION_LABELS[value] || value}</option>
                                     ))}
@@ -1306,7 +1306,7 @@ export default function SubmarinesListPage() {
                         </div>
 
                         <label className="create-submarine-description">
-                            Описание
+                            Description
                             <textarea
                                 id="submarine-description-input"
                                 rows="4"
@@ -1317,7 +1317,7 @@ export default function SubmarinesListPage() {
 
                         <div className="create-submarine-weapons">
                             <div className="create-submarine-weapon-block">
-                                <h3>Обычные турели</h3>
+                                <h3>Regular turrets</h3>
                                 <div className="create-submarine-weapon-grid">
                                     {submarinesApi.TURRET_WEAPON_VALUES.map((weapon) => (
                                         <label key={weapon} className="create-submarine-checkbox">
@@ -1332,7 +1332,7 @@ export default function SubmarinesListPage() {
                                 </div>
                             </div>
                             <div className="create-submarine-weapon-block">
-                                <h3>Крупные турели</h3>
+                                <h3>Large turrets</h3>
                                 <div className="create-submarine-weapon-grid">
                                     {submarinesApi.LARGE_TURRET_WEAPON_VALUES.map((weapon) => (
                                         <label key={weapon} className="create-submarine-checkbox">
@@ -1351,7 +1351,7 @@ export default function SubmarinesListPage() {
                         {createError && <div className="auth-error">{createError}</div>}
 
                         <button className="btn btn-primary" type="submit" id="submit-submarine" disabled={creating}>
-                            {creating ? 'Создание...' : 'Создать подлодку'}
+                            {creating ? 'Creating...' : 'Create submarine'}
                         </button>
                     </form>
                 )}
@@ -1360,11 +1360,11 @@ export default function SubmarinesListPage() {
                 {loading ? (
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <p>Загрузка подлодок...</p>
+                        <p>Loading submarines...</p>
                     </div>
                 ) : submarines.length === 0 ? (
                     <div className="empty-state">
-                        <p>По текущему запросу подлодки не найдены.</p>
+                        <p>No submarines found for the current query.</p>
                     </div>
                 ) : (
                     <section className="submarines-grid">
@@ -1387,9 +1387,10 @@ export default function SubmarinesListPage() {
                 />
 
                 <section className="submarines-footnote glass-card">
-                    <p>Текущее состояние фильтров сохранено в URL. Дата открытия страницы: {formatDate(new Date())}</p>
+                    <p>Current filter state is stored in the URL. Page open date: {formatDate(new Date())}</p>
                 </section>
             </div>
         </div>
     );
 }
+

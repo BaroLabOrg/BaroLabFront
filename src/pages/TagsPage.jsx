@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import { createTag, getTags } from '../api/tags';
@@ -36,7 +36,7 @@ function formatTagDate(tag) {
 
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('ru-RU', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -87,7 +87,7 @@ export default function TagsPage() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (error) {
-            setLoadingError(mapPaginationError(error, 'Не удалось загрузить теги'));
+            setLoadingError(mapPaginationError(error, 'Failed to load tags'));
         } finally {
             setLoading(false);
         }
@@ -140,7 +140,7 @@ export default function TagsPage() {
 
         const trimmedName = newTagName.trim();
         if (!trimmedName) {
-            setFieldError('Введите название тега');
+            setFieldError('Enter tag name');
             return;
         }
 
@@ -174,16 +174,16 @@ export default function TagsPage() {
         <div className="page">
             <div className="container tags-page">
                 <section className="tags-header-box glass-card shine">
-                    <h1 className="tags-title">Каталог тегов</h1>
+                    <h1 className="tags-title">Tag Catalog</h1>
                     <p className="tags-subtitle">
-                        Глобальные теги системы. Создание тега не прикрепляет его к модификациям. Всего: {totalTags}
+                        Global system tags. Creating a tag does not attach it to mods. Total: {totalTags}
                     </p>
                 </section>
 
                 <section className="tags-controls glass-card">
                     <div className="tags-sort-controls">
                         <label className="tags-control-group">
-                            <span>Сортировка</span>
+                            <span>Sorting</span>
                             <select value={sortBy} onChange={handleSortByChange}>
                                 <option value="name">name</option>
                                 <option value="createdAt">createdAt</option>
@@ -192,7 +192,7 @@ export default function TagsPage() {
                         </label>
 
                         <label className="tags-control-group">
-                            <span>Направление</span>
+                            <span>Direction</span>
                             <select value={direction} onChange={handleDirectionChange}>
                                 <option value="asc">asc</option>
                                 <option value="desc">desc</option>
@@ -200,7 +200,7 @@ export default function TagsPage() {
                         </label>
 
                         <label className="tags-control-group">
-                            <span>Размер страницы</span>
+                            <span>Page size</span>
                             <select value={size} onChange={handleSizeChange}>
                                 {PAGE_SIZE_VALUES.map((value) => (
                                     <option key={value} value={value}>
@@ -212,18 +212,18 @@ export default function TagsPage() {
                     </div>
 
                     <form className="tags-create-form" onSubmit={handleCreateTag}>
-                        <label htmlFor="new-tag-name">Создать новый тег</label>
+                        <label htmlFor="new-tag-name">Create new tag</label>
                         <div className="tags-create-row">
                             <input
                                 id="new-tag-name"
                                 type="text"
-                                placeholder="Например, Medical"
+                                placeholder="For example, Medical"
                                 value={newTagName}
                                 onChange={(event) => setNewTagName(event.target.value)}
                                 disabled={submitting}
                             />
                             <button className="btn btn-primary" type="submit" disabled={submitting}>
-                                {submitting ? 'Создание...' : 'Создать'}
+                                {submitting ? 'Creating...' : 'Create'}
                             </button>
                         </div>
 
@@ -240,7 +240,7 @@ export default function TagsPage() {
                     <div className="auth-error">{loadingError}</div>
                 ) : tags.length === 0 ? (
                     <div className="empty-state">
-                        <p>Теги пока не созданы</p>
+                        <p>No tags created yet</p>
                     </div>
                 ) : (
                     <section className="tags-grid">
@@ -252,10 +252,10 @@ export default function TagsPage() {
                                     <h3>{tag.name}</h3>
                                     <p className="tag-slug">slug: {tag.slug}</p>
                                     {usageCount !== null && usageCount !== undefined && (
-                                        <p className="tag-usage">Использований: {usageCount}</p>
+                                        <p className="tag-usage">Usage count: {usageCount}</p>
                                     )}
                                     {formatTagDate(tag) && (
-                                        <p className="tag-date">Создан: {formatTagDate(tag)}</p>
+                                        <p className="tag-date">Created: {formatTagDate(tag)}</p>
                                     )}
                                 </article>
                             );
@@ -275,4 +275,5 @@ export default function TagsPage() {
         </div>
     );
 }
+
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     ENCYCLOPEDIA_ENTITY_TYPES,
@@ -52,7 +52,7 @@ function formatDate(value) {
     if (!value) return '—';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '—';
-    return date.toLocaleDateString('ru-RU', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -134,7 +134,7 @@ export default function EncyclopediaEditorPage() {
                 if (!cancelled) applyEditorState(response);
             } catch (err) {
                 if (!cancelled) {
-                    setError(err?.message || 'Не удалось загрузить редактор энциклопедии');
+                    setError(err?.message || 'Failed to load encyclopedia editor');
                     setEditorState(null);
                 }
             } finally {
@@ -170,7 +170,7 @@ export default function EncyclopediaEditorPage() {
                     setAvailableEntities([]);
                     setAvailableEntitiesTotal(0);
                     setAvailableEntitiesTotalPages(0);
-                    setAvailableEntitiesError(err?.message || 'Не удалось загрузить доступные сущности');
+                    setAvailableEntitiesError(err?.message || 'Failed to load available entities');
                 }
             } finally {
                 if (!cancelled) {
@@ -200,7 +200,7 @@ export default function EncyclopediaEditorPage() {
     const handleCreate = async (event) => {
         event.preventDefault();
         if (!createEntityId.trim()) {
-            setError('Выберите сущность из списка или укажите UUID вручную');
+            setError('Select an entity from the list or provide UUID manually');
             return;
         }
 
@@ -215,7 +215,7 @@ export default function EncyclopediaEditorPage() {
             });
             navigate(`/admin/encyclopedia/${created.entityId}/edit`, { replace: true });
         } catch (err) {
-            setError(err?.message || 'Не удалось создать страницу энциклопедии');
+            setError(err?.message || 'Failed to create encyclopedia page');
         } finally {
             setActionLoading(false);
         }
@@ -231,7 +231,7 @@ export default function EncyclopediaEditorPage() {
             const result = await autoGenerateAndPublishEncyclopediaArticles();
             setBatchResult(result);
         } catch (err) {
-            setBatchError(err?.message || 'Не удалось выполнить авто-генерацию и публикацию статей');
+            setBatchError(err?.message || 'Failed to run auto-generation and publication');
         } finally {
             setBatchActionLoading(false);
         }
@@ -245,9 +245,9 @@ export default function EncyclopediaEditorPage() {
         try {
             const updated = await updateEncyclopediaMetadata(editorState.entityId, { summary: summary.trim() });
             applyEditorState(updated);
-            setSuccess('Метаданные сохранены');
+            setSuccess('Metadata saved');
         } catch (err) {
-            setError(err?.message || 'Не удалось сохранить метаданные');
+            setError(err?.message || 'Failed to save metadata');
         } finally {
             setActionLoading(false);
         }
@@ -261,9 +261,9 @@ export default function EncyclopediaEditorPage() {
         try {
             const updated = await saveEncyclopediaDraft(editorState.entityId, draftMarkdown);
             applyEditorState(updated);
-            setSuccess('Черновик сохранен');
+            setSuccess('Draft saved');
         } catch (err) {
-            setError(err?.message || 'Не удалось сохранить черновик');
+            setError(err?.message || 'Failed to save draft');
         } finally {
             setActionLoading(false);
         }
@@ -278,9 +278,9 @@ export default function EncyclopediaEditorPage() {
             const preview = await previewEncyclopediaDraft(editorState.entityId, draftMarkdown);
             setPreviewHtml(preview.renderedHtml || '');
             setPreviewLinks(preview.links || []);
-            setSuccess('Превью обновлено');
+            setSuccess('Preview updated');
         } catch (err) {
-            setError(err?.message || 'Не удалось построить превью');
+            setError(err?.message || 'Failed to build preview');
         } finally {
             setActionLoading(false);
         }
@@ -294,9 +294,9 @@ export default function EncyclopediaEditorPage() {
         try {
             const updated = await publishEncyclopediaDraft(editorState.entityId, draftMarkdown);
             applyEditorState(updated);
-            setSuccess('Статья опубликована');
+            setSuccess('Article published');
         } catch (err) {
-            setError(err?.message || 'Не удалось опубликовать статью');
+            setError(err?.message || 'Failed to publish article');
         } finally {
             setActionLoading(false);
         }
@@ -311,9 +311,9 @@ export default function EncyclopediaEditorPage() {
             const payload = sanitizeInfoboxFields(infoboxFields);
             const updated = await updateEncyclopediaInfobox(editorState.entityId, payload);
             applyEditorState(updated);
-            setSuccess('Infobox сохранен');
+            setSuccess('Infobox saved');
         } catch (err) {
-            setError(err?.message || 'Не удалось сохранить infobox');
+            setError(err?.message || 'Failed to save infobox');
         } finally {
             setActionLoading(false);
         }
@@ -328,9 +328,9 @@ export default function EncyclopediaEditorPage() {
             const payload = sanitizeRelations(relations);
             const updated = await updateEncyclopediaRelations(editorState.entityId, payload);
             applyEditorState(updated);
-            setSuccess('Ручные связи сохранены');
+            setSuccess('Manual relations saved');
         } catch (err) {
-            setError(err?.message || 'Не удалось сохранить ручные связи');
+            setError(err?.message || 'Failed to save manual relations');
         } finally {
             setActionLoading(false);
         }
@@ -338,7 +338,7 @@ export default function EncyclopediaEditorPage() {
 
     const handleArchive = async () => {
         if (!editorState?.entityId) return;
-        if (!window.confirm('Архивировать статью? Публичная страница будет скрыта.')) return;
+        if (!window.confirm('Archive article? Public page will be hidden.')) return;
 
         setActionLoading(true);
         setError('');
@@ -346,9 +346,9 @@ export default function EncyclopediaEditorPage() {
         try {
             const updated = await archiveEncyclopediaArticle(editorState.entityId);
             applyEditorState(updated);
-            setSuccess('Статья архивирована');
+            setSuccess('Article archived');
         } catch (err) {
-            setError(err?.message || 'Не удалось архивировать статью');
+            setError(err?.message || 'Failed to archive article');
         } finally {
             setActionLoading(false);
         }
@@ -375,7 +375,7 @@ export default function EncyclopediaEditorPage() {
             setRelationSearchResults(result.items || []);
         } catch (err) {
             setRelationSearchResults([]);
-            setRelationSearchError(err?.message || 'Не удалось найти сущности для связи');
+            setRelationSearchError(err?.message || 'Failed to find entities for relation');
         } finally {
             setRelationSearchLoading(false);
         }
@@ -407,16 +407,16 @@ export default function EncyclopediaEditorPage() {
         return (
             <div className="page">
                 <div className="container encyclopedia-editor-page">
-                    <Link to="/encyclopedia" className="back-link">← Назад к энциклопедии</Link>
+                    <Link to="/encyclopedia" className="back-link">← Back to encyclopedia</Link>
                     <section className="encyclopedia-editor-card glass-card">
-                        <h1>Создание страницы энциклопедии</h1>
+                        <h1>Create encyclopedia page</h1>
                         <p className="encyclopedia-editor-muted">
-                            Сначала выберите ванильную сущность без статьи, затем создайте черновик.
+                            First select a vanilla entity without an article, then create a draft.
                         </p>
                         {isAdmin && (
                             <div className="encyclopedia-batch-block">
                                 <div className="encyclopedia-batch-header">
-                                    <h2>Массовое заполнение энциклопедии</h2>
+                                    <h2>Bulk encyclopedia fill</h2>
                                     <button
                                         className="btn btn-primary"
                                         type="button"
@@ -424,20 +424,20 @@ export default function EncyclopediaEditorPage() {
                                         disabled={batchActionLoading}
                                     >
                                         {batchActionLoading
-                                            ? 'Обработка...'
-                                            : 'Авто-создать и опубликовать статьи'}
+                                            ? 'Processing...'
+                                            : 'Auto-create and publish articles'}
                                     </button>
                                 </div>
                                 {batchError && <div className="auth-error">{batchError}</div>}
                                 {batchResult && (
                                     <div className="encyclopedia-batch-result">
-                                        <p><strong>Проверено:</strong> {batchResult.totalChecked}</p>
-                                        <p><strong>Создано:</strong> {batchResult.created}</p>
-                                        <p><strong>Обновлено:</strong> {batchResult.updated}</p>
-                                        <p><strong>Опубликовано:</strong> {batchResult.published}</p>
-                                        <p><strong>Пропущено (manual):</strong> {batchResult.skippedManual}</p>
-                                        <p><strong>Пропущено (без изменений):</strong> {batchResult.skippedUnchanged}</p>
-                                        <p><strong>Ошибок:</strong> {batchResult.failed}</p>
+                                        <p><strong>Checked:</strong> {batchResult.totalChecked}</p>
+                                        <p><strong>Created:</strong> {batchResult.created}</p>
+                                        <p><strong>Updated:</strong> {batchResult.updated}</p>
+                                        <p><strong>Published:</strong> {batchResult.published}</p>
+                                        <p><strong>Skipped (manual):</strong> {batchResult.skippedManual}</p>
+                                        <p><strong>Skipped (unchanged):</strong> {batchResult.skippedUnchanged}</p>
+                                        <p><strong>Errors:</strong> {batchResult.failed}</p>
                                         {Array.isArray(batchResult.errors) && batchResult.errors.length > 0 && (
                                             <div className="encyclopedia-batch-errors">
                                                 {batchResult.errors.map((entry, index) => (
@@ -452,7 +452,7 @@ export default function EncyclopediaEditorPage() {
 
                         <form className="encyclopedia-create-form" onSubmit={handleCreate}>
                             <div className="available-entities-block">
-                                <label htmlFor="create-entity-search-input">Поиск сущности</label>
+                                <label htmlFor="create-entity-search-input">Entity search</label>
                                 <div className="relation-search-row">
                                     <input
                                         id="create-entity-search-input"
@@ -464,7 +464,7 @@ export default function EncyclopediaEditorPage() {
                                                 handleCreateSearchSubmit(event);
                                             }
                                         }}
-                                        placeholder="Название, slug или source identifier"
+                                        placeholder="Title, slug, or source identifier"
                                     />
                                     <select
                                         value={createEntityTypeFilter}
@@ -473,7 +473,7 @@ export default function EncyclopediaEditorPage() {
                                             setAvailableEntitiesPage(0);
                                         }}
                                     >
-                                        <option value="">Все типы</option>
+                                        <option value="">All types</option>
                                         {ENCYCLOPEDIA_ENTITY_TYPES.map((type) => (
                                             <option key={type} value={type}>{type}</option>
                                         ))}
@@ -484,14 +484,14 @@ export default function EncyclopediaEditorPage() {
                                         onClick={handleCreateSearchSubmit}
                                         disabled={availableEntitiesLoading}
                                     >
-                                        {availableEntitiesLoading ? 'Поиск...' : 'Найти'}
+                                        {availableEntitiesLoading ? 'Searching...' : 'Search'}
                                     </button>
                                 </div>
                                 {availableEntitiesError && <p className="relation-search-error">{availableEntitiesError}</p>}
                                 {availableEntitiesLoading ? (
-                                    <p className="encyclopedia-editor-muted">Загрузка списка сущностей...</p>
+                                    <p className="encyclopedia-editor-muted">Loading entity list...</p>
                                 ) : availableEntities.length === 0 ? (
-                                    <p className="encyclopedia-editor-muted">Подходящие сущности не найдены.</p>
+                                    <p className="encyclopedia-editor-muted">No matching entities found.</p>
                                 ) : (
                                     <>
                                         <div className="relation-search-results">
@@ -529,13 +529,13 @@ export default function EncyclopediaEditorPage() {
                                                 disabled={availableEntitiesPage <= 0 || availableEntitiesLoading}
                                                 onClick={() => setAvailableEntitiesPage((current) => Math.max(0, current - 1))}
                                             >
-                                                Предыдущая
+                                                Previous
                                             </button>
                                             <span className="encyclopedia-editor-muted">
-                                                Страница {availableEntitiesTotalPages > 0 ? availableEntitiesPage + 1 : 0}
-                                                {' из '}
+                                                Page {availableEntitiesTotalPages > 0 ? availableEntitiesPage + 1 : 0}
+                                                {' of '}
                                                 {availableEntitiesTotalPages}
-                                                {' · Всего: '}
+                                                {' · Total: '}
                                                 {availableEntitiesTotal}
                                             </span>
                                             <button
@@ -548,7 +548,7 @@ export default function EncyclopediaEditorPage() {
                                                 }
                                                 onClick={() => setAvailableEntitiesPage((current) => current + 1)}
                                             >
-                                                Следующая
+                                                Next
                                             </button>
                                         </div>
                                     </>
@@ -563,7 +563,7 @@ export default function EncyclopediaEditorPage() {
                                             className="available-entity-preview-image"
                                         />
                                     ) : (
-                                        <div className="available-entity-preview-placeholder">Нет изображения</div>
+                                        <div className="available-entity-preview-placeholder">No image</div>
                                     )}
                                     <div className="available-entity-preview-meta">
                                         <strong>{selectedCreateEntity.title}</strong>
@@ -587,7 +587,7 @@ export default function EncyclopediaEditorPage() {
                                     rows="3"
                                     value={createSummary}
                                     onChange={(event) => setCreateSummary(event.target.value)}
-                                    placeholder="Краткое описание статьи"
+                                    placeholder="Short article description"
                                 />
                             </label>
                             <label>
@@ -596,13 +596,13 @@ export default function EncyclopediaEditorPage() {
                                     rows="10"
                                     value={createDraft}
                                     onChange={(event) => setCreateDraft(event.target.value)}
-                                    placeholder="Начальный markdown..."
+                                    placeholder="Initial markdown..."
                                 />
                             </label>
                             {error && <div className="auth-error">{error}</div>}
                             {success && <div className="editor-success">{success}</div>}
                             <button className="btn btn-primary" type="submit" disabled={actionLoading}>
-                                {actionLoading ? 'Создание...' : 'Создать'}
+                                {actionLoading ? 'Creating...' : 'Create'}
                             </button>
                         </form>
                     </section>
@@ -617,7 +617,7 @@ export default function EncyclopediaEditorPage() {
                 <div className="container">
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <p>Загрузка редактора...</p>
+                        <p>Loading editor...</p>
                     </div>
                 </div>
             </div>
@@ -629,7 +629,7 @@ export default function EncyclopediaEditorPage() {
             <div className="page">
                 <div className="container encyclopedia-editor-page">
                     {error && <div className="auth-error">{error}</div>}
-                    <Link to="/encyclopedia" className="back-link">← Назад к энциклопедии</Link>
+                    <Link to="/encyclopedia" className="back-link">← Back to encyclopedia</Link>
                 </div>
             </div>
         );
@@ -640,13 +640,13 @@ export default function EncyclopediaEditorPage() {
     return (
         <div className="page">
             <div className="container encyclopedia-editor-page">
-                <Link to={`/encyclopedia/${editorState.slug}`} className="back-link">← Открыть публичную страницу</Link>
+                <Link to={`/encyclopedia/${editorState.slug}`} className="back-link">← Open public page</Link>
 
                 <section className="encyclopedia-editor-header glass-card">
                     <div>
                         <h1>{editorState.title}</h1>
                         <p className="encyclopedia-editor-muted">
-                            {editorState.entityType} · {editorState.primaryCategory || 'Без категории'}
+                            {editorState.entityType} · {editorState.primaryCategory || 'Uncategorized'}
                             {editorState.secondaryCategory ? ` / ${editorState.secondaryCategory}` : ''}
                         </p>
                         <p className="encyclopedia-editor-muted">
@@ -655,7 +655,7 @@ export default function EncyclopediaEditorPage() {
                         </p>
                     </div>
                     <div className="encyclopedia-editor-header-actions">
-                        <button className="btn btn-ghost" onClick={handleSaveMetadata} disabled={actionLoading}>Сохранить metadata</button>
+                        <button className="btn btn-ghost" onClick={handleSaveMetadata} disabled={actionLoading}>Save metadata</button>
                         <button className="btn btn-ghost" onClick={handleSaveDraft} disabled={actionLoading}>Save draft</button>
                         <button className="btn btn-ghost" onClick={handlePreview} disabled={actionLoading}>Preview</button>
                         <button className="btn btn-primary" onClick={handlePublish} disabled={actionLoading}>Publish</button>
@@ -678,7 +678,7 @@ export default function EncyclopediaEditorPage() {
                     <h2>Markdown</h2>
                     <div className="encyclopedia-editor-panes">
                         <div className="encyclopedia-editor-pane">
-                            <label htmlFor="encyclopedia-draft-textarea">Черновик markdown</label>
+                            <label htmlFor="encyclopedia-draft-textarea">Draft markdown</label>
                             <textarea
                                 id="encyclopedia-draft-textarea"
                                 rows="24"
@@ -694,14 +694,14 @@ export default function EncyclopediaEditorPage() {
                                     dangerouslySetInnerHTML={{ __html: renderedPreviewHtml }}
                                 />
                             ) : (
-                                <p className="encyclopedia-editor-muted">Превью пока не сгенерировано.</p>
+                                <p className="encyclopedia-editor-muted">Preview is not generated yet.</p>
                             )}
                         </div>
                     </div>
                     <div className="encyclopedia-preview-links">
                         <h3>Wiki links</h3>
                         {previewLinks.length === 0 ? (
-                            <p className="encyclopedia-editor-muted">Нет данных preview по wiki-links.</p>
+                            <p className="encyclopedia-editor-muted">No preview data for wiki-links.</p>
                         ) : (
                             <ul>
                                 {previewLinks.map((link) => (
@@ -729,16 +729,16 @@ export default function EncyclopediaEditorPage() {
                                 type="button"
                                 onClick={() => setInfoboxFields((current) => [...current, buildEmptyInfoboxField(current.length)])}
                             >
-                                + Поле
+                                + Field
                             </button>
                             <button className="btn btn-primary btn-sm" type="button" onClick={handleSaveInfobox} disabled={actionLoading}>
-                                Сохранить infobox
+                                Save infobox
                             </button>
                         </div>
                     </div>
 
                     {infoboxFields.length === 0 ? (
-                        <p className="encyclopedia-editor-muted">Поля infobox не добавлены.</p>
+                        <p className="encyclopedia-editor-muted">No infobox fields added.</p>
                     ) : (
                         <div className="encyclopedia-editor-rows">
                             {infoboxFields.map((field, index) => (
@@ -747,7 +747,7 @@ export default function EncyclopediaEditorPage() {
                                     <input value={field.fieldLabel} onChange={(event) => setInfoboxFields((current) => current.map((item, i) => (i === index ? { ...item, fieldLabel: event.target.value } : item)))} placeholder="field_label" />
                                     <input value={field.fieldValue} onChange={(event) => setInfoboxFields((current) => current.map((item, i) => (i === index ? { ...item, fieldValue: event.target.value } : item)))} placeholder="field_value" />
                                     <input type="number" value={field.sortOrder} onChange={(event) => setInfoboxFields((current) => current.map((item, i) => (i === index ? { ...item, sortOrder: Number(event.target.value) || 0 } : item)))} placeholder="sort_order" />
-                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => setInfoboxFields((current) => current.filter((_, i) => i !== index))}>Удалить</button>
+                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => setInfoboxFields((current) => current.filter((_, i) => i !== index))}>Delete</button>
                                 </div>
                             ))}
                         </div>
@@ -756,24 +756,24 @@ export default function EncyclopediaEditorPage() {
 
                 <section className="encyclopedia-editor-card glass-card">
                     <div className="encyclopedia-editor-section-header">
-                        <h2>Ручные связи</h2>
+                        <h2>Manual relations</h2>
                         <div className="editor-actions-inline">
-                            <button className="btn btn-ghost btn-sm" type="button" onClick={() => setRelations((current) => [...current, buildEmptyRelation(current.length)])}>+ Связь</button>
-                            <button className="btn btn-primary btn-sm" type="button" onClick={handleSaveRelations} disabled={actionLoading}>Сохранить связи</button>
+                            <button className="btn btn-ghost btn-sm" type="button" onClick={() => setRelations((current) => [...current, buildEmptyRelation(current.length)])}>+ Relation</button>
+                            <button className="btn btn-primary btn-sm" type="button" onClick={handleSaveRelations} disabled={actionLoading}>Save relations</button>
                         </div>
                     </div>
 
                     <div className="relation-search-block">
-                        <label htmlFor="relation-search-input">Поиск сущностей для связи</label>
+                        <label htmlFor="relation-search-input">Search entities for relation</label>
                         <div className="relation-search-row">
                             <input
                                 id="relation-search-input"
                                 value={relationSearchInput}
                                 onChange={(event) => setRelationSearchInput(event.target.value)}
-                                placeholder="Введите часть названия"
+                                placeholder="Enter a part of the title"
                             />
                             <button className="btn btn-ghost" type="button" onClick={handleRelationSearch} disabled={relationSearchLoading}>
-                                {relationSearchLoading ? 'Поиск...' : 'Найти'}
+                                {relationSearchLoading ? 'Searching...' : 'Search'}
                             </button>
                         </div>
                         {relationSearchError && <p className="relation-search-error">{relationSearchError}</p>}
@@ -790,7 +790,7 @@ export default function EncyclopediaEditorPage() {
                     </div>
 
                     {relations.length === 0 ? (
-                        <p className="encyclopedia-editor-muted">Ручные связи не добавлены.</p>
+                        <p className="encyclopedia-editor-muted">No manual relations added.</p>
                     ) : (
                         <div className="encyclopedia-editor-rows">
                             {relations.map((relation, index) => (
@@ -802,7 +802,7 @@ export default function EncyclopediaEditorPage() {
                                         ))}
                                     </select>
                                     <input type="number" value={relation.sortOrder} onChange={(event) => setRelations((current) => current.map((item, i) => (i === index ? { ...item, sortOrder: Number(event.target.value) || 0 } : item)))} placeholder="sort_order" />
-                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => setRelations((current) => current.filter((_, i) => i !== index))}>Удалить</button>
+                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => setRelations((current) => current.filter((_, i) => i !== index))}>Delete</button>
                                     {(relation.title || relation.slug) && <p className="relation-row-hint">{relation.title || relation.slug}</p>}
                                 </div>
                             ))}
@@ -813,15 +813,15 @@ export default function EncyclopediaEditorPage() {
                 <section className="encyclopedia-editor-card glass-card">
                     <h2>Imported properties (read-only)</h2>
                     {editorState.importedProperties.length === 0 ? (
-                        <p className="encyclopedia-editor-muted">Свойства не найдены.</p>
+                        <p className="encyclopedia-editor-muted">No properties found.</p>
                     ) : (
                         <div className="encyclopedia-imported-table-wrap">
                             <table className="encyclopedia-imported-table">
                                 <thead>
                                     <tr>
-                                        <th>Ключ</th>
-                                        <th>Значение</th>
-                                        <th>Тип</th>
+                                        <th>Key</th>
+                                        <th>Value</th>
+                                        <th>Type</th>
                                         <th>Origin</th>
                                     </tr>
                                 </thead>
@@ -843,3 +843,5 @@ export default function EncyclopediaEditorPage() {
         </div>
     );
 }
+
+

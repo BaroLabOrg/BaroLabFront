@@ -9,13 +9,13 @@ export default function UsedInCollections({ collections = MOCK_COLLECTIONS }) {
         <section className="collections-section glass-card">
             <div className="collections-header">
                 <span className="collections-accent-bar" />
-                <h3 className="collections-title">Этот мод используют в сборках</h3>
+                <h3 className="collections-title">Used in collections</h3>
             </div>
 
             {collections.length === 0 ? (
                 <div className="collections-empty">
                     <span className="collections-empty-icon">📦</span>
-                    <p>Пока нет данных</p>
+                    <p>No data yet</p>
                 </div>
             ) : (
                 <div className="collections-scroll">

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import './ModCard.css';
 
 export default function ModCard({ mod }) {
@@ -8,7 +8,7 @@ export default function ModCard({ mod }) {
     const createdAt = mod.created_at || mod.createdAt;
     const createdDate = createdAt ? new Date(createdAt) : null;
     const date = createdDate && !Number.isNaN(createdDate.getTime())
-        ? createdDate.toLocaleDateString('ru-RU', {
+        ? createdDate.toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
@@ -37,12 +37,13 @@ export default function ModCard({ mod }) {
                     <span className="mod-card-date">{date}</span>
                 </div>
                 <div className="mod-card-stats">
-                    <span className="mod-card-transitions" title="Переходы">
+                    <span className="mod-card-transitions" title="Visits">
                         🔗 {mod.popularity ?? 0}
                     </span>
-                    <span className="mod-card-read">Подробнее →</span>
+                    <span className="mod-card-read">Read more →</span>
                 </div>
             </div>
         </Link>
     );
 }
+

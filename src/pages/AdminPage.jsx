@@ -18,8 +18,8 @@ export default function AdminPage() {
         <div className="page">
             <div className="container">
                 <div className="admin-header">
-                    <h1 className="page-title">⚙ Панель администратора</h1>
-                    <p className="page-subtitle">Управление пользователями, модами и их руководствами</p>
+                    <h1 className="page-title">⚙ Admin Panel</h1>
+                    <p className="page-subtitle">Manage users, mods, and guides</p>
                 </div>
 
                 <div className="admin-tabs">
@@ -28,7 +28,7 @@ export default function AdminPage() {
                             className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
                             onClick={() => setActiveTab('users')}
                         >
-                            👥 Пользователи
+                            👥 Users
                         </button>
                     )}
 
@@ -36,13 +36,13 @@ export default function AdminPage() {
                         className={`admin-tab ${activeTab === 'mods' ? 'active' : ''}`}
                         onClick={() => setActiveTab('mods')}
                     >
-                        🎮 Моды
+                        🎮 Mods
                     </button>
                     <button
                         className={`admin-tab ${activeTab === 'guides' ? 'active' : ''}`}
                         onClick={() => setActiveTab('guides')}
                     >
-                        📚 Руководства
+                        📚 Guides
                     </button>
                     {isAdmin && (
                         <button
@@ -101,7 +101,7 @@ function UsersTab() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(api.mapPaginationError(err, 'Не удалось загрузить пользователей'));
+            setError(api.mapPaginationError(err, 'Failed to load users'));
         } finally {
             setLoading(false);
         }
@@ -148,7 +148,7 @@ function UsersTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего пользователей: <strong>{totalUsers}</strong></div>
+            <div className="admin-stat">Total users: <strong>{totalUsers}</strong></div>
             <div className="admin-list">
                 {users.map((user) => (
                     <div key={user.id} className="admin-item glass-card">
@@ -179,7 +179,7 @@ function UsersTab() {
                                     onClick={() => handleActivate(user.id)}
                                     disabled={actionLoading === user.id}
                                 >
-                                    Активировать
+                                    Activate
                                 </button>
                             ) : (
                                 <button
@@ -187,7 +187,7 @@ function UsersTab() {
                                     onClick={() => handleBlock(user.id)}
                                     disabled={actionLoading === user.id}
                                 >
-                                    Заблокировать
+                                    Block
                                 </button>
                             )}
                         </div>
@@ -252,7 +252,7 @@ function ModsTab() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(api.mapPaginationError(err, 'Не удалось загрузить моды'));
+            setError(api.mapPaginationError(err, 'Failed to load mods'));
         } finally {
             setLoading(false);
         }
@@ -300,7 +300,7 @@ function ModsTab() {
             setCommentHasNext(data.has_next);
             setCommentHasPrevious(data.has_previous);
         } catch (err) {
-            setError(api.mapPaginationError(err, 'Не удалось загрузить комментарии'));
+            setError(api.mapPaginationError(err, 'Failed to load comments'));
         } finally {
             setCommentsLoading(false);
         }
@@ -357,7 +357,7 @@ function ModsTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего модов: <strong>{totalMods}</strong></div>
+            <div className="admin-stat">Total mods: <strong>{totalMods}</strong></div>
             <div className="admin-list">
                 {mods.map((mod) => {
                     const isOpen = selectedId === mod.external_id && commentsOpen;
@@ -371,12 +371,12 @@ function ModsTab() {
                                             {mod.description?.slice(0, 80)}{mod.description?.length > 80 ? '...' : ''}
                                         </span>
                                         <span className="admin-item-meta">
-                                            🔥 Популярность: {mod.popularity} &nbsp;|&nbsp; 👤 {mod.author_username}
+                                            🔥 Popularity: {mod.popularity} &nbsp;|&nbsp; 👤 {mod.author_username}
                                         </span>
                                         <span className="admin-item-date">
                                             🕒 {formatDate(mod.createdAt || mod.created_at)}
                                             {(mod.updatedAt || mod.updated_at) && (mod.updatedAt || mod.updated_at) !== (mod.createdAt || mod.created_at) ?
-                                                ` (обн. ${formatDate(mod.updatedAt || mod.updated_at)})` : ''}
+                                                ` (updated ${formatDate(mod.updatedAt || mod.updated_at)})` : ''}
                                         </span>
                                     </div>
                                     <div className="admin-item-badges">
@@ -391,7 +391,7 @@ function ModsTab() {
                                             onClick={() => handleActivate(mod.external_id)}
                                             disabled={actionLoading === mod.external_id}
                                         >
-                                            Активировать
+                                            Activate
                                         </button>
                                     ) : (
                                         <button
@@ -399,14 +399,14 @@ function ModsTab() {
                                             onClick={() => handleBlock(mod.external_id)}
                                             disabled={actionLoading === mod.external_id}
                                         >
-                                            Заблокировать
+                                            Block
                                         </button>
                                     )}
                                     <button
                                         className={`btn btn-outline btn-sm ${isOpen ? 'active' : ''}`}
                                         onClick={() => toggleComments(mod.external_id)}
                                     >
-                                        {isOpen ? '▲ Скрыть комм.' : '▼ Комментарии'}
+                                        {isOpen ? '▲ Hide comments' : '▼ Comments'}
                                     </button>
                                 </div>
                             </div>
@@ -415,7 +415,7 @@ function ModsTab() {
                                 <div className="comments-ladder">
                                     {commentsLoading && <LoadingSpinner />}
                                     {!commentsLoading && comments.length === 0 && (
-                                        <p className="no-comments">Нет комментариев</p>
+                                        <p className="no-comments">No comments</p>
                                     )}
                                     {!commentsLoading && comments.map((c) => (
                                         <div key={c.id} className="admin-comment-item glass-card">
@@ -428,7 +428,7 @@ function ModsTab() {
                                                     <span className="admin-item-date">
                                                         🕒 {formatDate(c.createdAt || c.created_at)}
                                                         {(c.updatedAt || c.updated_at) && (c.updatedAt || c.updated_at) !== (c.createdAt || c.created_at) ?
-                                                            ` (обн. ${formatDate(c.updatedAt || c.updated_at)})` : ''}
+                                                            ` (updated ${formatDate(c.updatedAt || c.updated_at)})` : ''}
                                                     </span>
                                                 </div>
                                                 <div className="admin-item-badges">
@@ -442,7 +442,7 @@ function ModsTab() {
                                                         onClick={() => handleCommentActivate(c.id)}
                                                         disabled={commentActionLoading === c.id}
                                                     >
-                                                        Активировать
+                                                        Activate
                                                     </button>
                                                 ) : (
                                                     <button
@@ -450,7 +450,7 @@ function ModsTab() {
                                                         onClick={() => handleCommentBlock(c.id)}
                                                         disabled={commentActionLoading === c.id}
                                                     >
-                                                        Заблокировать
+                                                        Block
                                                     </button>
                                                 )}
                                             </div>
@@ -517,7 +517,7 @@ function GuidesTab() {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(api.mapPaginationError(err, 'Не удалось загрузить руководства'));
+            setError(api.mapPaginationError(err, 'Failed to load guides'));
         } finally {
             setLoading(false);
         }
@@ -552,7 +552,7 @@ function GuidesTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Всего руководств: <strong>{totalGuides}</strong></div>
+            <div className="admin-stat">Total guides: <strong>{totalGuides}</strong></div>
             <div className="admin-list">
                 {guides.map((guide) => (
                     <div key={guide.id} className="admin-item-group">
@@ -564,12 +564,12 @@ function GuidesTab() {
                                         {guide.description?.slice(0, 80)}{guide.description?.length > 80 ? '...' : ''}
                                     </span>
                                     <span className="admin-item-meta">
-                                        🔗 <Link to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">К моду ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}
+                                        🔗 <Link to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}/edit`} className="auth-link">To mod ID {guide.modId || guide.mod_id}</Link> &nbsp;|&nbsp; 👤 {guide.author?.username || guide.author?.login}
                                     </span>
                                     <span className="admin-item-date">
                                         🕒 {formatDate(guide.createdAt || guide.created_at)}
                                         {(guide.updatedAt || guide.updated_at) && (guide.updatedAt || guide.updated_at) !== (guide.createdAt || guide.created_at) ?
-                                            ` (обн. ${formatDate(guide.updatedAt || guide.updated_at)})` : ''}
+                                            ` (updated ${formatDate(guide.updatedAt || guide.updated_at)})` : ''}
                                     </span>
                                 </div>
                                 <div className="admin-item-badges">
@@ -583,7 +583,7 @@ function GuidesTab() {
                                         onClick={() => handleActivate(guide.id)}
                                         disabled={actionLoading === guide.id}
                                     >
-                                        Активировать
+                                        Activate
                                     </button>
                                 ) : (
                                     <button
@@ -591,7 +591,7 @@ function GuidesTab() {
                                         onClick={() => handleBlock(guide.id)}
                                         disabled={actionLoading === guide.id}
                                     >
-                                        Заблокировать
+                                        Block
                                     </button>
                                 )}
                             </div>
@@ -615,7 +615,7 @@ function GuidesTab() {
 function formatDate(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
-    return isNaN(d.getTime()) ? '' : d.toLocaleString('ru-RU', {
+    return isNaN(d.getTime()) ? '' : d.toLocaleString('en-US', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
     });

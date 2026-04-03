@@ -46,7 +46,7 @@ export default function CommentsSection({ externalId }) {
             setHasNext(data.has_next);
             setHasPrevious(data.has_previous);
         } catch (err) {
-            setError(mapPaginationError(err, 'Не удалось загрузить комментарии'));
+            setError(mapPaginationError(err, 'Failed to load comments'));
         } finally {
             setLoading(false);
         }
@@ -75,7 +75,7 @@ export default function CommentsSection({ externalId }) {
     if (loading) {
         return (
             <section className="mod-comments-section glass-card">
-                <div className="mod-comments-loading">Загрузка комментариев...</div>
+                <div className="mod-comments-loading">Loading comments...</div>
             </section>
         );
     }
@@ -83,7 +83,7 @@ export default function CommentsSection({ externalId }) {
     return (
         <section className="mod-comments-section glass-card">
             <h3 className="mod-comments-title">
-                Комментарии <span className="mod-comments-count">{totalComments}</span>
+                Comments <span className="mod-comments-count">{totalComments}</span>
             </h3>
 
             {isAuthenticated ? (
@@ -92,22 +92,21 @@ export default function CommentsSection({ externalId }) {
                         className="mod-comment-input"
                         value={commentBody}
                         onChange={(e) => setCommentBody(e.target.value)}
-                        placeholder="Напишите комментарий..."
+                        placeholder="Write a comment..."
                         rows="3"
                         required
                         disabled={submitting}
                     />
                     <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
-                        {submitting ? 'Отправка...' : 'Отправить'}
+                        {submitting ? 'Sending...' : 'Send'}
                     </button>
                     {error && <div className="auth-error mod-comments-error">{error}</div>}
                 </form>
             ) : (
                 <div className="mod-comment-guest">
                     <p>
-                        <Link to="/login">Войдите</Link> или{' '}
-                        <Link to="/sign-up">зарегистрируйтесь</Link>, чтобы оставить
-                        комментарий.
+                        <Link to="/login">Log in</Link> or{' '}
+                        <Link to="/sign-up">sign up</Link> to leave a comment.
                     </p>
                 </div>
             )}
@@ -116,7 +115,7 @@ export default function CommentsSection({ externalId }) {
 
             <div className="mod-comments-list">
                 {comments.length === 0 ? (
-                    <p className="mod-comments-empty">Комментариев пока нет. Будьте первым!</p>
+                    <p className="mod-comments-empty">No comments yet. Be the first!</p>
                 ) : (
                     comments.map((c) => (
                         <div key={c.id} className="mod-comment-entry">

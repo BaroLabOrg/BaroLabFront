@@ -111,7 +111,7 @@ export async function subscribeMod(externalId) {
     }
 
     if (res.status === 429) {
-        throw new Error('Можно раз в час. Попробуйте позже.');
+        throw new Error('You can do this once per hour. Please try again later.');
     }
 
     if (!res.ok) {

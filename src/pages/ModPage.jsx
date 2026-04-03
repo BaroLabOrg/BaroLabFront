@@ -46,7 +46,7 @@ export default function ModPage() {
         } catch (err) {
             console.error('Failed to add tag:', err);
             // Optionally, show a toast or error message here
-            alert('Ошибка при добавлении тега: ' + err.message);
+            alert('Error adding tag: ' + err.message);
         }
     };
 
@@ -57,7 +57,7 @@ export default function ModPage() {
             await loadMod();
         } catch (err) {
             console.error('Failed to remove tag:', err);
-            alert('Ошибка при удалении тега: ' + err.message);
+            alert('Error removing tag: ' + err.message);
         }
     };
 
@@ -67,7 +67,7 @@ export default function ModPage() {
                 <div className="container">
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <p>Загрузка мода...</p>
+                        <p>Loading mod...</p>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ export default function ModPage() {
                 <div className="container">
                     <div className="auth-error">{error}</div>
                     <Link to="/mods" className="btn btn-ghost" style={{ marginTop: 16 }}>
-                        ← Назад к модам
+                        ← Back to mods
                     </Link>
                 </div>
             </div>
@@ -90,7 +90,7 @@ export default function ModPage() {
     return (
         <div className="page mod-page">
             <div className="container mod-page-container">
-                <Link to="/mods" className="back-link">← Назад к модам</Link>
+                <Link to="/mods" className="back-link">← Back to mods</Link>
 
                 {mod && (
                     <>
@@ -114,9 +114,9 @@ export default function ModPage() {
 
                                 {/* Content */}
                                 <section className="mod-content-section glass-card fade-in">
-                                    <h3 className="mod-content-heading">Описание</h3>
+                                    <h3 className="mod-content-heading">Description</h3>
                                     <div className="mod-content-body">
-                                        {mod.description || 'Нет описания.'}
+                                        {mod.description || 'No description.'}
                                     </div>
                                 </section>
 
