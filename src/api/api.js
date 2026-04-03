@@ -109,10 +109,10 @@ export function normalizePagedResponse(response) {
     };
 }
 
-export function mapPaginationError(error, fallbackMessage = 'Не удалось загрузить данные') {
+export function mapPaginationError(error, fallbackMessage = 'Failed to load data') {
     if (error?.status === 400) {
-        const details = error?.message || 'Некорректные параметры пагинации';
-        return `Ошибка пагинации: ${details}`;
+        const details = error?.message || 'Invalid pagination parameters';
+        return `Pagination error: ${details}`;
     }
     return error?.message || fallbackMessage;
 }

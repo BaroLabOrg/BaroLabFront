@@ -47,7 +47,7 @@ export default function GuidesSection() {
                 setHasNext(data.has_next);
                 setHasPrevious(data.has_previous);
             } catch (err) {
-                setError(mapPaginationError(err, 'Не удалось загрузить руководства'));
+                setError(mapPaginationError(err, 'Failed to load guides'));
             } finally {
                 setLoading(false);
             }
@@ -70,11 +70,11 @@ export default function GuidesSection() {
                 <div className="guides-header">
                     <div className="guides-header-main">
                         <span className="guides-accent-bar" />
-                        <h3 className="guides-title">Связанные руководства</h3>
+                        <h3 className="guides-title">Related guides</h3>
                     </div>
                 </div>
                 <div className="guides-empty">
-                    <p>Загрузка...</p>
+                    <p>Loading...</p>
                 </div>
             </section>
         );
@@ -85,14 +85,14 @@ export default function GuidesSection() {
             <div className="guides-header">
                 <div className="guides-header-main">
                     <span className="guides-accent-bar" />
-                    <h3 className="guides-title">Связанные руководства</h3>
+                    <h3 className="guides-title">Related guides</h3>
                 </div>
                 {canCreateGuide && (
                     <button
                         onClick={handleCreateGuide}
                         className="btn btn-primary btn-sm guides-create-btn"
                     >
-                        Создать руководство
+                        Create guide
                     </button>
                 )}
             </div>
@@ -100,7 +100,7 @@ export default function GuidesSection() {
             {guides.length === 0 ? (
                 <div className="guides-empty">
                     <span className="guides-empty-icon">📖</span>
-                    <p>Для этого мода пока нет руководств.</p>
+                    <p>No guides for this mod yet.</p>
                 </div>
             ) : (
                 <ul className="guides-list">
@@ -114,7 +114,7 @@ export default function GuidesSection() {
                                     <div className="guide-info">
                                         <span className="guide-name">{guide.title}</span>
                                         <span className="guide-meta">
-                                            Автор: {guide.author?.username || 'Unknown'} · {guideCreatedAt ? new Date(guideCreatedAt).toLocaleDateString() : 'N/A'}
+                                            Author: {guide.author?.username || 'Unknown'} · {guideCreatedAt ? new Date(guideCreatedAt).toLocaleDateString() : 'N/A'}
                                         </span>
                                     </div>
                                 </Link>
@@ -127,7 +127,7 @@ export default function GuidesSection() {
                                                 handleEditGuide(guide.id);
                                             }}
                                         >
-                                            Редактировать
+                                            Edit
                                         </button>
                                     </div>
                                 )}

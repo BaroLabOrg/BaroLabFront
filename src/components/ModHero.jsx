@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import './ModHero.css';
 
 export default function ModHero({ mod, onSubscribe }) {
@@ -13,7 +13,7 @@ export default function ModHero({ mod, onSubscribe }) {
         ? mod.description.length > 150
             ? mod.description.slice(0, 150) + '…'
             : mod.description
-        : 'Описание мода';
+        : 'Mod description';
 
     const handleSubscribe = async () => {
         setSubscribing(true);
@@ -54,7 +54,7 @@ export default function ModHero({ mod, onSubscribe }) {
                         )}
                         <span className="mod-hero-separator">·</span>
                         <span className="mod-hero-date">
-                            {new Date(mod.created_at).toLocaleDateString('ru-RU', {
+                            {new Date(mod.created_at).toLocaleDateString('en-US', {
                                 day: 'numeric',
                                 month: 'short',
                                 year: 'numeric',
@@ -70,11 +70,11 @@ export default function ModHero({ mod, onSubscribe }) {
                     onClick={handleSubscribe}
                     disabled={subscribing}
                 >
-                    {subscribing ? 'Загрузка...' : '⬇ Download'}
+                    {subscribing ? 'Loading...' : '⬇ Download'}
                 </button>
                 <div className="mod-hero-stats">
-                    <span className="mod-hero-transitions-badge" title="Переходы в Steam Workshop">
-                        🔗 {mod.popularity ?? 0} переходов
+                    <span className="mod-hero-transitions-badge" title="Steam Workshop visits">
+                        🔗 {mod.popularity ?? 0} visits
                     </span>
                 </div>
                 {subError && <div className="mod-hero-error">{subError}</div>}
@@ -82,3 +82,4 @@ export default function ModHero({ mod, onSubscribe }) {
         </div>
     );
 }
+

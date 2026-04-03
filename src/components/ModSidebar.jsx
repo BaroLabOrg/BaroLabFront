@@ -32,7 +32,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
     return (
         <aside className="mod-sidebar">
             <div className="mod-sidebar-card glass-card">
-                <h4 className="mod-sidebar-heading">Теги</h4>
+                <h4 className="mod-sidebar-heading">Tags</h4>
                 <TagChips 
                     tags={tags} 
                     onRemove={isAdmin ? onRemoveTag : undefined} 
@@ -46,7 +46,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                                 className="btn btn-secondary btn-sm mod-tag-add-btn" 
                                 onClick={() => setIsAddingTag(true)}
                             >
-                                + Добавить тег
+                                + Add tag
                             </button>
                         ) : (
                             <div className="mod-sidebar-tag-select-container fade-in">
@@ -55,7 +55,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                                     value={selectedTag} 
                                     onChange={(e) => setSelectedTag(e.target.value)}
                                 >
-                                    <option value="" disabled>Выберите тег</option>
+                                    <option value="" disabled>Select tag</option>
                                     {allTags.filter(t => !tags.some(ext => ext.id === t.id)).map(tag => (
                                         <option key={tag.id} value={tag.id}>{tag.name}</option>
                                     ))}
@@ -66,7 +66,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                                         onClick={handleAddClick}
                                         disabled={!selectedTag}
                                     >
-                                        Добавить
+                                        Add
                                     </button>
                                     <button 
                                         className="btn btn-ghost btn-sm" 
@@ -75,7 +75,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                                             setSelectedTag('');
                                         }}
                                     >
-                                        Отмена
+                                        Cancel
                                     </button>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
 
             {mod.required_mods && mod.required_mods.length > 0 && (
                 <div className="mod-sidebar-card glass-card">
-                    <h4 className="mod-sidebar-heading">Необходимые моды</h4>
+                    <h4 className="mod-sidebar-heading">Required mods</h4>
                     <ul className="mod-deps-list">
                         {mod.required_mods.map((depId, i) => (
                             <li key={i} className="mod-dep-item">
@@ -101,7 +101,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
             )}
 
             <div className="mod-sidebar-card glass-card">
-                <h4 className="mod-sidebar-heading">Создатель</h4>
+                <h4 className="mod-sidebar-heading">Author</h4>
                 <div className="mod-creator-card">
                     <div className="mod-creator-avatar">👤</div>
                     <div className="mod-creator-info">
@@ -117,14 +117,14 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                         ) : (
                             <span className="mod-creator-name">{authorName}</span>
                         )}
-                        <span className="mod-creator-role">{authorSteamId ? 'Автор Steam Workshop' : 'Автор BaroLab'}</span>
+                        <span className="mod-creator-role">{authorSteamId ? 'Steam Workshop author' : 'BaroLab author'}</span>
                     </div>
                 </div>
             </div>
 
             {mod.mods_above && mod.mods_above.length > 0 && (
                 <div className="mod-sidebar-card glass-card">
-                    <h4 className="mod-sidebar-heading">Загружать выше</h4>
+                    <h4 className="mod-sidebar-heading">Load above</h4>
                     <ul className="mod-deps-list">
                         {mod.mods_above.map((modId, i) => (
                             <li key={i} className="mod-dep-item">

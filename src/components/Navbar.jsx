@@ -22,26 +22,26 @@ export default function Navbar() {
 
                 <div className="navbar-links">
                     <NavLink to="/mods" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Моды
+                        Mods
                     </NavLink>
                     <NavLink to="/submarines" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Подлодки
+                        Submarines
                     </NavLink>
                     <NavLink to="/guides" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Руководства
+                        Guides
                     </NavLink>
                     <NavLink to="/tags" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Теги
+                        Tags
                     </NavLink>
                     <NavLink to="/encyclopedia" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        Энциклопедия
+                        Encyclopedia
                     </NavLink>
                     {isAdmin && (
                         <NavLink
                             to="/admin"
                             className={({ isActive }) => `nav-link nav-link-admin ${isActive ? 'active' : ''}`}
                         >
-                            ⚙ Админ
+                            ⚙ Admin
                         </NavLink>
                     )}
                 </div>
@@ -52,16 +52,16 @@ export default function Navbar() {
                             {user.username && <span className="user-name-badge">@{user.username}</span>}
                             {roleLabel && <span className="user-role-badge">{roleLabel}</span>}
                             <button className="btn btn-ghost btn-sm navbar-logout" onClick={handleLogout}>
-                                Выйти
+                                Log out
                             </button>
                         </>
                     ) : (
                         <>
                             <NavLink to="/login" className="btn btn-ghost btn-sm navbar-auth-link">
-                                Войти
+                                Log in
                             </NavLink>
                             <NavLink to="/sign-up" className="btn btn-primary btn-sm">
-                                Регистрация
+                                Sign up
                             </NavLink>
                         </>
                     )}

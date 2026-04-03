@@ -5,14 +5,14 @@ export default function SubmarineGallery({ title, main_image, additional_images 
         <ImageGallery
             className="submarine-section submarine-gallery glass-card"
             title={title}
-            heading="Галерея"
+            heading="Gallery"
             mainImage={main_image}
             additionalImages={additional_images}
             includeMainImage
             showEmptyPlaceholder
-            emptyPlaceholderText="Изображения отсутствуют."
-            previewAlt={(index) => `${title || 'Submarine'} - изображение ${index + 1}`}
-            thumbnailAriaLabel={(index) => `Показать изображение ${index + 1}`}
+            emptyPlaceholderText="No images available."
+            previewAlt={(index) => `${title || 'Submarine'} - image ${index + 1}`}
+            thumbnailAriaLabel={(index) => `Show image ${index + 1}`}
         />
     );
 }

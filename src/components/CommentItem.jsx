@@ -1,8 +1,8 @@
-
+﻿
 import './CommentItem.css';
 
 export default function CommentItem({ comment }) {
-    const date = new Date(comment.created_at).toLocaleDateString('ru-RU', {
+    const date = new Date(comment.created_at).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -20,3 +20,4 @@ export default function CommentItem({ comment }) {
         </div>
     );
 }
+

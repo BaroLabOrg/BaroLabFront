@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import { ENCYCLOPEDIA_ENTITY_TYPES, getEncyclopediaList, getEncyclopediaNavigation } from '../api/encyclopedia';
@@ -116,22 +116,22 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Injuries',
-                label: 'Травмы',
+                label: 'Traumas',
                 count: 8,
                 secondaryBlocks: [],
             },
             {
                 key: 'Infections',
-                label: 'Инфекции',
+                label: 'Infections',
                 count: 7,
                 secondaryBlocks: [
                     { key: 'Husk', label: 'Husk', count: 3 },
-                    { key: 'Parasitic', label: 'Паразитические', count: 4 },
+                    { key: 'Parasitic', label: 'Parasitic', count: 4 },
                 ],
             },
             {
                 key: 'Psychological',
-                label: 'Психологические',
+                label: 'Psychological',
                 count: 4,
                 secondaryBlocks: [],
             },
@@ -144,19 +144,19 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Crew Characters',
-                label: 'Экипаж',
+                label: 'Crew',
                 count: 5,
                 secondaryBlocks: [],
             },
             {
                 key: 'Neutral NPCs',
-                label: 'Нейтральные NPC',
+                label: 'Neutral NPCs',
                 count: 5,
                 secondaryBlocks: [],
             },
             {
                 key: 'Story Characters',
-                label: 'Сюжетные',
+                label: 'Story-related',
                 count: 4,
                 secondaryBlocks: [],
             },
@@ -169,19 +169,19 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Major Factions',
-                label: 'Крупные фракции',
+                label: 'Major factions',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Local Groups',
-                label: 'Локальные группы',
+                label: 'Local groups',
                 count: 3,
                 secondaryBlocks: [],
             },
             {
                 key: 'Hostile Forces',
-                label: 'Враждебные силы',
+                label: 'Hostile forces',
                 count: 2,
                 secondaryBlocks: [],
             },
@@ -194,25 +194,25 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Outposts',
-                label: 'Аванпосты',
+                label: 'Outposts',
                 count: 8,
                 secondaryBlocks: [
-                    { key: 'City', label: 'Гражданские', count: 4 },
-                    { key: 'Military', label: 'Военные', count: 4 },
+                    { key: 'City', label: 'Civilian', count: 4 },
+                    { key: 'Military', label: 'Military', count: 4 },
                 ],
             },
             {
                 key: 'Ruins',
-                label: 'Руины',
+                label: 'Ruins',
                 count: 7,
                 secondaryBlocks: [
-                    { key: 'Alien', label: 'Инопланетные', count: 4 },
-                    { key: 'Wreck', label: 'Обломки', count: 3 },
+                    { key: 'Alien', label: 'Alien', count: 4 },
+                    { key: 'Wreck', label: 'Wrecks', count: 3 },
                 ],
             },
             {
                 key: 'Transit Points',
-                label: 'Транзитные точки',
+                label: 'Transit points',
                 count: 6,
                 secondaryBlocks: [],
             },
@@ -225,19 +225,19 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Transport',
-                label: 'Транспортные',
+                label: 'Transport',
                 count: 5,
                 secondaryBlocks: [],
             },
             {
                 key: 'Attack',
-                label: 'Атакующие',
+                label: 'Attack',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Scout',
-                label: 'Разведчики',
+                label: 'Scout',
                 count: 4,
                 secondaryBlocks: [],
             },
@@ -250,23 +250,23 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Monsters',
-                label: 'Монстры',
+                label: 'Monsters',
                 count: 11,
                 secondaryBlocks: [
-                    { key: 'Abyss', label: 'Бездна', count: 5 },
-                    { key: 'Cave', label: 'Пещеры', count: 3 },
-                    { key: 'Shallows', label: 'Мелководье', count: 3 },
+                    { key: 'Abyss', label: 'Abyss', count: 5 },
+                    { key: 'Cave', label: 'Caves', count: 3 },
+                    { key: 'Shallows', label: 'Shallows', count: 3 },
                 ],
             },
             {
                 key: 'Humanoids',
-                label: 'Гуманоиды',
+                label: 'Humanoids',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Pets',
-                label: 'Питомцы',
+                label: 'Pets',
                 count: 3,
                 secondaryBlocks: [],
             },
@@ -279,19 +279,19 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Shallow Regions',
-                label: 'Верхние регионы',
+                label: 'Upper regions',
                 count: 3,
                 secondaryBlocks: [],
             },
             {
                 key: 'Middle Regions',
-                label: 'Средние регионы',
+                label: 'Mid regions',
                 count: 3,
                 secondaryBlocks: [],
             },
             {
                 key: 'Abyss Regions',
-                label: 'Глубинные регионы',
+                label: 'Deep regions',
                 count: 3,
                 secondaryBlocks: [],
             },
@@ -304,37 +304,37 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Captain Tree',
-                label: 'Капитан',
+                label: 'Captain',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Engineer Tree',
-                label: 'Инженер',
+                label: 'Engineer',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Mechanic Tree',
-                label: 'Механик',
+                label: 'Mechanic',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Security Tree',
-                label: 'Офицер безопасности',
+                label: 'Security officer',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Medical Tree',
-                label: 'Врач',
+                label: 'Doctor',
                 count: 4,
                 secondaryBlocks: [],
             },
             {
                 key: 'Assistant Tree',
-                label: 'Ассистент',
+                label: 'Assistant',
                 count: 4,
                 secondaryBlocks: [],
             },
@@ -347,18 +347,18 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Crew Roles',
-                label: 'Роли экипажа',
+                label: 'Crew roles',
                 count: 6,
                 secondaryBlocks: [],
             },
             {
                 key: 'Specializations',
-                label: 'Специализации',
+                label: 'Specializations',
                 count: 6,
                 secondaryBlocks: [
-                    { key: 'Medical', label: 'Медицинские', count: 2 },
-                    { key: 'Engineering', label: 'Инженерные', count: 2 },
-                    { key: 'Combat', label: 'Боевые', count: 2 },
+                    { key: 'Medical', label: 'Medical', count: 2 },
+                    { key: 'Engineering', label: 'Engineering', count: 2 },
+                    { key: 'Combat', label: 'Combat', count: 2 },
                 ],
             },
         ],
@@ -370,19 +370,19 @@ const DEMO_TYPE_SECTIONS = [
         primaryBlocks: [
             {
                 key: 'Mechanics',
-                label: 'Механики',
+                label: 'Mechanics',
                 count: 5,
                 secondaryBlocks: [],
             },
             {
                 key: 'UI & Symbols',
-                label: 'UI и символы',
+                label: 'UI and symbols',
                 count: 3,
                 secondaryBlocks: [],
             },
             {
                 key: 'Meta Systems',
-                label: 'Системные темы',
+                label: 'System topics',
                 count: 3,
                 secondaryBlocks: [],
             },
@@ -399,8 +399,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'ITEM',
             primaryCategory: 'Medical',
             secondaryCategory: 'Medicines',
-            summary: 'Базовое средство для остановки кровотечения.',
-            shortDescription: 'Базовое средство для остановки кровотечения.',
+            summary: 'Basic item for stopping bleeding.',
+            shortDescription: 'Basic item for stopping bleeding.',
             primaryImageUrl: null,
         },
         {
@@ -410,8 +410,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'ITEM',
             primaryCategory: 'Medical',
             secondaryCategory: 'Medicines',
-            summary: 'Используется для переливания крови.',
-            shortDescription: 'Используется для переливания крови.',
+            summary: 'Used for blood transfusion.',
+            shortDescription: 'Used for blood transfusion.',
             primaryImageUrl: null,
         },
     ],
@@ -423,8 +423,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'AFFLICTION',
             primaryCategory: 'Infections',
             secondaryCategory: 'Husk',
-            summary: 'Постепенное заражение, требующее срочного лечения.',
-            shortDescription: 'Постепенное заражение, требующее срочного лечения.',
+            summary: 'Gradual infection that requires urgent treatment.',
+            shortDescription: 'Gradual infection that requires urgent treatment.',
             primaryImageUrl: null,
         },
     ],
@@ -436,8 +436,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'LOCATION',
             primaryCategory: 'Ruins',
             secondaryCategory: 'Alien',
-            summary: 'Опасные структуры с ценной добычей.',
-            shortDescription: 'Опасные структуры с ценной добычей.',
+            summary: 'Dangerous structures with valuable loot.',
+            shortDescription: 'Dangerous structures with valuable loot.',
             primaryImageUrl: null,
         },
     ],
@@ -449,8 +449,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'SUBMARINE',
             primaryCategory: 'Transport',
             secondaryCategory: '',
-            summary: 'Универсальная подлодка для грузовых маршрутов.',
-            shortDescription: 'Универсальная подлодка для грузовых маршрутов.',
+            summary: 'Versatile submarine for cargo routes.',
+            shortDescription: 'Versatile submarine for cargo routes.',
             primaryImageUrl: null,
         },
     ],
@@ -462,8 +462,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'CREATURE',
             primaryCategory: 'Monsters',
             secondaryCategory: 'Abyss',
-            summary: 'Крупный хищник глубин.',
-            shortDescription: 'Крупный хищник глубин.',
+            summary: 'Large deep-sea predator.',
+            shortDescription: 'Large deep-sea predator.',
             primaryImageUrl: null,
         },
         {
@@ -473,8 +473,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'CREATURE',
             primaryCategory: 'Monsters',
             secondaryCategory: 'Abyss',
-            summary: 'Опасный абиссальный червь.',
-            shortDescription: 'Опасный абиссальный червь.',
+            summary: 'Dangerous abyssal worm.',
+            shortDescription: 'Dangerous abyssal worm.',
             primaryImageUrl: null,
         },
     ],
@@ -486,8 +486,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'TALENT',
             primaryCategory: 'Captain Tree',
             secondaryCategory: '',
-            summary: 'Усиливает эффективность команды рядом с капитаном.',
-            shortDescription: 'Усиливает эффективность команды рядом с капитаном.',
+            summary: 'Improves team efficiency near the captain.',
+            shortDescription: 'Improves team efficiency near the captain.',
             primaryImageUrl: null,
         },
     ],
@@ -499,8 +499,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'JOB',
             primaryCategory: 'Crew Roles',
             secondaryCategory: '',
-            summary: 'Координация экипажа и управление миссией.',
-            shortDescription: 'Координация экипажа и управление миссией.',
+            summary: 'Crew coordination and mission management.',
+            shortDescription: 'Crew coordination and mission management.',
             primaryImageUrl: null,
         },
         {
@@ -510,8 +510,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'JOB',
             primaryCategory: 'Crew Roles',
             secondaryCategory: '',
-            summary: 'Лечение экипажа и контроль аффликтов.',
-            shortDescription: 'Лечение экипажа и контроль аффликтов.',
+            summary: 'Crew treatment and affliction control.',
+            shortDescription: 'Crew treatment and affliction control.',
             primaryImageUrl: null,
         },
     ],
@@ -523,8 +523,8 @@ const DEMO_ITEM_POOL = {
             entityType: 'OTHER',
             primaryCategory: 'Mechanics',
             secondaryCategory: '',
-            summary: 'Базовые принципы работы реактора и распределения нагрузки.',
-            shortDescription: 'Базовые принципы работы реактора и распределения нагрузки.',
+            summary: 'Basic principles of reactor operation and load distribution.',
+            shortDescription: 'Basic principles of reactor operation and load distribution.',
             primaryImageUrl: null,
         },
     ],
@@ -1439,7 +1439,7 @@ function sortByCountDesc(a, b) {
 function sortByCountDescThenLabelAsc(a, b) {
     const countDelta = Number(b.count || 0) - Number(a.count || 0);
     if (countDelta !== 0) return countDelta;
-    return String(a.label || '').localeCompare(String(b.label || ''), 'ru-RU');
+    return String(a.label || '').localeCompare(String(b.label || ''), 'en-US');
 }
 
 function buildSectionQuickLinks(section, maxLinks = MAX_QUICK_LINKS_PER_SECTION) {
@@ -1534,12 +1534,12 @@ function buildDemoItems({ entityType, primaryCategory, secondaryCategory }) {
         {
             id: `demo-${entityType}-${primaryCategory}-1`,
             slug: `demo-${String(entityType || '').toLowerCase()}-${slugSuffix}`,
-            title: `${primaryCategory || entityType} — демо`,
+            title: `${primaryCategory || entityType} — demo`,
             entityType,
             primaryCategory,
             secondaryCategory: secondaryCategory || '',
-            summary: 'Заглушка предпросмотра структуры энциклопедии.',
-            shortDescription: 'Заглушка предпросмотра структуры энциклопедии.',
+            summary: 'Placeholder for encyclopedia structure preview.',
+            shortDescription: 'Placeholder for encyclopedia structure preview.',
             primaryImageUrl: null,
         },
     ];
@@ -1622,7 +1622,7 @@ export default function EncyclopediaListPage() {
                 if (!cancelled) {
                     setTypeSections([]);
                     setHasLiveSections(false);
-                    setHubError(mapPaginationError(error, 'Не удалось загрузить структуру энциклопедии'));
+                    setHubError(mapPaginationError(error, 'Failed to load encyclopedia structure'));
                 }
             } finally {
                 if (!cancelled) setLoadingHub(false);
@@ -1718,7 +1718,7 @@ export default function EncyclopediaListPage() {
                     setTotalPages(0);
                     setHasNext(false);
                     setHasPrevious(false);
-                    setItemsError(mapPaginationError(error, 'Не удалось загрузить статьи'));
+                    setItemsError(mapPaginationError(error, 'Failed to load articles'));
                 }
             } finally {
                 if (!cancelled) setLoadingItems(false);
@@ -1745,9 +1745,9 @@ export default function EncyclopediaListPage() {
         <div className="page">
             <div className="container encyclopedia-list-page">
                 <header className="encyclopedia-header-box glass-card">
-                    <h1 className="encyclopedia-title">📖 Энциклопедия Barotrauma</h1>
+                    <h1 className="encyclopedia-title">📖 Barotrauma Encyclopedia</h1>
                     <p className="encyclopedia-subtitle">
-                        Структура: разделы → подгруппы → статьи.
+                        Structure: sections → groups → articles.
                     </p>
                     <div className="encyclopedia-level-actions">
                         {entityType && (
@@ -1761,7 +1761,7 @@ export default function EncyclopediaListPage() {
                                     page: 0,
                                 })}
                             >
-                                К разделам
+                                To sections
                             </button>
                         )}
                         {entityType && primaryCategory && (
@@ -1774,7 +1774,7 @@ export default function EncyclopediaListPage() {
                                     page: 0,
                                 })}
                             >
-                                К подгруппам
+                                To groups
                             </button>
                         )}
                         {secondaryCategory && (
@@ -1786,26 +1786,26 @@ export default function EncyclopediaListPage() {
                                     page: 0,
                                 })}
                             >
-                                К подподгруппам
+                                To subgroups
                             </button>
                         )}
-                        {isAdmin && <Link to="/admin/encyclopedia/new" className="btn btn-primary">➕ Создать страницу</Link>}
+                        {isAdmin && <Link to="/admin/encyclopedia/new" className="btn btn-primary">➕ Create page</Link>}
                     </div>
                 </header>
 
                 {rootLevel && (
                     <section className="encyclopedia-sections">
-                        <h2 className="encyclopedia-hub-title">Разделы энциклопедии</h2>
+                        <h2 className="encyclopedia-hub-title">Encyclopedia sections</h2>
                         {demoMode && (
                             <div className="encyclopedia-demo-hint">
-                                Показаны демо-заглушки структуры. Реальные данные появятся после импорта/публикации.
+                                Demo placeholders are shown. Real data will appear after import/publication.
                             </div>
                         )}
                         {hubError && <div className="auth-error">{hubError}</div>}
                         {loadingHub ? (
                             <div className="loading-state">
                                 <div className="loading-spinner" />
-                                <p>Загрузка разделов...</p>
+                                <p>Loading sections...</p>
                             </div>
                         ) : (
                             <div className="encyclopedia-type-stack">
@@ -1817,10 +1817,10 @@ export default function EncyclopediaListPage() {
                                                 <h3>{section.label}</h3>
                                                 <span className="encyclopedia-type-section-titleline-bar" />
                                             </div>
-                                            <span className="encyclopedia-type-section-count">{section.count} статей</span>
+                                            <span className="encyclopedia-type-section-count">{section.count} articles</span>
                                             <button
                                                 className="btn btn-ghost btn-sm"
-                                                aria-label={`Открыть раздел ${section.label}`}
+                                                aria-label={`Open section ${section.label}`}
                                                 onClick={() => updateSearch({
                                                     entityType: section.key,
                                                     primaryCategory: '',
@@ -1829,11 +1829,11 @@ export default function EncyclopediaListPage() {
                                                     page: 0,
                                                 })}
                                             >
-                                                Открыть раздел
+                                                Open section
                                             </button>
                                         </div>
                                         {section.primaryBlocks.length === 0 ? (
-                                            <p className="encyclopedia-empty-text">Подгруппы пока не определены.</p>
+                                            <p className="encyclopedia-empty-text">No groups defined yet.</p>
                                         ) : (
                                             <>
                                                 <div className="encyclopedia-hub-grid">
@@ -1853,7 +1853,7 @@ export default function EncyclopediaListPage() {
                                                                 {buildBlockMonogram(block.label)}
                                                             </span>
                                                             <strong>{block.label}</strong>
-                                                            <span>{block.count} статей</span>
+                                                            <span>{block.count} articles</span>
                                                         </button>
                                                     ))}
                                                 </div>
@@ -1887,16 +1887,16 @@ export default function EncyclopediaListPage() {
                     <section className="encyclopedia-groups-panel glass-card">
                         <div className="encyclopedia-panel-titleline">
                             <span className="encyclopedia-panel-titleline-bar" />
-                            <h2>{selectedTypeSection?.label || entityType}: подгруппы</h2>
+                            <h2>{selectedTypeSection?.label || entityType}: groups</h2>
                             <span className="encyclopedia-panel-titleline-bar" />
                         </div>
                         {loadingHub ? (
                             <div className="loading-state">
                                 <div className="loading-spinner" />
-                                <p>Загрузка подгрупп...</p>
+                                <p>Loading groups...</p>
                             </div>
                         ) : primaryBlocks.length === 0 ? (
-                            <p className="encyclopedia-empty-text">Для раздела пока нет подгрупп.</p>
+                            <p className="encyclopedia-empty-text">No groups for this section yet.</p>
                         ) : (
                             <div className="encyclopedia-hub-grid encyclopedia-hub-grid-level">
                                 {primaryBlocks.map((block) => (
@@ -1914,7 +1914,7 @@ export default function EncyclopediaListPage() {
                                             {buildBlockMonogram(block.label)}
                                         </span>
                                         <strong>{block.label}</strong>
-                                        <span>{block.count} статей</span>
+                                        <span>{block.count} articles</span>
                                     </button>
                                 ))}
                             </div>
@@ -1926,16 +1926,16 @@ export default function EncyclopediaListPage() {
                     <section className="encyclopedia-groups-panel glass-card">
                         <div className="encyclopedia-panel-titleline">
                             <span className="encyclopedia-panel-titleline-bar" />
-                            <h2>{selectedPrimaryBlock?.label || primaryCategory}: подподгруппы</h2>
+                            <h2>{selectedPrimaryBlock?.label || primaryCategory}: subgroups</h2>
                             <span className="encyclopedia-panel-titleline-bar" />
                         </div>
                         {effectiveLoadingSecondary ? (
                             <div className="loading-state">
                                 <div className="loading-spinner" />
-                                <p>Загрузка подподгрупп...</p>
+                                <p>Loading subgroups...</p>
                             </div>
                         ) : effectiveSecondaryBlocks.length === 0 ? (
-                            <p className="encyclopedia-empty-text">У этой подгруппы нет дополнительных уровней.</p>
+                            <p className="encyclopedia-empty-text">This group has no additional levels.</p>
                         ) : (
                             <div className="encyclopedia-hub-grid encyclopedia-hub-grid-level">
                                 {effectiveSecondaryBlocks.map((block) => (
@@ -1952,7 +1952,7 @@ export default function EncyclopediaListPage() {
                                             {buildBlockMonogram(block.label)}
                                         </span>
                                         <strong>{block.label}</strong>
-                                        <span>{block.count} статей</span>
+                                        <span>{block.count} articles</span>
                                     </button>
                                 ))}
                             </div>
@@ -1965,7 +1965,7 @@ export default function EncyclopediaListPage() {
                         <section className="encyclopedia-search-panel glass-card">
                             <div className="encyclopedia-panel-titleline encyclopedia-panel-titleline-compact">
                                 <span className="encyclopedia-panel-titleline-bar" />
-                                <h2>Статьи раздела</h2>
+                                <h2>Section articles</h2>
                                 <span className="encyclopedia-panel-titleline-bar" />
                             </div>
                             <form
@@ -1975,22 +1975,22 @@ export default function EncyclopediaListPage() {
                                     updateSearch({ q: searchInput, page: 0 });
                                 }}
                             >
-                                <label htmlFor="encyclopedia-search-input">Поиск в выбранной подгруппе</label>
+                                <label htmlFor="encyclopedia-search-input">Search in selected group</label>
                                 <div className="encyclopedia-search-row">
                                     <input
                                         id="encyclopedia-search-input"
                                         value={searchInput}
                                         onChange={(event) => setSearchInput(event.target.value)}
-                                        placeholder="Введите название статьи"
+                                        placeholder="Enter article title"
                                     />
-                                    <button className="btn btn-primary" type="submit" disabled={loadingItems}>Найти</button>
+                                    <button className="btn btn-primary" type="submit" disabled={loadingItems}>Search</button>
                                     <button
                                         className="btn btn-ghost"
                                         type="button"
                                         onClick={() => updateSearch({ q: '', page: 0 })}
                                         disabled={loadingItems && !q}
                                     >
-                                        Сбросить
+                                        Reset
                                     </button>
                                 </div>
                             </form>
@@ -1999,11 +1999,11 @@ export default function EncyclopediaListPage() {
                         {loadingItems ? (
                             <div className="loading-state">
                                 <div className="loading-spinner" />
-                                <p>Загрузка статей...</p>
+                                <p>Loading articles...</p>
                             </div>
                         ) : items.length === 0 ? (
                             <section className="encyclopedia-empty-state glass-card">
-                                <p>Статьи в этой подгруппе не найдены.</p>
+                                <p>No articles found in this group.</p>
                             </section>
                         ) : (
                             <section className="encyclopedia-grid">
@@ -2022,14 +2022,14 @@ export default function EncyclopediaListPage() {
                                                 <span>
                                                     {item.primaryCategory
                                                         ? resolvePrimaryBlockLabel(item.entityType || 'OTHER', item.primaryCategory)
-                                                        : 'Без категории'}
+                                                        : 'Uncategorized'}
                                                 </span>
                                             </p>
                                             <h2 className="encyclopedia-card-title">
                                                 <Link to={`/encyclopedia/${item.slug}`}>{item.title}</Link>
                                             </h2>
                                             <p className="encyclopedia-card-description">
-                                                {item.summary || item.shortDescription || 'Описание пока отсутствует.'}
+                                                {item.summary || item.shortDescription || 'Description is not available yet.'}
                                             </p>
                                         </div>
                                     </article>
@@ -2044,10 +2044,12 @@ export default function EncyclopediaListPage() {
                             disabled={loadingItems}
                             onPageChange={(nextPage) => updateSearch({ page: nextPage })}
                         />
-                        {!loadingItems && <p className="encyclopedia-total-hint">Найдено статей: {total}</p>}
+                        {!loadingItems && <p className="encyclopedia-total-hint">Articles found: {total}</p>}
                     </>
                 )}
             </div>
         </div>
     );
 }
+
+

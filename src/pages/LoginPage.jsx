@@ -23,9 +23,9 @@ export default function LoginPage() {
             navigate('/mods');
         } catch (err) {
             if (err.status === 403) {
-                setSsoError('Этот аккаунт привязан к Google. Пожалуйста, используйте вход через Google.');
+                setSsoError('This account is linked to Google. Please use Google sign-in.');
             } else {
-                setError(err.message || 'Ошибка входа');
+                setError(err.message || 'Login error');
             }
         } finally {
             setLoading(false);
@@ -40,14 +40,14 @@ export default function LoginPage() {
             await loginWithGoogle(credentialResponse.credential);
             navigate('/mods');
         } catch (err) {
-            setError(err.message || 'Ошибка входа через Google');
+            setError(err.message || 'Google login error');
         } finally {
             setLoading(false);
         }
     };
 
     const handleGoogleError = () => {
-        setError('Не удалось войти через Google. Попробуйте ещё раз.');
+        setError('Google login failed. Please try again.');
     };
 
     return (
@@ -57,8 +57,8 @@ export default function LoginPage() {
                 <div className="auth-card glass-card">
                     <div className="auth-header">
                         <span className="auth-logo">◆</span>
-                        <h1 className="auth-title">С возвращением</h1>
-                        <p className="auth-subtitle">Войдите в свой аккаунт BaroLab</p>
+                        <h1 className="auth-title">Welcome back</h1>
+                        <p className="auth-subtitle">Sign in to your BaroLab account</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="auth-form">
@@ -66,26 +66,26 @@ export default function LoginPage() {
                         {ssoError && <div className="auth-sso-error">{ssoError}</div>}
 
                         <div className="form-group">
-                            <label className="form-label">Логин</label>
+                            <label className="form-label">Login</label>
                             <input
                                 id="login-input"
                                 type="text"
                                 value={login}
                                 onChange={(e) => setLogin(e.target.value)}
-                                placeholder="Введите логин"
+                                placeholder="Enter login"
                                 required
                                 autoFocus
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Пароль</label>
+                            <label className="form-label">Password</label>
                             <input
                                 id="password-input"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Введите пароль"
+                                placeholder="Enter password"
                                 required
                             />
                         </div>
@@ -96,12 +96,12 @@ export default function LoginPage() {
                             className="btn btn-primary auth-submit"
                             disabled={loading}
                         >
-                            {loading ? 'Вход...' : 'Войти'}
+                            {loading ? 'Signing in...' : 'Log in'}
                         </button>
                     </form>
 
                     <div className="auth-divider">
-                        <span>или</span>
+                        <span>or</span>
                     </div>
 
                     <div className="google-login-wrapper">
@@ -113,13 +113,13 @@ export default function LoginPage() {
                             width="100%"
                             text="signin_with"
                             shape="rectangular"
-                            locale="ru"
+                            locale="en"
                         />
                     </div>
 
                     <div className="auth-footer">
-                        <span>Нет аккаунта?</span>
-                        <Link to="/sign-up">Создать аккаунт</Link>
+                        <span>No account?</span>
+                        <Link to="/sign-up">Create account</Link>
                     </div>
                 </div>
             </div>

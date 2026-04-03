@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+﻿import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as tagsApi from '../api/tags';
 import * as submarinesApi from '../api/submarines';
@@ -13,7 +13,7 @@ function formatDate(value) {
     if (!value) return '—';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '—';
-    return date.toLocaleDateString('ru-RU', {
+    return date.toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -22,7 +22,7 @@ function formatDate(value) {
 
 function formatNumber(value, fractionDigits = 0) {
     if (value === undefined || value === null || Number.isNaN(Number(value))) return '—';
-    return Number(value).toLocaleString('ru-RU', {
+    return Number(value).toLocaleString('en-US', {
         minimumFractionDigits: fractionDigits,
         maximumFractionDigits: fractionDigits,
     });
@@ -65,7 +65,7 @@ export default function SubmarinePage() {
             } catch (err) {
                 if (!cancelled) {
                     setSubmarine(null);
-                    setError(err?.message || 'Не удалось загрузить подлодку');
+                    setError(err?.message || 'Failed to load submarine');
                 }
             } finally {
                 if (!cancelled) {
@@ -124,7 +124,7 @@ export default function SubmarinePage() {
             } catch (err) {
                 if (!cancelled) {
                     setAllTags([]);
-                    setTagsError(err?.message || 'Не удалось загрузить теги');
+                    setTagsError(err?.message || 'Failed to load tags');
                 }
             } finally {
                 if (!cancelled) {
@@ -165,7 +165,7 @@ export default function SubmarinePage() {
             setSelectedTag('');
             setIsAddingTag(false);
         } catch (err) {
-            setTagActionError(err?.message || 'Не удалось добавить тег');
+            setTagActionError(err?.message || 'Failed to add tag');
         } finally {
             setTagMutationLoading(false);
         }
@@ -182,7 +182,7 @@ export default function SubmarinePage() {
             const updated = await submarinesApi.getSubmarine(externalId);
             setSubmarine(updated);
         } catch (err) {
-            setTagActionError(err?.message || 'Не удалось удалить тег');
+            setTagActionError(err?.message || 'Failed to remove tag');
         } finally {
             setTagMutationLoading(false);
         }
@@ -194,7 +194,7 @@ export default function SubmarinePage() {
                 <div className="container">
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <p>Загрузка подлодки...</p>
+                        <p>Loading submarine...</p>
                     </div>
                 </div>
             </div>
@@ -207,7 +207,7 @@ export default function SubmarinePage() {
                 <div className="container">
                     <div className="auth-error">{error}</div>
                     <Link to="/submarines" className="btn btn-ghost submarine-back-btn">
-                        ← Назад к каталогу
+                        ← Back to catalog
                     </Link>
                 </div>
             </div>
@@ -225,7 +225,7 @@ export default function SubmarinePage() {
     return (
         <div className="page submarine-page">
             <div className="container submarine-page-container">
-                <Link to="/submarines" className="back-link">← Назад к подлодкам</Link>
+                <Link to="/submarines" className="back-link">← Back to submarines</Link>
 
                 <section className="submarine-hero glass-card">
                     <h1>{submarine.title}</h1>
@@ -233,15 +233,15 @@ export default function SubmarinePage() {
                         {submarine.submarineClass || '—'} · Tier {submarine.tier ?? '—'}
                         {submarine.fabricationType ? ` · ${submarine.fabricationType}` : ''}
                     </p>
-                    <p className="submarine-hero-description">{submarine.description || 'Нет описания.'}</p>
+                    <p className="submarine-hero-description">{submarine.description || 'No description.'}</p>
                 </section>
 
                 <div className="submarine-layout">
                     <main className="submarine-main">
                         <Suspense fallback={(
                             <section className="submarine-section glass-card">
-                                <h2>Галерея</h2>
-                                <p className="submarine-gallery-loading">Загрузка галереи...</p>
+                                <h2>Gallery</h2>
+                                <p className="submarine-gallery-loading">Loading gallery...</p>
                             </section>
                         )}
                         >
@@ -253,32 +253,32 @@ export default function SubmarinePage() {
                         </Suspense>
 
                         <section className="submarine-section glass-card">
-                            <h2>Базовые характеристики</h2>
+                            <h2>Base stats</h2>
                             <div className="submarine-metrics-grid">
-                                {metric('Цена', `${formatNumber(submarine.price)} mk`)}
-                                {metric('Экипаж', submarine.recommendedCrewDisplay || `${submarine.recommendedCrewMin ?? '—'} - ${submarine.recommendedCrewMax ?? '—'}`)}
-                                {metric('Грузоподъёмность', formatNumber(submarine.cargoCapacity))}
-                                {metric('Макс. скорость (гориз.)', `${formatNumber(submarine.maxHorizontalSpeedKph, 1)} км/ч`)}
-                                {metric('Слотов турелей', formatNumber(submarine.turretSlotCount))}
-                                {metric('Крупных слотов', formatNumber(submarine.largeTurretSlotCount))}
+                                {metric('Price', `${formatNumber(submarine.price)} mk`)}
+                                {metric('Crew', submarine.recommendedCrewDisplay || `${submarine.recommendedCrewMin ?? '—'} - ${submarine.recommendedCrewMax ?? '—'}`)}
+                                {metric('Cargo capacity', formatNumber(submarine.cargoCapacity))}
+                                {metric('Max speed (horizontal)', `${formatNumber(submarine.maxHorizontalSpeedKph, 1)} km/h`)}
+                                {metric('Turret slots', formatNumber(submarine.turretSlotCount))}
+                                {metric('Large slots', formatNumber(submarine.largeTurretSlotCount))}
                             </div>
                         </section>
 
                         <section className="submarine-section glass-card">
-                            <h2>Технические параметры</h2>
+                            <h2>Technical parameters</h2>
                             <div className="submarine-metrics-grid">
-                                {metric('Длина', submarine.lengthMeters !== undefined && submarine.lengthMeters !== null ? `${formatNumber(submarine.lengthMeters, 1)} м` : '—')}
-                                {metric('Высота', submarine.heightMeters !== undefined && submarine.heightMeters !== null ? `${formatNumber(submarine.heightMeters, 1)} м` : '—')}
-                                {metric('Макс. погружение', submarine.maxDescentSpeedKph !== undefined && submarine.maxDescentSpeedKph !== null ? `${formatNumber(submarine.maxDescentSpeedKph, 1)} км/ч` : '—')}
-                                {metric('Реактор', submarine.maxReactorOutputKw !== undefined && submarine.maxReactorOutputKw !== null ? `${formatNumber(submarine.maxReactorOutputKw, 1)} кВт` : '—')}
+                                {metric('Length', submarine.lengthMeters !== undefined && submarine.lengthMeters !== null ? `${formatNumber(submarine.lengthMeters, 1)} m` : '—')}
+                                {metric('Height', submarine.heightMeters !== undefined && submarine.heightMeters !== null ? `${formatNumber(submarine.heightMeters, 1)} m` : '—')}
+                                {metric('Max descent speed', submarine.maxDescentSpeedKph !== undefined && submarine.maxDescentSpeedKph !== null ? `${formatNumber(submarine.maxDescentSpeedKph, 1)} km/h` : '—')}
+                                {metric('Reactor', submarine.maxReactorOutputKw !== undefined && submarine.maxReactorOutputKw !== null ? `${formatNumber(submarine.maxReactorOutputKw, 1)} kW` : '—')}
                             </div>
                         </section>
 
                         <section className="submarine-section glass-card">
-                            <h2>Вооружение по умолчанию</h2>
+                            <h2>Default armament</h2>
                             <div className="submarine-weapons">
                                 <div>
-                                    <h3>Обычные турели</h3>
+                                    <h3>Regular turrets</h3>
                                     {submarine.defaultTurretWeapons?.length ? (
                                         <ul>
                                             {submarine.defaultTurretWeapons.map((weapon) => (
@@ -286,11 +286,11 @@ export default function SubmarinePage() {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p>Не указано</p>
+                                        <p>Not specified</p>
                                     )}
                                 </div>
                                 <div>
-                                    <h3>Крупные турели</h3>
+                                    <h3>Large turrets</h3>
                                     {submarine.defaultLargeTurretWeapons?.length ? (
                                         <ul>
                                             {submarine.defaultLargeTurretWeapons.map((weapon) => (
@@ -298,7 +298,7 @@ export default function SubmarinePage() {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p>Не указано</p>
+                                        <p>Not specified</p>
                                     )}
                                 </div>
                             </div>
@@ -307,18 +307,18 @@ export default function SubmarinePage() {
 
                     <aside className="submarine-sidebar">
                         <section className="submarine-section glass-card">
-                            <h2>Метаданные</h2>
+                            <h2>Metadata</h2>
                             <div className="submarine-meta">
                                 <p><strong>External ID:</strong> {submarine.externalId ?? submarine.external_id ?? '—'}</p>
-                                <p><strong>Автор:</strong> {submarine.authorUsername || submarine.author_username || '—'}</p>
-                                <p><strong>Статус:</strong> {statusLabel}</p>
-                                <p><strong>Создано:</strong> {formatDate(submarine.createdAt || submarine.created_at)}</p>
-                                <p><strong>Обновлено:</strong> {formatDate(submarine.updatedAt || submarine.updated_at)}</p>
+                                <p><strong>Author:</strong> {submarine.authorUsername || submarine.author_username || '—'}</p>
+                                <p><strong>Status:</strong> {statusLabel}</p>
+                                <p><strong>Created:</strong> {formatDate(submarine.createdAt || submarine.created_at)}</p>
+                                <p><strong>Updated:</strong> {formatDate(submarine.updatedAt || submarine.updated_at)}</p>
                             </div>
                         </section>
 
                         <section className="submarine-section glass-card">
-                            <h2>Теги</h2>
+                            <h2>Tags</h2>
                             <TagChips
                                 tags={submarineTags}
                                 onRemove={canManageTags ? handleRemoveTag : undefined}
@@ -335,19 +335,19 @@ export default function SubmarinePage() {
                                                 setIsAddingTag(true);
                                             }}
                                         >
-                                            + Добавить тег
+                                            + Add tag
                                         </button>
                                     ) : (
                                         <div className="submarine-tag-editor-controls">
-                                            <label htmlFor="submarine-tag-select">Выберите тег</label>
+                                            <label htmlFor="submarine-tag-select">Select tag</label>
                                             <select
                                                 id="submarine-tag-select"
-                                                aria-label="Выберите тег"
+                                                aria-label="Select tag"
                                                 value={selectedTag}
                                                 onChange={(event) => setSelectedTag(event.target.value)}
                                                 disabled={tagMutationLoading || tagsLoading || selectableTags.length === 0}
                                             >
-                                                <option value="">Выберите тег</option>
+                                                <option value="">Select tag</option>
                                                 {selectableTags.map((tag) => (
                                                     <option key={tag.id} value={tag.id}>
                                                         {tag.name || tag.slug || tag.id}
@@ -361,7 +361,7 @@ export default function SubmarinePage() {
                                                     onClick={handleAddTag}
                                                     disabled={!selectedTag || tagMutationLoading}
                                                 >
-                                                    Добавить
+                                                    Add
                                                 </button>
                                                 <button
                                                     type="button"
@@ -373,14 +373,14 @@ export default function SubmarinePage() {
                                                     }}
                                                     disabled={tagMutationLoading}
                                                 >
-                                                    Отмена
+                                                    Cancel
                                                 </button>
                                             </div>
                                         </div>
                                     )}
-                                    {tagsLoading && <p className="submarine-tag-meta">Загрузка тегов...</p>}
+                                    {tagsLoading && <p className="submarine-tag-meta">Loading tags...</p>}
                                     {!tagsLoading && isAddingTag && selectableTags.length === 0 && (
-                                        <p className="submarine-tag-meta">Все доступные теги уже добавлены.</p>
+                                        <p className="submarine-tag-meta">All available tags are already added.</p>
                                     )}
                                     {tagsError && <p className="submarine-tag-error">{tagsError}</p>}
                                     {tagActionError && <p className="submarine-tag-error">{tagActionError}</p>}
@@ -393,3 +393,4 @@ export default function SubmarinePage() {
         </div>
     );
 }
+

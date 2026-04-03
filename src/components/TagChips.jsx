@@ -51,7 +51,7 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
         .filter(Boolean);
 
     if (normalizedTags.length === 0) {
-        return <div className="tag-chips-empty">Нет тегов</div>;
+        return <div className="tag-chips-empty">No tags</div>;
     }
 
     return (
@@ -67,7 +67,7 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
                                 e.preventDefault();
                                 onRemove(tag.id || tag.key);
                             }}
-                            title="Удалить тег"
+                            title="Remove tag"
                         >
                             &times;
                         </button>

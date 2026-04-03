@@ -126,7 +126,7 @@ export default function ModsListPage() {
             setTotalPages(0);
             setHasNext(false);
             setHasPrevious(false);
-            setError(mapPaginationError(err, 'Не удалось загрузить моды'));
+            setError(mapPaginationError(err, 'Failed to load mods'));
         } finally {
             setLoading(false);
         }
@@ -164,7 +164,7 @@ export default function ModsListPage() {
             } catch (err) {
                 if (!cancelled) {
                     setAllTags([]);
-                    setTagsError(mapPaginationError(err, 'Не удалось загрузить теги'));
+                    setTagsError(mapPaginationError(err, 'Failed to load tags'));
                 }
             } finally {
                 if (!cancelled) {
@@ -291,9 +291,9 @@ export default function ModsListPage() {
         <div className="page">
             <div className="container">
                 <div className="mods-header-box glass-card shine">
-                    <h1 className="mods-title">🔧 Библиотека Модов</h1>
+                    <h1 className="mods-title">🔧 Mods Library</h1>
                     <p className="mods-subtitle">
-                        Steam Workshop моды сообщества · всего: {totalMods}
+                        Community Steam Workshop mods · total: {totalMods}
                     </p>
                     {isAuthenticated ? (
                         <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
@@ -302,13 +302,13 @@ export default function ModsListPage() {
                                 className="btn btn-primary"
                                 onClick={() => setShowForm(!showForm)}
                             >
-                                {showForm ? '✕ Закрыть' : '➕ Добавить мод'}
+                                {showForm ? '✕ Close' : '➕ Add mod'}
                             </button>
                         </div>
                     ) : (
                         <p className="auth-prompt" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
-                            <Link to="/login" className="auth-link">Войдите в аккаунт</Link> или{' '}
-                            <Link to="/sign-up" className="auth-link">зарегистрируйтесь</Link>, чтобы добавлять моды.
+                            <Link to="/login" className="auth-link">Log in</Link> or{' '}
+                            <Link to="/sign-up" className="auth-link">sign up</Link> to add mods.
                         </p>
                     )}
                 </div>
@@ -316,7 +316,7 @@ export default function ModsListPage() {
                 <section className="mods-search-panel glass-card">
                     <form className="mods-search-form" onSubmit={handleSearchSubmit}>
                         <label className="mods-search-label" htmlFor="mods-search-input">
-                            Поиск по названию мода
+                            Search by mod name
                         </label>
                         <div className="mods-search-row">
                             <input
@@ -324,11 +324,11 @@ export default function ModsListPage() {
                                 type="text"
                                 value={searchInput}
                                 onChange={(event) => setSearchInput(event.target.value)}
-                                placeholder="Введите название мода"
+                                placeholder="Enter mod name"
                                 autoComplete="off"
                             />
                             <button className="btn btn-primary" type="submit" disabled={loading || creating}>
-                                Найти
+                                Search
                             </button>
                             <button
                                 className="btn btn-ghost"
@@ -336,14 +336,14 @@ export default function ModsListPage() {
                                 disabled={!hasActiveFilters || loading || creating}
                                 onClick={handleResetFilters}
                             >
-                                Сбросить
+                                Reset
                             </button>
                         </div>
                     </form>
 
                     <div className="mods-tags-filter">
                         <label className="mods-search-label" htmlFor="mods-tag-select">
-                            Фильтр по тегам
+                            Filter by tags
                         </label>
                         <div className="mods-tag-row">
                             <select
@@ -352,7 +352,7 @@ export default function ModsListPage() {
                                 onChange={(event) => setTagToAdd(event.target.value)}
                                 disabled={tagsLoading || selectableTags.length === 0}
                             >
-                                <option value="">Выберите тег</option>
+                                <option value="">Select tag</option>
                                 {selectableTags.map((tag) => {
                                     const value = getTagFilterValue(tag);
                                     return (
@@ -368,15 +368,15 @@ export default function ModsListPage() {
                                 onClick={handleAddTagFilter}
                                 disabled={!tagToAdd || loading || creating}
                             >
-                                Добавить тег
+                                Add tag
                             </button>
                         </div>
 
-                        {tagsLoading && <p className="mods-tags-meta">Загрузка тегов...</p>}
+                        {tagsLoading && <p className="mods-tags-meta">Loading tags...</p>}
                         {tagsError && <p className="mods-tags-error">{tagsError}</p>}
 
                         <div className="mods-selected-tags">
-                            <span className="mods-tags-meta">Выбранные теги</span>
+                            <span className="mods-tags-meta">Selected tags</span>
                             <TagChips
                                 tags={selectedTagObjects}
                                 showRemoveButton
@@ -388,25 +388,25 @@ export default function ModsListPage() {
 
                 {isAuthenticated && showForm && (
                     <form className="create-mod-form glass-card fade-in" onSubmit={handleCreateMod}>
-                        <h3 className="form-title">Добавить мод</h3>
+                        <h3 className="form-title">Add mod</h3>
                         <div className="form-group">
-                            <label className="form-label">Название</label>
+                            <label className="form-label">Title</label>
                             <input
                                 id="mod-title-input"
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Название мода"
+                                placeholder="Mod title"
                                 required
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Описание</label>
+                            <label className="form-label">Description</label>
                             <textarea
                                 id="mod-content-input"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Описание мода"
+                                placeholder="Mod description"
                                 required
                                 rows="4"
                             />
@@ -423,7 +423,7 @@ export default function ModsListPage() {
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Главная картинка (URL)</label>
+                            <label className="form-label">Main image (URL)</label>
                             <input
                                 id="mod-main-image-input"
                                 type="url"
@@ -433,7 +433,7 @@ export default function ModsListPage() {
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Дополнительные картинки (URL, через запятую)</label>
+                            <label className="form-label">Additional images (URLs, comma-separated)</label>
                             <input
                                 id="mod-additional-images-input"
                                 type="text"
@@ -443,7 +443,7 @@ export default function ModsListPage() {
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Необходимые моды (ID из Steam, через запятую)</label>
+                            <label className="form-label">Required mods (Steam IDs, comma-separated)</label>
                             <input
                                 id="mod-required-input"
                                 type="text"
@@ -453,7 +453,7 @@ export default function ModsListPage() {
                             />
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Моды выше (ID из Steam, через запятую)</label>
+                            <label className="form-label">Mods above (Steam IDs, comma-separated)</label>
                             <input
                                 id="mod-above-input"
                                 type="text"
@@ -468,7 +468,7 @@ export default function ModsListPage() {
                             className="btn btn-primary"
                             disabled={creating}
                         >
-                            {creating ? 'Публикация...' : 'Опубликовать'}
+                            {creating ? 'Publishing...' : 'Publish'}
                         </button>
                     </form>
                 )}
@@ -478,12 +478,12 @@ export default function ModsListPage() {
                 {loading ? (
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <p>Загрузка модов...</p>
+                        <p>Loading mods...</p>
                     </div>
                 ) : mods.length === 0 ? (
                     <div className="empty-state fade-in">
                         <span className="empty-icon">🔧</span>
-                        <p>По текущему запросу моды не найдены.</p>
+                        <p>No mods found for the current query.</p>
                     </div>
                 ) : (
                     <div className="mods-grid">

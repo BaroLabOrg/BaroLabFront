@@ -40,7 +40,7 @@ export default function Pagination({
                 disabled={!canGoPrevious}
                 onClick={() => onPageChange(page - 1)}
             >
-                Назад
+                Back
             </button>
 
             <div className="pagination-pages">
@@ -63,7 +63,7 @@ export default function Pagination({
                 disabled={!canGoNext}
                 onClick={() => onPageChange(page + 1)}
             >
-                Вперед
+                Next
             </button>
         </nav>
     );

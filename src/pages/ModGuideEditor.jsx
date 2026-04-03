@@ -55,7 +55,7 @@ export default function ModGuideEditor() {
 
     const handleSave = async () => {
         if (!title || title.trim().length < 3) {
-            setError('Название руководства должно содержать минимум 3 символа.');
+            setError('Guide title must be at least 3 characters.');
             return;
         }
 
@@ -84,8 +84,8 @@ export default function ModGuideEditor() {
                 <div className="instructions-modal-overlay" onClick={() => setShowInstructions(false)}>
                     <div className="instructions-modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="instructions-modal-header">
-                            <h3>Как писать руководства?</h3>
-                            <button onClick={() => setShowInstructions(false)}>Закрыть</button>
+                            <h3>How to write guides?</h3>
+                            <button onClick={() => setShowInstructions(false)}>Close</button>
                         </div>
                         <div className="instructions-modal-body guide-markdown-body">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -101,7 +101,7 @@ export default function ModGuideEditor() {
                     {error && <div className="editor-error-msg">{error}</div>}
                 </div>
                 <div className="editor-header-right">
-                    <button className="btn-help" onClick={() => setShowInstructions(true)}>Как писать руководства?</button>
+                    <button className="btn-help" onClick={() => setShowInstructions(true)}>How to write guides?</button>
                     <button className="btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
                     <button className="btn-save" onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Save Guide'}
