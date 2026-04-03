@@ -15,6 +15,9 @@ const ModGuidePage = lazy(() => import('./pages/ModGuidePage'));
 const GuidesListPage = lazy(() => import('./pages/GuidesListPage'));
 const ModGuideEditor = lazy(() => import('./pages/ModGuideEditor'));
 const TagsPage = lazy(() => import('./pages/TagsPage'));
+const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
+const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
+const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
 
 function RouteFallback() {
     return (
@@ -72,6 +75,14 @@ export default function App() {
                         element={<TagsPage />}
                     />
                     <Route
+                        path="/encyclopedia"
+                        element={<EncyclopediaListPage />}
+                    />
+                    <Route
+                        path="/encyclopedia/:slug"
+                        element={<EncyclopediaDetailPage />}
+                    />
+                    <Route
                         path="/mod/:externalId"
                         element={<ModPage />}
                     />
@@ -103,6 +114,22 @@ export default function App() {
                                 <ModGuideEditor />
                             </ProtectedRoute>
                         }
+                    />
+                    <Route
+                        path="/admin/encyclopedia/new"
+                        element={(
+                            <ProtectedRoute adminOnly>
+                                <EncyclopediaEditorPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/admin/encyclopedia/:id/edit"
+                        element={(
+                            <ProtectedRoute adminOnly>
+                                <EncyclopediaEditorPage />
+                            </ProtectedRoute>
+                        )}
                     />
 
                     {/* Fallback */}

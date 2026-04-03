@@ -32,6 +32,9 @@ export default function Navbar() {
                     <NavLink to="/tags" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Теги
                     </NavLink>
+                    <NavLink to="/encyclopedia" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Энциклопедия
+                    </NavLink>
                     {isAdmin && (
                         <NavLink
                             to="/admin"
