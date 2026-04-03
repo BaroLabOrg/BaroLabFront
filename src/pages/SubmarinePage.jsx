@@ -214,7 +214,6 @@ export default function SubmarinePage() {
         );
     }
 
-    const statusLabel = submarine.blocked ? 'BLOCKED' : submarine.active ? 'ACTIVE' : 'UNKNOWN';
     const mainImage = submarine.main_image || submarine.mainImage;
     const additionalImages = Array.isArray(submarine.additional_images)
         ? submarine.additional_images
@@ -311,7 +310,6 @@ export default function SubmarinePage() {
                             <div className="submarine-meta">
                                 <p><strong>External ID:</strong> {submarine.externalId ?? submarine.external_id ?? '—'}</p>
                                 <p><strong>Author:</strong> {submarine.authorUsername || submarine.author_username || '—'}</p>
-                                <p><strong>Status:</strong> {statusLabel}</p>
                                 <p><strong>Created:</strong> {formatDate(submarine.createdAt || submarine.created_at)}</p>
                                 <p><strong>Updated:</strong> {formatDate(submarine.updatedAt || submarine.updated_at)}</p>
                             </div>

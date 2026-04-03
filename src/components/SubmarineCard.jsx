@@ -18,16 +18,9 @@ function formatCrew(submarine) {
     return `${submarine.recommendedCrewMin} - ${submarine.recommendedCrewMax}`;
 }
 
-function getStatusLabel(submarine) {
-    if (submarine.blocked === true) return 'BLOCKED';
-    if (submarine.active === true) return 'ACTIVE';
-    return '';
-}
-
 export default function SubmarineCard({ submarine }) {
     const externalId = submarine.externalId ?? submarine.external_id;
     const mainImage = submarine.main_image || submarine.mainImage;
-    const statusLabel = getStatusLabel(submarine);
     const previewAlt = submarine.title ? `${submarine.title} preview` : 'Submarine preview';
 
     return (
@@ -54,11 +47,6 @@ export default function SubmarineCard({ submarine }) {
                         {submarine.submarineClass || '—'} · Tier {submarine.tier ?? '—'}
                     </p>
                 </div>
-                {statusLabel && (
-                    <span className={`submarine-card-status ${statusLabel === 'BLOCKED' ? 'blocked' : 'active'}`}>
-                        {statusLabel}
-                    </span>
-                )}
             </div>
 
             <p className="submarine-card-description">

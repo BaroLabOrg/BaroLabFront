@@ -85,7 +85,6 @@ describe('SubmarinePage', () => {
         expect(screen.getByText('COILGUN')).toBeInTheDocument();
         expect(screen.getByText('RAILGUN')).toBeInTheDocument();
         expect(screen.getByText('Military')).toBeInTheDocument();
-        expect(screen.getByText('ACTIVE')).toBeInTheDocument();
         expect(await screen.findByRole('img', { name: 'Orca - изображение 1' })).toBeInTheDocument();
         expect(await screen.findByRole('button', { name: 'Показать изображение 2' })).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: '+ Добавить тег' })).not.toBeInTheDocument();
