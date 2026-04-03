@@ -196,6 +196,10 @@ function parseOptionalNumber(rawValue, label, { integer = false } = {}) {
     return parsed;
 }
 
+function isBlockedSubmarine(submarine) {
+    return submarine?.blocked === true || String(submarine?.status || '').toUpperCase() === 'BLOCKED';
+}
+
 function formatDate(value) {
     if (!value) return '—';
     const date = new Date(value);
@@ -406,7 +410,10 @@ export default function SubmarinesListPage() {
                 sortBy,
                 direction,
             });
-            setSubmarines(response.items);
+            const visibleSubmarines = Array.isArray(response.items)
+                ? response.items.filter((submarine) => !isBlockedSubmarine(submarine))
+                : [];
+            setSubmarines(visibleSubmarines);
             setTotalSubmarines(response.total);
             setTotalPages(response.total_pages);
             setHasNext(response.has_next);

@@ -142,6 +142,20 @@ describe('SubmarinesListPage', () => {
         }));
     });
 
+    it('hides blocked submarines from catalog list', async () => {
+        submarinesApi.searchSubmarines.mockResolvedValue(paged([
+            buildSubmarine(1, 'Typhon', { blocked: true, active: false, status: 'BLOCKED' }),
+            buildSubmarine(2, 'Orca', { blocked: false, active: true, status: 'ACTIVE' }),
+        ], { total: 2 }));
+
+        renderSubmarinesPage();
+
+        await waitFor(() => {
+            expect(screen.getByText('Orca')).toBeInTheDocument();
+        });
+        expect(screen.queryByText('Typhon')).not.toBeInTheDocument();
+    });
+
     it('restores filters from URL query params', async () => {
         renderSubmarinesPage('/submarines?q=orca&submarineClass=ATTACK&tier=2&priceMin=1000&priceMax=3000&recommendedCrewMin=2&recommendedCrewMax=5&maxHorizontalSpeedKphMin=22.5&maxHorizontalSpeedKphMax=44.1&tags=military,fast&page=1&size=20&sortBy=price&direction=asc');
 
