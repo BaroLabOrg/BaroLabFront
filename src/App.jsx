@@ -15,6 +15,7 @@ const ModGuidePage = lazy(() => import('./pages/ModGuidePage'));
 const GuidesListPage = lazy(() => import('./pages/GuidesListPage'));
 const ModGuideEditor = lazy(() => import('./pages/ModGuideEditor'));
 const TagsPage = lazy(() => import('./pages/TagsPage'));
+const LoadOrderPage = lazy(() => import('./pages/LoadOrderPage'));
 const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
 const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
 const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
@@ -73,6 +74,10 @@ export default function App() {
                     <Route
                         path="/tags"
                         element={<TagsPage />}
+                    />
+                    <Route
+                        path="/load-order"
+                        element={<LoadOrderPage />}
                     />
                     <Route
                         path="/encyclopedia"
