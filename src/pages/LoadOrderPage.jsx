@@ -1,18 +1,28 @@
 import { useState } from 'react';
 import { convertLoadOrder } from '../api/loadOrder';
+import { LOAD_ORDER_SAMPLE_REQUEST } from './loadOrderSample';
 import './LoadOrderPage.css';
 
 const INITIAL_REQUEST_TEXT = `{
   "mods": []
 }`;
+const SAMPLE_REQUEST_TEXT = JSON.stringify(LOAD_ORDER_SAMPLE_REQUEST, null, 2);
 
-function getErrorTitle(status) {
-    if (status === 400) {
+function getErrorTitle(status, code) {
+    if (code === 'VALIDATION_FAILED') {
         return 'Validation failed (400)';
     }
 
-    if (status === 422) {
+    if (code === 'CYCLIC_DEPENDENCY') {
         return 'Dependency graph contains cycle (422)';
+    }
+
+    if (status === 400) {
+        return 'Bad request (400)';
+    }
+
+    if (status === 422) {
+        return 'Unprocessable request (422)';
     }
 
     return 'Request failed';
@@ -24,7 +34,19 @@ export default function LoadOrderPage() {
     const [requestError, setRequestError] = useState('');
     const [responseError, setResponseError] = useState('');
     const [responseStatus, setResponseStatus] = useState(null);
+    const [responseCode, setResponseCode] = useState('');
+    const [responseDetails, setResponseDetails] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const handleUseSample = () => {
+        setRequestText(SAMPLE_REQUEST_TEXT);
+        setRequestError('');
+        setResponseError('');
+        setResponseStatus(null);
+        setResponseCode('');
+        setResponseDetails([]);
+        setXmlResult('');
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -32,6 +54,8 @@ export default function LoadOrderPage() {
         setRequestError('');
         setResponseError('');
         setResponseStatus(null);
+        setResponseCode('');
+        setResponseDetails([]);
         setXmlResult('');
 
         let payload;
@@ -48,6 +72,8 @@ export default function LoadOrderPage() {
             setXmlResult(xml);
         } catch (error) {
             setResponseStatus(error?.status ?? null);
+            setResponseCode(error?.code || '');
+            setResponseDetails(Array.isArray(error?.details) ? error.details : []);
             setResponseError(error?.message || 'Failed to convert load order.');
         } finally {
             setLoading(false);
@@ -84,6 +110,9 @@ export default function LoadOrderPage() {
                         {requestError && <div className="auth-error">{requestError}</div>}
 
                         <div className="load-order-actions">
+                            <button type="button" className="btn btn-outline" onClick={handleUseSample} disabled={loading}>
+                                Use Example
+                            </button>
                             <button type="submit" className="btn btn-primary" disabled={loading}>
                                 {loading ? 'Converting...' : 'Convert to XML'}
                             </button>
@@ -93,8 +122,30 @@ export default function LoadOrderPage() {
 
                 {responseError && (
                     <section className="load-order-error-card glass-card">
-                        <h2>{getErrorTitle(responseStatus)}</h2>
+                        <h2>{getErrorTitle(responseStatus, responseCode)}</h2>
                         <p>{responseError}</p>
+                        {(responseStatus || responseCode) && (
+                            <div className="load-order-error-meta">
+                                {responseStatus ? <span>HTTP: {responseStatus}</span> : null}
+                                {responseCode ? <span>code: {responseCode}</span> : null}
+                            </div>
+                        )}
+                        {responseDetails.length > 0 && (
+                            <ul className="load-order-error-details">
+                                {responseDetails.map((detail, index) => (
+                                    <li key={`${index}-${detail.code}-${detail.modId}-${detail.dependencyId}`}>
+                                        <div className="load-order-error-detail-main">
+                                            {detail.message || 'Validation detail'}
+                                        </div>
+                                        <div className="load-order-error-detail-meta">
+                                            {detail.code ? <span>detail: {detail.code}</span> : null}
+                                            {detail.modId ? <span>mod: {detail.modId}</span> : null}
+                                            {detail.dependencyId ? <span>dep: {detail.dependencyId}</span> : null}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </section>
                 )}
 

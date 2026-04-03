@@ -24,28 +24,53 @@ function tryParseJson(text) {
     }
 }
 
-function mapErrorMessage(errorBody, status, fallbackText) {
-    if (typeof fallbackText === 'string' && fallbackText.trim().length > 0) {
-        return fallbackText.trim();
+function normalizeString(value) {
+    if (typeof value !== 'string') {
+        return '';
     }
+    return value.trim();
+}
 
+function normalizeErrorDetails(errorBody) {
     if (!errorBody || typeof errorBody !== 'object') {
-        return `Error ${status}`;
+        return [];
     }
 
-    if (typeof errorBody.message === 'string' && errorBody.message.trim().length > 0) {
-        return errorBody.message;
+    if (Array.isArray(errorBody.details)) {
+        return errorBody.details
+            .filter((detail) => detail && typeof detail === 'object')
+            .map((detail) => ({
+                code: normalizeString(detail.code),
+                modId: normalizeString(detail.modId),
+                dependencyId: normalizeString(detail.dependencyId),
+                message: normalizeString(detail.message),
+            }))
+            .filter((detail) => detail.code || detail.modId || detail.dependencyId || detail.message);
     }
 
-    if (typeof errorBody.error === 'string' && errorBody.error.trim().length > 0) {
-        return errorBody.error;
+    if (Array.isArray(errorBody.errors)) {
+        return errorBody.errors
+            .filter((item) => typeof item === 'string' && item.trim().length > 0)
+            .map((message) => ({
+                code: '',
+                modId: '',
+                dependencyId: '',
+                message: message.trim(),
+            }));
     }
 
-    if (Array.isArray(errorBody.errors) && errorBody.errors.length > 0) {
-        const firstError = errorBody.errors.find((item) => typeof item === 'string' && item.trim().length > 0);
-        if (firstError) {
-            return firstError;
-        }
+    return [];
+}
+
+function resolveErrorMessage(errorBody, status, fallbackText) {
+    const bodyMessage = normalizeString(errorBody?.message) || normalizeString(errorBody?.error);
+    if (bodyMessage) {
+        return bodyMessage;
+    }
+
+    const fallback = normalizeString(fallbackText);
+    if (fallback) {
+        return fallback;
     }
 
     return `Error ${status}`;
@@ -66,12 +91,14 @@ export async function convertLoadOrder(payload) {
 
     if (!response.ok) {
         const errorBody = tryParseJson(responseText);
-        const fallbackMessage = errorBody ? '' : responseText;
-        throw new ApiRequestError({
-            message: mapErrorMessage(errorBody, response.status, fallbackMessage),
+        const details = normalizeErrorDetails(errorBody);
+        const error = new ApiRequestError({
+            message: resolveErrorMessage(errorBody, response.status, responseText),
             status: response.status,
-            code: errorBody?.code,
+            code: normalizeString(errorBody?.code) || undefined,
         });
+        error.details = details;
+        throw error;
     }
 
     return responseText;

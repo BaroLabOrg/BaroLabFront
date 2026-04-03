@@ -38,6 +38,8 @@
 .load-order-actions {
   margin-top: 12px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   justify-content: flex-start;
 }
 
@@ -53,6 +55,47 @@
 .load-order-error-card p {
   margin: 0;
   color: var(--accent-red);
+}
+
+.load-order-error-meta {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.load-order-error-details {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.load-order-error-details li {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+}
+
+.load-order-error-detail-main {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.load-order-error-detail-meta {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
 .load-order-result {
