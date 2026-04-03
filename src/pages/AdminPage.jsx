@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 import * as guideApi from '../api/modGuides';
+import * as submarineApi from '../api/submarines';
 import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
@@ -19,7 +20,7 @@ export default function AdminPage() {
             <div className="container">
                 <div className="admin-header">
                     <h1 className="page-title">⚙ Admin Panel</h1>
-                    <p className="page-subtitle">Manage users, mods, and guides</p>
+                    <p className="page-subtitle">Manage users, mods, guides, and submarines</p>
                 </div>
 
                 <div className="admin-tabs">
@@ -44,6 +45,12 @@ export default function AdminPage() {
                     >
                         📚 Guides
                     </button>
+                    <button
+                        className={`admin-tab ${activeTab === 'submarines' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('submarines')}
+                    >
+                        🚢 Submarines
+                    </button>
                     {isAdmin && (
                         <button
                             className={`admin-tab ${activeTab === 'steam-sync' ? 'active' : ''}`}
@@ -59,6 +66,7 @@ export default function AdminPage() {
 
                     {activeTab === 'mods' && <ModsTab />}
                     {activeTab === 'guides' && <GuidesTab />}
+                    {activeTab === 'submarines' && <SubmarinesTab />}
                     {activeTab === 'steam-sync' && isAdmin && <SteamSyncTab />}
                 </div>
             </div>
@@ -598,6 +606,157 @@ function GuidesTab() {
                         </div>
                     </div>
                 ))}
+            </div>
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
+                disabled={loading || actionLoading !== null}
+                onPageChange={setPage}
+            />
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════════ */
+/*              SUBMARINES TAB                */
+/* ═══════════════════════════════════════════ */
+function SubmarinesTab() {
+    const PAGE_SIZE = 12;
+    const [submarines, setSubmarines] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalSubmarines, setTotalSubmarines] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [actionLoading, setActionLoading] = useState(null);
+
+    useEffect(() => {
+        loadSubmarines(page);
+    }, [page]);
+
+    const loadSubmarines = async (targetPage) => {
+        setLoading(true);
+        setError('');
+        try {
+            const data = await submarineApi.getSubmarines({
+                page: targetPage,
+                size: PAGE_SIZE,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+            setSubmarines(data.items);
+            setTotalSubmarines(data.total);
+            setTotalPages(data.total_pages);
+            setHasNext(data.has_next);
+            setHasPrevious(data.has_previous);
+        } catch (err) {
+            setError(api.mapPaginationError(err, 'Failed to load submarines'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleActivate = async (externalId) => {
+        setActionLoading(externalId);
+        try {
+            const updated = await submarineApi.activateSubmarine(externalId);
+            setSubmarines(submarines.map((s) => ((s.externalId ?? s.external_id) === externalId ? updated : s)));
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleBlock = async (externalId) => {
+        setActionLoading(externalId);
+        try {
+            const updated = await submarineApi.blockSubmarine(externalId);
+            setSubmarines(submarines.map((s) => ((s.externalId ?? s.external_id) === externalId ? updated : s)));
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    if (loading) return <LoadingSpinner />;
+
+    return (
+        <div className="admin-tab-content">
+            {error && <div className="auth-error">{error}</div>}
+            <div className="admin-stat">Total submarines: <strong>{totalSubmarines}</strong></div>
+            <div className="admin-list">
+                {submarines.map((submarine) => {
+                    const externalId = submarine.externalId ?? submarine.external_id;
+                    const createdAt = submarine.createdAt || submarine.created_at;
+                    const updatedAt = submarine.updatedAt || submarine.updated_at;
+                    const isBlocked = submarine.blocked === true
+                        || String(submarine.status || '').toUpperCase() === 'BLOCKED';
+                    const status = isBlocked
+                        ? 'BLOCKED'
+                        : submarine.active === true || String(submarine.status || '').toUpperCase() === 'ACTIVE'
+                            ? 'ACTIVE'
+                            : submarine.status || 'UNKNOWN';
+
+                    return (
+                        <div key={submarine.id || externalId} className="admin-item-group">
+                            <div className="admin-item glass-card">
+                                <div className="admin-item-info">
+                                    <div className="admin-item-main">
+                                        <span className="admin-item-name">
+                                            {submarine.title || `Submarine #${externalId}`}
+                                        </span>
+                                        <span className="admin-item-sub">
+                                            {submarine.description?.slice(0, 100)}
+                                            {submarine.description?.length > 100 ? '...' : ''}
+                                        </span>
+                                        <span className="admin-item-meta">
+                                            🧭 {submarine.submarineClass || submarine.submarine_class || '—'}
+                                            &nbsp;|&nbsp; Tier {submarine.tier ?? '—'}
+                                            &nbsp;|&nbsp; 👤 {submarine.authorUsername || submarine.author_username || '—'}
+                                        </span>
+                                        <span className="admin-item-date">
+                                            🕒 {formatDate(createdAt)}
+                                            {updatedAt && updatedAt !== createdAt
+                                                ? ` (updated ${formatDate(updatedAt)})`
+                                                : ''}
+                                        </span>
+                                    </div>
+                                    <div className="admin-item-badges">
+                                        <StatusBadge status={status} />
+                                    </div>
+                                </div>
+                                <div className="admin-item-actions">
+                                    {isBlocked ? (
+                                        <button
+                                            className="btn btn-success btn-sm"
+                                            onClick={() => handleActivate(externalId)}
+                                            disabled={actionLoading === externalId}
+                                        >
+                                            Activate
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => handleBlock(externalId)}
+                                            disabled={actionLoading === externalId}
+                                        >
+                                            Block
+                                        </button>
+                                    )}
+                                    <Link className="btn btn-outline btn-sm" to={`/submarines/${externalId}`}>
+                                        Open
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
             <Pagination
                 page={page}

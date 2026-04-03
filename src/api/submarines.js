@@ -346,6 +346,20 @@ export async function createSubmarine(payload) {
     return normalizeSubmarine(response);
 }
 
+export async function activateSubmarine(externalId) {
+    const response = await request(`/api/submarines/${externalId}/activate`, {
+        method: 'PATCH',
+    });
+    return normalizeSubmarine(response);
+}
+
+export async function blockSubmarine(externalId) {
+    const response = await request(`/api/submarines/${externalId}/block`, {
+        method: 'PATCH',
+    });
+    return normalizeSubmarine(response);
+}
+
 export async function addSubmarineTag(externalId, tagId) {
     return request(`/api/submarines/${externalId}/tags/${tagId}`, {
         method: 'POST',
