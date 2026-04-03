@@ -1,146 +1,148 @@
 .tags-page {
-    padding-top: 2rem;
-    padding-bottom: 4rem;
+  padding-top: 8px;
+  padding-bottom: 32px;
 }
 
 .tags-header-box {
-    text-align: center;
-    padding: 3rem 2rem;
-    border-radius: 20px;
-    margin-bottom: 2rem;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(20, 20, 20, 0.6) 100%);
-    border: 1px solid rgba(88, 101, 242, 0.2);
+  margin-bottom: 16px;
+  padding: 20px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .tags-title {
-    margin: 0 0 0.8rem;
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, #b3b3b3 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .tags-subtitle {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--text-muted);
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
 }
 
 .tags-controls {
-    margin-bottom: 1.8rem;
-    padding: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: end;
-    justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .tags-sort-controls {
-    display: flex;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tags-control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .tags-control-group select {
-    min-width: 150px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    border-radius: var(--radius-sm);
-    padding: 0.6rem 0.7rem;
+  min-width: 150px;
 }
 
 .tags-create-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-    min-width: min(460px, 100%);
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .tags-create-form label {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .tags-create-row {
-    display: flex;
-    gap: 0.6rem;
+  display: flex;
+  gap: 8px;
 }
 
 .tags-create-row input {
-    flex: 1;
+  flex: 1;
 }
 
 .tags-form-error {
-    margin: 0;
-    color: var(--danger);
-    font-size: 0.78rem;
+  margin: 4px 0 0;
+  color: var(--accent-red);
+  font-size: 12px;
 }
 
 .tags-form-error-field {
-    color: var(--warning);
+  color: var(--accent-red);
 }
 
 .tags-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .tag-item-card {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .tag-item-card h3 {
-    margin: 0;
-    font-size: 1.05rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .tag-slug {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.82rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
 }
 
 .tag-usage,
 .tag-date {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.8rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
 }
 
 @media (max-width: 900px) {
-    .tags-controls {
-        align-items: stretch;
-    }
-
-    .tags-create-form {
-        min-width: 100%;
-    }
+  .tags-controls {
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 640px) {
-    .tags-header-box {
-        padding: 2rem 1rem;
-    }
+  .tags-header-box,
+  .tags-controls {
+    padding: 14px;
+  }
 
-    .tags-create-row {
-        flex-direction: column;
-    }
+  .tags-create-row {
+    flex-direction: column;
+  }
 }
-

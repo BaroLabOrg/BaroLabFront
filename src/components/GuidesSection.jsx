@@ -67,10 +67,10 @@ export default function GuidesSection() {
     if (loading) {
         return (
             <section className="guides-section glass-card">
-                <div className="guides-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="guides-header">
+                    <div className="guides-header-main">
                         <span className="guides-accent-bar" />
-                        <h3 className="guides-title" style={{ margin: 0 }}>Связанные руководства</h3>
+                        <h3 className="guides-title">Связанные руководства</h3>
                     </div>
                 </div>
                 <div className="guides-empty">
@@ -82,24 +82,15 @@ export default function GuidesSection() {
 
     return (
         <section className="guides-section glass-card">
-            <div className="guides-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="guides-header">
+                <div className="guides-header-main">
                     <span className="guides-accent-bar" />
-                    <h3 className="guides-title" style={{ margin: 0 }}>Связанные руководства</h3>
+                    <h3 className="guides-title">Связанные руководства</h3>
                 </div>
                 {canCreateGuide && (
                     <button
                         onClick={handleCreateGuide}
-                        style={{
-                            background: '#4da6ff',
-                            color: '#000',
-                            border: 'none',
-                            padding: '0.4rem 0.8rem',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold',
-                            fontSize: '0.85rem'
-                        }}
+                        className="btn btn-primary btn-sm guides-create-btn"
                     >
                         Создать руководство
                     </button>
@@ -117,32 +108,23 @@ export default function GuidesSection() {
                         const guideCreatedAt = guide.createdAt || guide.created_at;
 
                         return (
-                            <li key={guide.id} className="guide-item" style={{ position: 'relative', marginBottom: '0.5rem' }}>
-                                <Link to={`/mod/${externalId}/guides/${guide.id}`} className="guide-link" style={{ display: 'flex', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                            <li key={guide.id} className="guide-item">
+                                <Link to={`/mod/${externalId}/guides/${guide.id}`} className="guide-link">
                                     <span className="guide-icon">📄</span>
-                                    <div className="guide-info" style={{ marginLeft: '1rem', flex: 1 }}>
-                                        <span className="guide-name" style={{ color: '#4da6ff', fontWeight: 'bold' }}>{guide.title}</span>
-                                        <br />
-                                        <span className="guide-meta" style={{ fontSize: '0.8rem', color: '#888' }}>
+                                    <div className="guide-info">
+                                        <span className="guide-name">{guide.title}</span>
+                                        <span className="guide-meta">
                                             Автор: {guide.author?.username || 'Unknown'} · {guideCreatedAt ? new Date(guideCreatedAt).toLocaleDateString() : 'N/A'}
                                         </span>
                                     </div>
                                 </Link>
                                 {canEditGuide(guide.author?.id) && (
-                                    <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }}>
+                                    <div className="guides-item-actions">
                                         <button
+                                            className="btn btn-secondary btn-sm guides-edit-btn"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 handleEditGuide(guide.id);
-                                            }}
-                                            style={{
-                                                background: 'transparent',
-                                                color: '#4da6ff',
-                                                border: '1px solid #4da6ff',
-                                                padding: '0.3rem 0.6rem',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontSize: '0.8rem'
                                             }}
                                         >
                                             Редактировать
@@ -156,7 +138,7 @@ export default function GuidesSection() {
             )}
 
             {error && (
-                <div className="auth-error" style={{ marginTop: '1rem' }}>
+                <div className="auth-error guides-error">
                     {error}
                 </div>
             )}

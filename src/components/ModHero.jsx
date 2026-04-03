@@ -7,6 +7,7 @@ export default function ModHero({ mod, onSubscribe }) {
     const authorName = mod.author_username || mod.authorUsername || 'Unknown';
     const authorSteamId = mod.author_steam_id || mod.authorSteamId || null;
     const steamProfileUrl = authorSteamId ? `https://steamcommunity.com/profiles/${authorSteamId}` : null;
+    const versionLabel = mod.version || mod.mod_version || mod.modVersion || '';
 
     const subtitle = mod.description
         ? mod.description.length > 150
@@ -36,7 +37,7 @@ export default function ModHero({ mod, onSubscribe }) {
                     {!mod.main_image && <span className="mod-hero-avatar-placeholder">🔧</span>}
                 </div>
                 <div className="mod-hero-info">
-                    <h1 className="mod-hero-title">{mod.title}</h1>
+                    <h1 className="mod-hero-title" data-version={versionLabel ? `v${versionLabel}` : ''}>{mod.title}</h1>
                     <p className="mod-hero-subtitle">{subtitle}</p>
                     <div className="mod-hero-meta">
                         {steamProfileUrl ? (

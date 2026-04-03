@@ -1,314 +1,286 @@
 .submarines-page {
-    padding-top: 2rem;
-    padding-bottom: 4rem;
+  padding-top: 8px;
+  padding-bottom: 32px;
 }
 
 .submarines-header-box {
-    text-align: center;
-    padding: 2.5rem 1.75rem;
-    border-radius: 20px;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(20, 20, 20, 0.6) 100%);
-    border: 1px solid rgba(88, 101, 242, 0.2);
+  margin-bottom: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: center;
 }
 
 .submarines-title {
-    margin: 0 0 0.75rem;
-    font-size: 2.1rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, #b3b3b3 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .submarines-subtitle {
-    margin: 0;
-    color: var(--text-muted);
+  margin: 0;
+  color: var(--text-secondary);
 }
 
-.submarines-actions {
-    margin-top: 1.25rem;
-}
-
+.submarines-actions,
 .submarine-auth-prompt {
-    margin-top: 1.25rem;
-    color: var(--text-secondary);
+  margin-top: 12px;
 }
 
 .submarines-filters {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  margin-bottom: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .submarines-search-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.submarines-search-form label {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+.submarines-search-form label,
+.submarines-tags-filter > label {
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.submarines-search-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
+.submarines-search-row,
+.submarines-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.submarines-search-row input {
-    flex: 1;
-    min-width: min(280px, 100%);
+.submarines-search-row input,
+.submarines-tag-row select {
+  flex: 1;
+  min-width: min(320px, 100%);
 }
 
 .submarines-advanced-toggle {
-    display: flex;
-    justify-content: flex-start;
+  display: flex;
 }
 
 .submarines-advanced-search {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .submarines-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .submarines-filter-group {
-    padding: 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg-glass);
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
 }
 
 .submarines-filter-group h3 {
-    margin: 0 0 0.3rem;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.submarines-filter-group label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.submarines-filter-group select,
-.submarines-filter-group input {
-    width: 100%;
-}
-
-.submarines-filter-group select,
-.submarines-sort-controls select,
-.create-submarine-form select {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    border-radius: var(--radius-sm);
-    padding: 0.6rem 0.7rem;
-}
-
-.submarines-filter-group option,
-.submarines-sort-controls option,
-.create-submarine-form option {
-    color: #fff;
-    background: #1e1e24;
+.submarines-filter-group label,
+.submarines-sort-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .submarines-range-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.55rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .submarines-tags-filter {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.submarines-tags-filter > label {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+.submarines-tags-meta,
+.submarines-tag-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
-.submarines-tag-row {
-    display: flex;
-    gap: 0.55rem;
-    flex-wrap: wrap;
-}
-
-.submarines-tag-row select {
-    min-width: min(320px, 100%);
-    flex: 1;
-}
-
-.submarines-tags-meta {
-    margin: 0;
-    font-size: 0.78rem;
-    color: var(--text-muted);
-}
-
-.submarines-tags-error {
-    margin: 0;
-    font-size: 0.78rem;
-    color: var(--danger);
+.submarines-tags-error,
+.submarine-tag-error {
+  margin: 0;
+  color: var(--accent-red);
+  font-size: 12px;
 }
 
 .submarines-sort-controls {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.65rem;
-}
-
-.submarines-sort-controls label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .create-submarine-form {
-    margin-bottom: 1.4rem;
-    padding: 1.15rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  max-width: 980px;
+  margin: 0 auto 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
 }
 
 .create-submarine-form h2 {
-    margin: 0;
-    font-size: 1.15rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .create-submarine-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .create-submarine-grid label,
 .create-submarine-description {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .create-submarine-description textarea {
-    width: 100%;
+  width: 100%;
 }
 
 .create-submarine-weapons {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .create-submarine-weapon-block {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg-glass);
-    padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  padding: 10px;
 }
 
 .create-submarine-weapon-block h3 {
-    margin: 0 0 0.55rem;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .create-submarine-weapon-grid {
-    display: grid;
-    gap: 0.45rem;
+  display: grid;
+  gap: 6px;
 }
 
 .create-submarine-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
-    color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.create-submarine-checkbox input {
+  width: auto;
 }
 
 .submarines-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .submarines-load-error {
-    margin-bottom: 1rem;
+  margin-bottom: 12px;
 }
 
 .submarines-footnote {
-    margin-top: 1.2rem;
-    padding: 0.75rem 0.9rem;
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
 }
 
 .submarines-footnote p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.78rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 @media (max-width: 1024px) {
-    .submarines-filter-grid {
-        grid-template-columns: 1fr;
-    }
+  .submarines-filter-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .create-submarine-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .create-submarine-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
-    .submarines-header-box {
-        padding: 2rem 1rem;
-    }
+  .submarines-header-box,
+  .submarines-filters {
+    padding: 14px;
+  }
 
-    .submarines-search-row button,
-    .submarines-tag-row button {
-        width: 100%;
-    }
+  .submarines-search-row button,
+  .submarines-tag-row button {
+    width: 100%;
+  }
 
-    .submarines-sort-controls {
-        grid-template-columns: 1fr;
-    }
+  .submarines-sort-controls,
+  .create-submarine-grid,
+  .create-submarine-weapons,
+  .submarines-range-row {
+    grid-template-columns: 1fr;
+  }
 
-    .create-submarine-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .create-submarine-weapons {
-        grid-template-columns: 1fr;
-    }
-
-    .submarines-range-row {
-        grid-template-columns: 1fr;
-    }
+  .create-submarine-form {
+    max-width: 100%;
+    padding: 20px;
+  }
 }

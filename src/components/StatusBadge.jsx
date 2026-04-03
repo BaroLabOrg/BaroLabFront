@@ -1,11 +1,21 @@
 import './StatusBadge.css';
 
 export default function StatusBadge({ status }) {
-    const isActive = status === 'ACTIVE';
+    const normalized = String(status || '').toUpperCase();
+    const variantByStatus = {
+        ACTIVE: 'success',
+        APPROVED: 'success',
+        BLOCKED: 'danger',
+        PENDING: 'warning',
+        DRAFT: 'muted',
+        INACTIVE: 'muted',
+    };
+    const variant = variantByStatus[normalized] || 'default';
+    const label = normalized || 'UNKNOWN';
+
     return (
-        <span className={`status-badge ${isActive ? 'status-active' : 'status-blocked'}`}>
-            <span className="status-dot" />
-            {isActive ? 'Active' : 'Blocked'}
+        <span className="status-badge" data-variant={variant}>
+            {label}
         </span>
     );
 }

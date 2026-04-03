@@ -75,7 +75,7 @@ export default function CommentsSection({ externalId }) {
     if (loading) {
         return (
             <section className="mod-comments-section glass-card">
-                <div style={{ textAlign: 'center', padding: '2rem' }}>Загрузка комментариев...</div>
+                <div className="mod-comments-loading">Загрузка комментариев...</div>
             </section>
         );
     }
@@ -100,7 +100,7 @@ export default function CommentsSection({ externalId }) {
                     <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                         {submitting ? 'Отправка...' : 'Отправить'}
                     </button>
-                    {error && <div className="mod-hero-error" style={{ marginTop: 8, color: 'var(--error)' }}>{error}</div>}
+                    {error && <div className="auth-error mod-comments-error">{error}</div>}
                 </form>
             ) : (
                 <div className="mod-comment-guest">
@@ -112,14 +112,14 @@ export default function CommentsSection({ externalId }) {
                 </div>
             )}
 
-            {!isAuthenticated && error && <div className="mod-hero-error" style={{ marginTop: 8, color: 'var(--error)' }}>{error}</div>}
+            {!isAuthenticated && error && <div className="auth-error mod-comments-error">{error}</div>}
 
             <div className="mod-comments-list">
                 {comments.length === 0 ? (
                     <p className="mod-comments-empty">Комментариев пока нет. Будьте первым!</p>
                 ) : (
                     comments.map((c) => (
-                        <div key={c.id} style={{ marginBottom: '16px' }}>
+                        <div key={c.id} className="mod-comment-entry">
                             <CommentItem comment={c} />
                         </div>
                     ))

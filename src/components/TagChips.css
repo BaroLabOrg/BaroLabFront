@@ -1,48 +1,66 @@
 .tag-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tag-chip {
-    display: inline-block;
-    padding: 5px 14px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: rgba(108, 99, 255, 0.1);
-    border: 1px solid rgba(108, 99, 255, 0.2);
-    border-radius: 20px;
-    transition: all var(--transition-fast);
-    cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--tag-default-border);
+  background: var(--tag-default-bg);
+  color: var(--tag-default-color);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  cursor: default;
 }
 
-.tag-chip:hover {
-    background: rgba(108, 99, 255, 0.18);
-    color: var(--text-primary);
-    border-color: rgba(108, 99, 255, 0.35);
+.tag-chip[data-variant='danger'] {
+  background: var(--tag-danger-bg);
+  color: var(--tag-danger-color);
+  border-color: var(--tag-danger-border);
+}
+
+.tag-chip[data-variant='success'] {
+  background: var(--tag-success-bg);
+  color: var(--tag-success-color);
+  border-color: var(--tag-success-border);
+}
+
+.tag-chip[data-variant='warning'] {
+  background: var(--tag-warning-bg);
+  color: var(--tag-warning-color);
+  border-color: var(--tag-warning-border);
+}
+
+.tag-chip[data-variant='muted'] {
+  background: var(--tag-muted-bg);
+  color: var(--tag-muted-color);
+  border-color: var(--tag-muted-border);
 }
 
 .tag-remove-btn {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1.1rem;
-    line-height: 0.5;
-    padding: 0;
-    margin-left: 6px;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity var(--transition-fast);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.75;
+  cursor: pointer;
 }
 
 .tag-remove-btn:hover {
-    opacity: 1;
-    color: var(--danger, #ff4d4f);
+  opacity: 1;
 }
 
 .tag-chips-empty {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.82rem;
 }

@@ -1,96 +1,164 @@
 .guides-section {
-    padding: 24px;
-    margin-bottom: 20px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .guides-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.guides-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .guides-accent-bar {
-    width: 4px;
-    height: 24px;
-    background: var(--danger);
-    border-radius: 2px;
-    flex-shrink: 0;
+  width: 3px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 .guides-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .guides-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 32px 16px;
-    color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 12px;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .guides-empty-icon {
-    font-size: 2rem;
-    opacity: 0.5;
+  font-size: 1.6rem;
+  opacity: 0.5;
 }
 
 .guides-empty p {
-    margin: 0;
-    font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.88rem;
 }
 
 .guides-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .guide-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    background: var(--bg-glass);
-    border: 1px solid var(--border);
-    transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .guide-item:hover {
-    border-color: var(--border-hover);
-    background: var(--bg-card-hover);
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.guide-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 .guide-icon {
-    font-size: 1.3rem;
-    flex-shrink: 0;
+  font-size: 1.15rem;
+  flex-shrink: 0;
 }
 
 .guide-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .guide-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .guide-meta {
-    font-size: 0.78rem;
-    color: var(--text-muted);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.guides-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guides-create-btn {
+  white-space: nowrap;
+}
+
+.guides-edit-btn {
+  white-space: nowrap;
+}
+
+.guides-error {
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .guides-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .guides-create-btn {
+    width: 100%;
+  }
+
+  .guide-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .guides-item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

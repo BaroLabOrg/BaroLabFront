@@ -43,7 +43,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                     <div className="mod-sidebar-add-tag">
                         {!isAddingTag ? (
                             <button 
-                                className="btn btn-outline btn-sm mod-tag-add-btn" 
+                                className="btn btn-secondary btn-sm mod-tag-add-btn" 
                                 onClick={() => setIsAddingTag(true)}
                             >
                                 + Добавить тег
@@ -127,11 +127,8 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                     <h4 className="mod-sidebar-heading">Загружать выше</h4>
                     <ul className="mod-deps-list">
                         {mod.mods_above.map((modId, i) => (
-                            <li key={i} className="mod-dep-item" style={{ alignItems: 'center' }}>
-                                <div
-                                    className="mod-similar-avatar"
-                                    style={{ width: '24px', height: '24px', flexShrink: 0, marginRight: '8px' }}
-                                >
+                            <li key={i} className="mod-dep-item">
+                                <div className="mod-similar-avatar">
                                     🔧
                                 </div>
                                 <Link to={`/mod/${modId}`} className="mod-dep-name">

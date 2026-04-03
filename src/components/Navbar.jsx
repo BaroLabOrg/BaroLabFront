@@ -5,6 +5,7 @@ import './Navbar.css';
 export default function Navbar() {
     const { user, isAdmin, logout } = useAuth();
     const navigate = useNavigate();
+    const roleLabel = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' ? user.role : '';
 
     const handleLogout = () => {
         logout();
@@ -15,7 +16,7 @@ export default function Navbar() {
         <nav className="navbar">
             <div className="navbar-inner container">
                 <NavLink to="/mods" className="navbar-logo">
-                    <span className="logo-icon">◊</span>
+                    <span className="logo-icon">◉</span>
                     <span className="logo-text">BaroLab</span>
                 </NavLink>
 
@@ -48,15 +49,15 @@ export default function Navbar() {
                 <div className="navbar-user">
                     {user ? (
                         <>
-                            {user.username && <span className="user-name-badge" style={{ marginRight: 8 }}>@{user.username}</span>}
-                            <span className="user-role-badge">{user.role}</span>
-                            <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
+                            {user.username && <span className="user-name-badge">@{user.username}</span>}
+                            {roleLabel && <span className="user-role-badge">{roleLabel}</span>}
+                            <button className="btn btn-ghost btn-sm navbar-logout" onClick={handleLogout}>
                                 Выйти
                             </button>
                         </>
                     ) : (
                         <>
-                            <NavLink to="/login" className="btn btn-ghost btn-sm" style={{ marginRight: 8 }}>
+                            <NavLink to="/login" className="btn btn-ghost btn-sm navbar-auth-link">
                                 Войти
                             </NavLink>
                             <NavLink to="/sign-up" className="btn btn-primary btn-sm">
@@ -69,4 +70,3 @@ export default function Navbar() {
         </nav>
     );
 }
-
