@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE = "https://barolab-back.i-lab.ink/";
 
 export class ApiRequestError extends Error {
     constructor({ message, status, code }) {
