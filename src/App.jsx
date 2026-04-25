@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
+const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignUpPage = lazy(() => import('./pages/SignUpPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -48,10 +49,10 @@ export default function App() {
                         element={isAuthenticated ? <Navigate to="/mods" replace /> : <SignUpPage />}
                     />
 
-                    {/* Protected / Public Mix */}
+                    {/* Home */}
                     <Route
                         path="/"
-                        element={<Navigate to="/mods" replace />}
+                        element={<HomePage />}
                     />
 
                     {/* Mods */}

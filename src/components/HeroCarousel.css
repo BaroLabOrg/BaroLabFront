@@ -1,0 +1,218 @@
+.hero-carousel {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+}
+
+.hero-skeleton {
+    height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+}
+
+.hero-bg-link {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 0;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.5s ease;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(13, 15, 20, 0.92) 0%,
+        rgba(13, 15, 20, 0.6) 55%,
+        rgba(13, 15, 20, 0.15) 100%
+    );
+}
+
+.hero-stub-version {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 2;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 64px;
+    gap: 32px;
+}
+
+.hero-left {
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.hero-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hero-btn-download {
+    font-size: 12px;
+}
+
+.hero-btn-guide {
+    font-size: 12px;
+}
+
+.hero-stub-status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+}
+
+.hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+    min-width: 220px;
+}
+
+.hero-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+
+.hero-meta-label {
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hero-meta-val {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.hero-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.hero-stars .star {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.hero-stars .star.filled {
+    color: var(--accent);
+}
+
+.hero-rating-val {
+    color: var(--text-secondary);
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+.hero-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    gap: 8px;
+}
+
+.hero-dot {
+    width: 28px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.25);
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition-fast), width var(--transition-fast);
+    padding: 0;
+}
+
+.hero-dot.active {
+    background: var(--accent);
+    width: 40px;
+}
+
+.hero-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    background: rgba(13,15,20,0.5);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.hero-arrow:hover {
+    color: var(--text-primary);
+    background: rgba(13,15,20,0.8);
+}
+
+.hero-arrow-prev { left: 16px; }
+.hero-arrow-next { right: 16px; }
+
+@media (max-width: 768px) {
+    .hero-carousel { height: 360px; }
+    .hero-title { font-size: 26px; }
+    .hero-right { display: none; }
+    .hero-content { padding-bottom: 52px; }
+}
