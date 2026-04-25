@@ -80,6 +80,13 @@ Use this address for:
 • Partnership inquiries
 • Security vulnerability reports`,
     },
+    'Support': {
+        title: 'Support the Station [WIP]',
+        content: `Support options are coming soon.
+
+This section is currently under development.
+Check back later for ways to support the project.`,
+    },
 };
 
 export default function Footer({ totalMods }) {
@@ -113,8 +120,8 @@ export default function Footer({ totalMods }) {
                     <button className="footer-link" onClick={() => openBox('Content Protocols')}>
                         › Content Protocols
                     </button>
-                    <button className="footer-link footer-support">
-                        › Support the Station 10 відсотків на зсу 🇺🇦
+                    <button className="footer-link footer-support" onClick={() => openBox('Support')}>
+                        › Support the Station [WIP]
                     </button>
                 </div>
 
@@ -161,10 +168,10 @@ export default function Footer({ totalMods }) {
             <div className="footer-manifest container">
                 <div className="footer-manifest-left">
                     <span className="footer-manifest-title">Station Manifest</span>
-                    <span className="footer-manifest-line">back: @сігма буданов</span>
-                    <span className="footer-manifest-line">back: @сігма буданов</span>
-                    <span className="footer-manifest-line">back: @сігма буданов</span>
-                    <span className="footer-manifest-line">back: @сігма буданов</span>
+                    <span className="footer-manifest-line">back: @crew_member_1 [WIP]</span>
+                    <span className="footer-manifest-line">back: @crew_member_2 [WIP]</span>
+                    <span className="footer-manifest-line">front: @crew_member_3 [WIP]</span>
+                    <span className="footer-manifest-line">front: @crew_member_4 [WIP]</span>
                 </div>
                 <div className="footer-manifest-right">
                     <span className="footer-manifest-stat">BUILD: v1.0.4</span>
