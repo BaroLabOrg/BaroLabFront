@@ -106,7 +106,7 @@ export default function HomePage() {
                     </span>
                     <span className="home-stats-sep">•</span>
                     <span className="home-stats-item">
-                        <span className="home-stats-num">1,488</span> Authors
+                        <span className="home-stats-num">WIP</span> Authors
                     </span>
                 </div>
             </div>
