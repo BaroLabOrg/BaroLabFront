@@ -1,4 +1,4 @@
-import { normalizePagedResponse, request } from './api';
+import { API_BASE, normalizePagedResponse, request } from './api';
 
 export const SUBMARINE_CLASS_VALUES = [
     'TRANSPORT',
@@ -370,4 +370,43 @@ export async function removeSubmarineTag(externalId, tagId) {
     return request(`/api/submarines/${externalId}/tags/${tagId}`, {
         method: 'DELETE',
     });
+}
+
+export async function subscribeSubmarine(externalId) {
+    const token = localStorage.getItem('barolab_token');
+    const headers = {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    const res = await fetch(`${API_BASE}/api/submarines/${externalId}/transition`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        redirect: 'manual',
+    });
+
+    if (res.type === 'opaqueredirect' || res.status === 302 || res.status === 0) {
+        const location = res.headers.get('Location');
+        if (location) {
+            window.location.assign(location);
+        } else {
+            window.location.assign(`https://steamcommunity.com/sharedfiles/filedetails/?id=${externalId}`);
+        }
+        return;
+    }
+
+    if (res.status === 429) {
+        throw new Error('You can do this once per hour. Please try again later.');
+    }
+
+    if (!res.ok) {
+        let errorMsg = `Error ${res.status}`;
+        try {
+            const body = await res.json();
+            errorMsg = body.message || errorMsg;
+        } catch {
+            // No-op: keep default status message.
+        }
+        throw new Error(errorMsg);
+    }
 }

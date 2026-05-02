@@ -73,8 +73,9 @@ describe('SubmarinePage', () => {
         };
     });
 
-    it('loads and renders submarine characteristics with gallery', async () => {
-        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+     it('loads and renders submarine characteristics with gallery', async () => {
+         vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+         vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
 
         render(<SubmarinePage />);
 
@@ -85,16 +86,18 @@ describe('SubmarinePage', () => {
         expect(screen.getByText('COILGUN')).toBeInTheDocument();
         expect(screen.getByText('RAILGUN')).toBeInTheDocument();
         expect(screen.getByText('Military')).toBeInTheDocument();
-        expect(await screen.findByRole('img', { name: 'Orca - изображение 1' })).toBeInTheDocument();
-        expect(await screen.findByRole('button', { name: 'Показать изображение 2' })).toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: '+ Добавить тег' })).not.toBeInTheDocument();
+         expect(await screen.findByRole('img', { name: 'Orca - изображение 1' })).toBeInTheDocument();
+         expect(await screen.findByRole('button', { name: 'Показать изображение 2' })).toBeInTheDocument();
+         expect(screen.getByRole('button', { name: '⬇ Download' })).toBeInTheDocument();
+         expect(screen.queryByRole('button', { name: '+ Добавить тег' })).not.toBeInTheDocument();
     });
 
-    it('shows gallery placeholder when images are missing', async () => {
-        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
-            main_image: '',
-            additional_images: [],
-        }));
+     it('shows gallery placeholder when images are missing', async () => {
+         vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+             main_image: '',
+             additional_images: [],
+         }));
+         vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
 
         render(<SubmarinePage />);
 
@@ -105,9 +108,9 @@ describe('SubmarinePage', () => {
         expect(screen.queryByRole('button', { name: /Показать изображение/i })).not.toBeInTheDocument();
     });
 
-    it('shows tag editor for admins and supports add/remove', async () => {
-        const user = userEvent.setup();
-        authState = {
+     it('shows tag editor for admins and supports add/remove', async () => {
+         const user = userEvent.setup();
+         authState = {
             isAuthenticated: true,
             isAdmin: true,
             user: { id: 'admin-1', username: 'admin' },
@@ -126,8 +129,9 @@ describe('SubmarinePage', () => {
             .mockResolvedValueOnce(buildSubmarine({
                 tags: [{ id: 'tag-2', name: 'Fast', slug: 'fast' }],
             }));
-        vi.spyOn(submarinesApi, 'addSubmarineTag').mockResolvedValue(null);
-        vi.spyOn(submarinesApi, 'removeSubmarineTag').mockResolvedValue(null);
+         vi.spyOn(submarinesApi, 'addSubmarineTag').mockResolvedValue(null);
+         vi.spyOn(submarinesApi, 'removeSubmarineTag').mockResolvedValue(null);
+         vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
         vi.spyOn(tagsApi, 'getTags').mockResolvedValue({
             items: [
                 { id: 'tag-1', name: 'Military', slug: 'military' },
@@ -161,12 +165,30 @@ describe('SubmarinePage', () => {
         });
     });
 
-    it('shows error state when request fails', async () => {
-        vi.spyOn(submarinesApi, 'getSubmarine').mockRejectedValue(new Error('Not found'));
+     it('shows error state when request fails', async () => {
+         vi.spyOn(submarinesApi, 'getSubmarine').mockRejectedValue(new Error('Not found'));
 
         render(<SubmarinePage />);
 
-        expect(await screen.findByText('Not found')).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: '← Назад к каталогу' })).toBeInTheDocument();
+         expect(await screen.findByText('Not found')).toBeInTheDocument();
+         expect(screen.getByRole('link', { name: '← Назад к каталогу' })).toBeInTheDocument();
+     });
+
+    it('calls submarine subscribe action when download button is clicked', async () => {
+        const user = userEvent.setup();
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+        const subscribeSpy = vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByRole('button', { name: '⬇ Download' }));
+
+        await waitFor(() => {
+            expect(subscribeSpy).toHaveBeenCalledWith('42');
+        });
     });
-});
+ });

@@ -50,6 +50,8 @@ export default function SubmarinePage() {
     const [isAddingTag, setIsAddingTag] = useState(false);
     const [tagActionError, setTagActionError] = useState('');
     const [tagMutationLoading, setTagMutationLoading] = useState(false);
+    const [subscribing, setSubscribing] = useState(false);
+    const [subscribeError, setSubscribeError] = useState('');
 
     useEffect(() => {
         let cancelled = false;
@@ -188,6 +190,18 @@ export default function SubmarinePage() {
         }
     };
 
+    const handleSubscribe = async () => {
+        setSubscribing(true);
+        setSubscribeError('');
+        try {
+            await submarinesApi.subscribeSubmarine(externalId);
+        } catch (err) {
+            setSubscribeError(err?.message || 'Failed to open Steam Workshop');
+        } finally {
+            setSubscribing(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="page">
@@ -227,12 +241,29 @@ export default function SubmarinePage() {
                 <Link to="/submarines" className="back-link">← Back to submarines</Link>
 
                 <section className="submarine-hero glass-card">
-                    <h1>{submarine.title}</h1>
-                    <p className="submarine-hero-subtitle">
-                        {submarine.submarineClass || '—'} · Tier {submarine.tier ?? '—'}
-                        {submarine.fabricationType ? ` · ${submarine.fabricationType}` : ''}
-                    </p>
+                    <div className="submarine-hero-top">
+                        <div className="submarine-hero-copy">
+                            <h1>{submarine.title}</h1>
+                            <p className="submarine-hero-subtitle">
+                                {submarine.submarineClass || '—'} · Tier {submarine.tier ?? '—'}
+                                {submarine.fabricationType ? ` · ${submarine.fabricationType}` : ''}
+                            </p>
+                        </div>
+                        <div className="submarine-hero-actions">
+                            <button
+                                className="btn btn-primary submarine-download-btn"
+                                onClick={handleSubscribe}
+                                disabled={subscribing}
+                            >
+                                {subscribing ? 'Loading...' : '⬇ Download'}
+                            </button>
+                            <div className="submarine-hero-popularity" title="Steam Workshop visits">
+                                🔗 {submarine.popularity ?? 0} visits
+                            </div>
+                        </div>
+                    </div>
                     <p className="submarine-hero-description">{submarine.description || 'No description.'}</p>
+                    {subscribeError && <div className="submarine-subscribe-error">{subscribeError}</div>}
                 </section>
 
                 <div className="submarine-layout">
