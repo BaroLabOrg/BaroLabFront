@@ -15,7 +15,7 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-inner container">
-                <NavLink to="/mods" className="navbar-logo">
+                <NavLink to="/" className="navbar-logo">
                     <span className="logo-icon">◉</span>
                     <span className="logo-text">BaroLab</span>
                 </NavLink>

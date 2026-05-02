@@ -1,9 +1,12 @@
 .hero-carousel {
     position: relative;
     width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
     height: 480px;
     overflow: hidden;
     background: var(--bg-secondary);
+    border-radius: var(--radius-md);
 }
 
 .hero-skeleton {

@@ -8,10 +8,8 @@
 /* ── Hero ── */
 .home-hero-wrap {
     width: 100%;
-    max-width: var(--max-width);
     margin: 0 auto;
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    background: var(--bg-secondary);
 }
 
 /* ── Quick Stats Bar ── */
