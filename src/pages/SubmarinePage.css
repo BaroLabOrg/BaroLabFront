@@ -6,9 +6,36 @@
     margin-top: 1rem;
 }
 
-.submarine-hero {
-    padding: 1.4rem;
-    margin-bottom: 1rem;
+ .submarine-hero {
+     padding: 1.4rem;
+     margin-bottom: 1rem;
+ }
+
+.submarine-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.submarine-hero-copy {
+    flex: 1;
+}
+
+.submarine-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.65rem;
+}
+
+.submarine-download-btn {
+    min-width: 150px;
+}
+
+.submarine-hero-popularity {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
 }
 
 .submarine-hero h1 {
@@ -21,11 +48,17 @@
     color: var(--text-secondary);
 }
 
-.submarine-hero-description {
-    margin: 0.95rem 0 0;
-    color: var(--text-primary);
-    line-height: 1.65;
-    white-space: pre-wrap;
+ .submarine-hero-description {
+     margin: 0.95rem 0 0;
+     color: var(--text-primary);
+     line-height: 1.65;
+     white-space: pre-wrap;
+ }
+
+.submarine-subscribe-error {
+    margin-top: 0.85rem;
+    color: var(--danger);
+    font-size: 0.85rem;
 }
 
 .submarine-layout {
@@ -176,13 +209,22 @@
     }
 }
 
-@media (max-width: 720px) {
-    .submarine-metrics-grid,
-    .submarine-weapons {
-        grid-template-columns: 1fr;
+ @media (max-width: 720px) {
+     .submarine-metrics-grid,
+     .submarine-weapons {
+         grid-template-columns: 1fr;
+     }
+
+    .submarine-hero-top {
+        flex-direction: column;
     }
 
-    .submarine-hero h1 {
-        font-size: 1.45rem;
+    .submarine-hero-actions {
+        width: 100%;
+        align-items: stretch;
     }
-}
+ 
+     .submarine-hero h1 {
+         font-size: 1.45rem;
+     }
+ }
