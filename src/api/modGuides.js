@@ -40,13 +40,16 @@ export async function deleteModGuide(modId, guideId) {
 }
 
 export async function getAllGuides({
+    q,
+    status,
+    author,
     page = 0,
     size = 20,
     sortBy = 'createdAt',
     direction = 'desc',
 } = {}) {
     const response = await request('/guides', {
-        query: { page, size, sortBy, direction },
+        query: { q, status, author, page, size, sortBy, direction },
     });
     return normalizePagedResponse(response);
 }

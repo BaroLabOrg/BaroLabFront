@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 import * as guideApi from '../api/modGuides';
@@ -10,6 +10,8 @@ import SteamSyncTab from './SteamSyncTab';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
+const USER_STATUS_OPTIONS = ['ALL', 'ACTIVE', 'BLOCKED'];
+const CONTENT_STATUS_OPTIONS = ['ALL', 'ACTIVE', 'BLOCKED'];
 
 export default function AdminPage() {
     const { isAdmin, isSuperAdmin } = useAuth();
@@ -88,16 +90,22 @@ function UsersTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
+    const [roleFilter, setRoleFilter] = useState('ALL');
 
     useEffect(() => {
         loadUsers(page);
-    }, [page]);
+    }, [page, searchQuery, statusFilter, roleFilter]);
 
     const loadUsers = async (targetPage) => {
         setLoading(true);
         setError('');
         try {
             const data = await api.getUsers({
+                q: searchQuery,
+                status: statusFilter === 'ALL' ? undefined : statusFilter,
+                role: roleFilter === 'ALL' ? undefined : roleFilter,
                 page: targetPage,
                 size: PAGE_SIZE,
                 sortBy: 'createdAt',
@@ -156,7 +164,41 @@ function UsersTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Total users: <strong>{totalUsers}</strong></div>
+            <div className="admin-toolbar glass-card">
+                <div className="admin-toolbar-main">
+                    <input
+                        className="admin-search-input"
+                        type="search"
+                        placeholder="Search by login, email, role or status"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <p className="admin-toolbar-hint">Search works across the full database and returns a new paginated result.</p>
+                </div>
+                <div className="admin-toolbar-filters">
+                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        {USER_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                    <select className="admin-filter-select" value={roleFilter} onChange={(e) => {
+                        setRoleFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        <option value="ALL">All roles</option>
+                        {ROLES.map((role) => (
+                            <option key={role} value={role}>{role}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="admin-stat">Total matched users: <strong>{totalUsers}</strong> · Loaded on current page: <strong>{users.length}</strong></div>
             <div className="admin-list">
                 {users.map((user) => (
                     <div key={user.id} className="admin-item glass-card">
@@ -201,6 +243,7 @@ function UsersTab() {
                         </div>
                     </div>
                 ))}
+                {users.length === 0 && <div className="admin-empty-state">No users match the current filters.</div>}
             </div>
             <Pagination
                 page={page}
@@ -229,6 +272,9 @@ function ModsTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
+    const [authorFilter, setAuthorFilter] = useState('');
 
     const [selectedId, setSelectedId] = useState(null);
     const [comments, setComments] = useState([]);
@@ -360,14 +406,62 @@ function ModsTab() {
         }
     };
 
+    const filteredMods = useMemo(() => {
+        const normalizedQuery = searchQuery.trim().toLowerCase();
+        const normalizedAuthor = authorFilter.trim().toLowerCase();
+        return mods.filter((mod) => {
+            const matchesQuery = !normalizedQuery || [mod.title, mod.description, mod.author_username, mod.status, mod.external_id, mod.rating, mod.popularity]
+                .filter(Boolean)
+                .some((value) => String(value).toLowerCase().includes(normalizedQuery));
+            const matchesStatus = statusFilter === 'ALL' || mod.status === statusFilter;
+            const matchesAuthor = !normalizedAuthor || String(mod.author_username || '').toLowerCase().includes(normalizedAuthor);
+            return matchesQuery && matchesStatus && matchesAuthor;
+        });
+    }, [mods, searchQuery, statusFilter, authorFilter]);
+
     if (loading) return <LoadingSpinner />;
 
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Total mods: <strong>{totalMods}</strong></div>
+            <div className="admin-toolbar glass-card">
+                <div className="admin-toolbar-main">
+                    <input
+                        className="admin-search-input"
+                        type="search"
+                        placeholder="Search by title, description, ID, rating or popularity"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <p className="admin-toolbar-hint">Search currently filters only the loaded page, not all mods in the database.</p>
+                </div>
+                <div className="admin-toolbar-filters">
+                    <input
+                        className="admin-filter-input"
+                        type="text"
+                        placeholder="Author"
+                        value={authorFilter}
+                        onChange={(e) => {
+                            setAuthorFilter(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        {CONTENT_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="admin-stat">Total mods in database: <strong>{totalMods}</strong> · Matches on current page: <strong>{filteredMods.length}</strong></div>
             <div className="admin-list">
-                {mods.map((mod) => {
+                {filteredMods.map((mod) => {
                     const isOpen = selectedId === mod.external_id && commentsOpen;
                     return (
                         <div key={mod.external_id} className="admin-item-group">
@@ -477,6 +571,7 @@ function ModsTab() {
                         </div>
                     );
                 })}
+                {filteredMods.length === 0 && <div className="admin-empty-state">No mods match the current filters.</div>}
             </div>
             <Pagination
                 page={page}
@@ -504,16 +599,22 @@ function GuidesTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
+    const [authorFilter, setAuthorFilter] = useState('');
 
     useEffect(() => {
         loadGuides(page);
-    }, [page]);
+    }, [page, searchQuery, statusFilter, authorFilter]);
 
     const loadGuides = async (targetPage) => {
         setLoading(true);
         setError('');
         try {
             const data = await guideApi.getAllGuides({
+                q: searchQuery,
+                status: statusFilter === 'ALL' ? undefined : statusFilter,
+                author: authorFilter,
                 page: targetPage,
                 size: PAGE_SIZE,
                 sortBy: 'createdAt',
@@ -560,7 +661,42 @@ function GuidesTab() {
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Total guides: <strong>{totalGuides}</strong></div>
+            <div className="admin-toolbar glass-card">
+                <div className="admin-toolbar-main">
+                    <input
+                        className="admin-search-input"
+                        type="search"
+                        placeholder="Search by title, description, mod ID or author"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <p className="admin-toolbar-hint">Search works across the full database and returns a new paginated result.</p>
+                </div>
+                <div className="admin-toolbar-filters">
+                    <input
+                        className="admin-filter-input"
+                        type="text"
+                        placeholder="Author"
+                        value={authorFilter}
+                        onChange={(e) => {
+                            setAuthorFilter(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        {CONTENT_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="admin-stat">Total matched guides: <strong>{totalGuides}</strong> · Loaded on current page: <strong>{guides.length}</strong></div>
             <div className="admin-list">
                 {guides.map((guide) => (
                     <div key={guide.id} className="admin-item-group">
@@ -606,6 +742,7 @@ function GuidesTab() {
                         </div>
                     </div>
                 ))}
+                {guides.length === 0 && <div className="admin-empty-state">No guides match the current filters.</div>}
             </div>
             <Pagination
                 page={page}
@@ -633,6 +770,10 @@ function SubmarinesTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
+    const [classFilter, setClassFilter] = useState('ALL');
+    const [authorFilter, setAuthorFilter] = useState('');
 
     useEffect(() => {
         loadSubmarines(page);
@@ -684,14 +825,75 @@ function SubmarinesTab() {
         }
     };
 
+    const filteredSubmarines = useMemo(() => {
+        const normalizedQuery = searchQuery.trim().toLowerCase();
+        const normalizedAuthor = authorFilter.trim().toLowerCase();
+        return submarines.filter((submarine) => {
+            const authorName = submarine.authorUsername || submarine.author_username || '';
+            const submarineClass = submarine.submarineClass || submarine.submarine_class || '';
+            const status = String(submarine.status || '').toUpperCase();
+            const matchesQuery = !normalizedQuery || [submarine.title, submarine.description, submarine.externalId, submarine.external_id, submarineClass, submarine.tier, authorName, submarine.price, status]
+                .filter(Boolean)
+                .some((value) => String(value).toLowerCase().includes(normalizedQuery));
+            const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
+            const matchesClass = classFilter === 'ALL' || submarineClass === classFilter;
+            const matchesAuthor = !normalizedAuthor || authorName.toLowerCase().includes(normalizedAuthor);
+            return matchesQuery && matchesStatus && matchesClass && matchesAuthor;
+        });
+    }, [submarines, searchQuery, statusFilter, classFilter, authorFilter]);
+
     if (loading) return <LoadingSpinner />;
 
     return (
         <div className="admin-tab-content">
             {error && <div className="auth-error">{error}</div>}
-            <div className="admin-stat">Total submarines: <strong>{totalSubmarines}</strong></div>
+            <div className="admin-toolbar glass-card">
+                <div className="admin-toolbar-main">
+                    <input
+                        className="admin-search-input"
+                        type="search"
+                        placeholder="Search by title, description, ID, class, tier, price or author"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <p className="admin-toolbar-hint">Search currently filters only the loaded page, not all submarines in the database.</p>
+                </div>
+                <div className="admin-toolbar-filters">
+                    <input
+                        className="admin-filter-input"
+                        type="text"
+                        placeholder="Author"
+                        value={authorFilter}
+                        onChange={(e) => {
+                            setAuthorFilter(e.target.value);
+                            setPage(0);
+                        }}
+                    />
+                    <select className="admin-filter-select" value={classFilter} onChange={(e) => {
+                        setClassFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        <option value="ALL">All classes</option>
+                        {submarineApi.SUBMARINE_CLASS_VALUES.map((submarineClass) => (
+                            <option key={submarineClass} value={submarineClass}>{submarineClass}</option>
+                        ))}
+                    </select>
+                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
+                        setStatusFilter(e.target.value);
+                        setPage(0);
+                    }}>
+                        {CONTENT_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="admin-stat">Total submarines in database: <strong>{totalSubmarines}</strong> · Matches on current page: <strong>{filteredSubmarines.length}</strong></div>
             <div className="admin-list">
-                {submarines.map((submarine) => {
+                {filteredSubmarines.map((submarine) => {
                     const externalId = submarine.externalId ?? submarine.external_id;
                     const createdAt = submarine.createdAt || submarine.created_at;
                     const updatedAt = submarine.updatedAt || submarine.updated_at;
@@ -757,6 +959,7 @@ function SubmarinesTab() {
                         </div>
                     );
                 })}
+                {filteredSubmarines.length === 0 && <div className="admin-empty-state">No submarines match the current filters.</div>}
             </div>
             <Pagination
                 page={page}

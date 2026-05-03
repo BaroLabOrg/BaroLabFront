@@ -141,13 +141,16 @@ export async function googleLogin(idToken) {
 
 // Users
 export async function getUsers({
+    q,
+    status,
+    role,
     page = 0,
     size = 20,
     sortBy = 'createdAt',
     direction = 'desc',
 } = {}) {
     const response = await request('/users', {
-        query: { page, size, sortBy, direction },
+        query: { q, status, role, page, size, sortBy, direction },
     });
     return normalizePagedResponse(response);
 }
