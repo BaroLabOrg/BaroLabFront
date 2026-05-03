@@ -43,6 +43,16 @@
   background: var(--bg-card);
 }
 
+.admin-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-search-row .admin-search-input {
+  flex: 1;
+}
+
 .admin-toolbar-main {
   flex: 1;
   min-width: 220px;

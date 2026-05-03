@@ -215,13 +215,17 @@ function cleanUndefined(payload) {
 }
 
 export async function getSubmarines({
+    q,
+    status,
+    author,
+    submarineClass,
     page = 0,
     size = 20,
     sortBy = 'createdAt',
     direction = 'desc',
 } = {}) {
     const response = await request('/api/submarines', {
-        query: { page, size, sortBy, direction },
+        query: { q, status, author, submarineClass, page, size, sortBy, direction },
     });
     return normalizeSubmarinePage(response);
 }

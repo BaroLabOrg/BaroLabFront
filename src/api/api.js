@@ -216,13 +216,16 @@ export async function blockComment(modId, commentId) {
 
 // Mods
 export async function getMods({
+    q,
+    status,
+    author,
     page = 0,
     size = 20,
     sortBy = 'createdAt',
     direction = 'desc',
 } = {}) {
     const response = await request('/mods', {
-        query: { page, size, sortBy, direction },
+        query: { q, status, author, page, size, sortBy, direction },
     });
     return normalizePagedResponse(response);
 }

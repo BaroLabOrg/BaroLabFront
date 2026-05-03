@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/api';
 import * as guideApi from '../api/modGuides';
@@ -272,9 +272,16 @@ function ModsTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('ALL');
-    const [authorFilter, setAuthorFilter] = useState('');
+
+    // search inputs (draft — не отправляются пока не нажата кнопка)
+    const [searchDraft, setSearchDraft] = useState('');
+    const [statusDraft, setStatusDraft] = useState('ALL');
+    const [authorDraft, setAuthorDraft] = useState('');
+
+    // applied params — по ним делается реальный запрос
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [appliedStatus, setAppliedStatus] = useState('ALL');
+    const [appliedAuthor, setAppliedAuthor] = useState('');
 
     const [selectedId, setSelectedId] = useState(null);
     const [comments, setComments] = useState([]);
@@ -288,13 +295,16 @@ function ModsTab() {
 
     useEffect(() => {
         loadMods(page);
-    }, [page]);
+    }, [page, appliedSearch, appliedStatus, appliedAuthor]);
 
     const loadMods = async (targetPage) => {
         setLoading(true);
         setError('');
         try {
             const data = await api.getMods({
+                q: appliedSearch || undefined,
+                status: appliedStatus === 'ALL' ? undefined : appliedStatus,
+                author: appliedAuthor || undefined,
                 page: targetPage,
                 size: PAGE_SIZE,
                 sortBy: 'createdAt',
@@ -310,6 +320,27 @@ function ModsTab() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearch = () => {
+        setAppliedSearch(searchDraft);
+        setAppliedStatus(statusDraft);
+        setAppliedAuthor(authorDraft);
+        setPage(0);
+    };
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key === 'Enter') handleSearch();
+    };
+
+    const handleClearSearch = () => {
+        setSearchDraft('');
+        setStatusDraft('ALL');
+        setAuthorDraft('');
+        setAppliedSearch('');
+        setAppliedStatus('ALL');
+        setAppliedAuthor('');
+        setPage(0);
     };
 
     const handleActivate = async (externalId) => {
@@ -406,19 +437,6 @@ function ModsTab() {
         }
     };
 
-    const filteredMods = useMemo(() => {
-        const normalizedQuery = searchQuery.trim().toLowerCase();
-        const normalizedAuthor = authorFilter.trim().toLowerCase();
-        return mods.filter((mod) => {
-            const matchesQuery = !normalizedQuery || [mod.title, mod.description, mod.author_username, mod.status, mod.external_id, mod.rating, mod.popularity]
-                .filter(Boolean)
-                .some((value) => String(value).toLowerCase().includes(normalizedQuery));
-            const matchesStatus = statusFilter === 'ALL' || mod.status === statusFilter;
-            const matchesAuthor = !normalizedAuthor || String(mod.author_username || '').toLowerCase().includes(normalizedAuthor);
-            return matchesQuery && matchesStatus && matchesAuthor;
-        });
-    }, [mods, searchQuery, statusFilter, authorFilter]);
-
     if (loading) return <LoadingSpinner />;
 
     return (
@@ -426,42 +444,45 @@ function ModsTab() {
             {error && <div className="auth-error">{error}</div>}
             <div className="admin-toolbar glass-card">
                 <div className="admin-toolbar-main">
-                    <input
-                        className="admin-search-input"
-                        type="search"
-                        placeholder="Search by title, description, ID, rating or popularity"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setPage(0);
-                        }}
-                    />
-                    <p className="admin-toolbar-hint">Search currently filters only the loaded page, not all mods in the database.</p>
+                    <div className="admin-search-row">
+                        <input
+                            className="admin-search-input"
+                            type="search"
+                            placeholder="Search by title, description, ID, rating or popularity"
+                            value={searchDraft}
+                            onChange={(e) => setSearchDraft(e.target.value)}
+                            onKeyDown={handleSearchKeyDown}
+                        />
+                        <button className="btn btn-primary btn-sm" onClick={handleSearch} disabled={loading}>
+                            Search
+                        </button>
+                        {(appliedSearch || appliedStatus !== 'ALL' || appliedAuthor) && (
+                            <button className="btn btn-outline btn-sm" onClick={handleClearSearch}>
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                    <p className="admin-toolbar-hint">Search works across the full database and rebuilds pagination.</p>
                 </div>
                 <div className="admin-toolbar-filters">
                     <input
                         className="admin-filter-input"
                         type="text"
                         placeholder="Author"
-                        value={authorFilter}
-                        onChange={(e) => {
-                            setAuthorFilter(e.target.value);
-                            setPage(0);
-                        }}
+                        value={authorDraft}
+                        onChange={(e) => setAuthorDraft(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                     />
-                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
-                        setStatusFilter(e.target.value);
-                        setPage(0);
-                    }}>
+                    <select className="admin-filter-select" value={statusDraft} onChange={(e) => setStatusDraft(e.target.value)}>
                         {CONTENT_STATUS_OPTIONS.map((status) => (
                             <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
                         ))}
                     </select>
                 </div>
             </div>
-            <div className="admin-stat">Total mods in database: <strong>{totalMods}</strong> · Matches on current page: <strong>{filteredMods.length}</strong></div>
+            <div className="admin-stat">Total matched mods: <strong>{totalMods}</strong> · On this page: <strong>{mods.length}</strong></div>
             <div className="admin-list">
-                {filteredMods.map((mod) => {
+                {mods.map((mod) => {
                     const isOpen = selectedId === mod.external_id && commentsOpen;
                     return (
                         <div key={mod.external_id} className="admin-item-group">
@@ -571,7 +592,7 @@ function ModsTab() {
                         </div>
                     );
                 })}
-                {filteredMods.length === 0 && <div className="admin-empty-state">No mods match the current filters.</div>}
+                {mods.length === 0 && <div className="admin-empty-state">No mods match the current filters.</div>}
             </div>
             <Pagination
                 page={page}
@@ -770,20 +791,32 @@ function SubmarinesTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [actionLoading, setActionLoading] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('ALL');
-    const [classFilter, setClassFilter] = useState('ALL');
-    const [authorFilter, setAuthorFilter] = useState('');
+
+    // draft — не отправляются пока не нажата кнопка
+    const [searchDraft, setSearchDraft] = useState('');
+    const [statusDraft, setStatusDraft] = useState('ALL');
+    const [classDraft, setClassDraft] = useState('ALL');
+    const [authorDraft, setAuthorDraft] = useState('');
+
+    // applied — по ним делается реальный запрос
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [appliedStatus, setAppliedStatus] = useState('ALL');
+    const [appliedClass, setAppliedClass] = useState('ALL');
+    const [appliedAuthor, setAppliedAuthor] = useState('');
 
     useEffect(() => {
         loadSubmarines(page);
-    }, [page]);
+    }, [page, appliedSearch, appliedStatus, appliedClass, appliedAuthor]);
 
     const loadSubmarines = async (targetPage) => {
         setLoading(true);
         setError('');
         try {
             const data = await submarineApi.getSubmarines({
+                q: appliedSearch || undefined,
+                status: appliedStatus === 'ALL' ? undefined : appliedStatus,
+                submarineClass: appliedClass === 'ALL' ? undefined : appliedClass,
+                author: appliedAuthor || undefined,
                 page: targetPage,
                 size: PAGE_SIZE,
                 sortBy: 'createdAt',
@@ -799,6 +832,30 @@ function SubmarinesTab() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearch = () => {
+        setAppliedSearch(searchDraft);
+        setAppliedStatus(statusDraft);
+        setAppliedClass(classDraft);
+        setAppliedAuthor(authorDraft);
+        setPage(0);
+    };
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key === 'Enter') handleSearch();
+    };
+
+    const handleClearSearch = () => {
+        setSearchDraft('');
+        setStatusDraft('ALL');
+        setClassDraft('ALL');
+        setAuthorDraft('');
+        setAppliedSearch('');
+        setAppliedStatus('ALL');
+        setAppliedClass('ALL');
+        setAppliedAuthor('');
+        setPage(0);
     };
 
     const handleActivate = async (externalId) => {
@@ -825,23 +882,6 @@ function SubmarinesTab() {
         }
     };
 
-    const filteredSubmarines = useMemo(() => {
-        const normalizedQuery = searchQuery.trim().toLowerCase();
-        const normalizedAuthor = authorFilter.trim().toLowerCase();
-        return submarines.filter((submarine) => {
-            const authorName = submarine.authorUsername || submarine.author_username || '';
-            const submarineClass = submarine.submarineClass || submarine.submarine_class || '';
-            const status = String(submarine.status || '').toUpperCase();
-            const matchesQuery = !normalizedQuery || [submarine.title, submarine.description, submarine.externalId, submarine.external_id, submarineClass, submarine.tier, authorName, submarine.price, status]
-                .filter(Boolean)
-                .some((value) => String(value).toLowerCase().includes(normalizedQuery));
-            const matchesStatus = statusFilter === 'ALL' || status === statusFilter;
-            const matchesClass = classFilter === 'ALL' || submarineClass === classFilter;
-            const matchesAuthor = !normalizedAuthor || authorName.toLowerCase().includes(normalizedAuthor);
-            return matchesQuery && matchesStatus && matchesClass && matchesAuthor;
-        });
-    }, [submarines, searchQuery, statusFilter, classFilter, authorFilter]);
-
     if (loading) return <LoadingSpinner />;
 
     return (
@@ -849,51 +889,51 @@ function SubmarinesTab() {
             {error && <div className="auth-error">{error}</div>}
             <div className="admin-toolbar glass-card">
                 <div className="admin-toolbar-main">
-                    <input
-                        className="admin-search-input"
-                        type="search"
-                        placeholder="Search by title, description, ID, class, tier, price or author"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setPage(0);
-                        }}
-                    />
-                    <p className="admin-toolbar-hint">Search currently filters only the loaded page, not all submarines in the database.</p>
+                    <div className="admin-search-row">
+                        <input
+                            className="admin-search-input"
+                            type="search"
+                            placeholder="Search by title, description, ID, class, tier, price or author"
+                            value={searchDraft}
+                            onChange={(e) => setSearchDraft(e.target.value)}
+                            onKeyDown={handleSearchKeyDown}
+                        />
+                        <button className="btn btn-primary btn-sm" onClick={handleSearch} disabled={loading}>
+                            Search
+                        </button>
+                        {(appliedSearch || appliedStatus !== 'ALL' || appliedClass !== 'ALL' || appliedAuthor) && (
+                            <button className="btn btn-outline btn-sm" onClick={handleClearSearch}>
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                    <p className="admin-toolbar-hint">Search works across the full database and rebuilds pagination.</p>
                 </div>
                 <div className="admin-toolbar-filters">
                     <input
                         className="admin-filter-input"
                         type="text"
                         placeholder="Author"
-                        value={authorFilter}
-                        onChange={(e) => {
-                            setAuthorFilter(e.target.value);
-                            setPage(0);
-                        }}
+                        value={authorDraft}
+                        onChange={(e) => setAuthorDraft(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                     />
-                    <select className="admin-filter-select" value={classFilter} onChange={(e) => {
-                        setClassFilter(e.target.value);
-                        setPage(0);
-                    }}>
+                    <select className="admin-filter-select" value={classDraft} onChange={(e) => setClassDraft(e.target.value)}>
                         <option value="ALL">All classes</option>
-                        {submarineApi.SUBMARINE_CLASS_VALUES.map((submarineClass) => (
-                            <option key={submarineClass} value={submarineClass}>{submarineClass}</option>
+                        {submarineApi.SUBMARINE_CLASS_VALUES.map((sc) => (
+                            <option key={sc} value={sc}>{sc}</option>
                         ))}
                     </select>
-                    <select className="admin-filter-select" value={statusFilter} onChange={(e) => {
-                        setStatusFilter(e.target.value);
-                        setPage(0);
-                    }}>
+                    <select className="admin-filter-select" value={statusDraft} onChange={(e) => setStatusDraft(e.target.value)}>
                         {CONTENT_STATUS_OPTIONS.map((status) => (
                             <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
                         ))}
                     </select>
                 </div>
             </div>
-            <div className="admin-stat">Total submarines in database: <strong>{totalSubmarines}</strong> · Matches on current page: <strong>{filteredSubmarines.length}</strong></div>
+            <div className="admin-stat">Total matched submarines: <strong>{totalSubmarines}</strong> · On this page: <strong>{submarines.length}</strong></div>
             <div className="admin-list">
-                {filteredSubmarines.map((submarine) => {
+                {submarines.map((submarine) => {
                     const externalId = submarine.externalId ?? submarine.external_id;
                     const createdAt = submarine.createdAt || submarine.created_at;
                     const updatedAt = submarine.updatedAt || submarine.updated_at;
@@ -959,7 +999,7 @@ function SubmarinesTab() {
                         </div>
                     );
                 })}
-                {filteredSubmarines.length === 0 && <div className="admin-empty-state">No submarines match the current filters.</div>}
+                {submarines.length === 0 && <div className="admin-empty-state">No submarines match the current filters.</div>}
             </div>
             <Pagination
                 page={page}
