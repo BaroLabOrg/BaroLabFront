@@ -20,6 +20,7 @@ const LoadOrderPage = lazy(() => import('./pages/LoadOrderPage'));
 const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
 const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
 const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
+const VanillaDataPage = lazy(() => import('./pages/VanillaDataPage'));
 
 function RouteFallback() {
     return (
@@ -79,6 +80,10 @@ export default function App() {
                     <Route
                         path="/load-order"
                         element={<LoadOrderPage />}
+                    />
+                    <Route
+                        path="/vanilla"
+                        element={<VanillaDataPage />}
                     />
                     <Route
                         path="/encyclopedia"
