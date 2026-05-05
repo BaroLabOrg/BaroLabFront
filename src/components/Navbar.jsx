@@ -36,6 +36,9 @@ export default function Navbar() {
                     <NavLink to="/load-order" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Load Order
                     </NavLink>
+                    <NavLink to="/vanilla" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        Vanilla Data
+                    </NavLink>
                     <NavLink to="/encyclopedia" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Encyclopedia
                     </NavLink>
