@@ -1,5 +1,5 @@
 /* ============================================================
-   PROMISE PAGE — 3-layer parallax scene, Signalis-style
+   PROMISE PAGE — corrected composition & z-index
    ============================================================ */
 
 .page {
@@ -8,18 +8,19 @@
     overflow: hidden;
     font-family: 'Courier New', Courier, monospace;
     z-index: 10000;
-    cursor: none;
+    cursor: crosshair;
 }
 
 /* ================================================================
-   LAYER 1 — Background (blood red, moves slowest)
+   LAYER 1 — Red background  z-index: 1
    ================================================================ */
 .layerBg {
     position: absolute;
-    inset: 0;
+    inset: -5%;          /* slightly oversized so parallax shift doesn't show edges */
+    z-index: 1;
     background: #e60000;
     will-change: transform;
-    transition: transform 0.12s ease-out;
+    transition: transform 0.14s ease-out;
 }
 
 /* Letterbox bars */
@@ -27,20 +28,19 @@
 .layerBg::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    height: 10vh;
+    left: 0; right: 0;
+    height: 9vh;
     background: #000;
-    z-index: 1;
+    z-index: 2;
 }
 .layerBg::before { top: 0; }
 .layerBg::after  { bottom: 0; }
 
-/* VHS noise on bg */
+/* VHS noise */
 .bgNoise {
     position: absolute;
     inset: 0;
-    opacity: 0.06;
+    opacity: 0.055;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
     animation: noiseShift 0.1s steps(1) infinite;
@@ -56,24 +56,27 @@
 }
 
 /* ================================================================
-   LAYER 2 — Symbol (hexagonal tesseract, moves at medium speed)
+   LAYER 2 — Symbol (small, centered)  z-index: 2
    ================================================================ */
 .layerSymbol {
     position: absolute;
-    inset: 0;
+    inset: -5%;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
     will-change: transform;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.11s ease-out;
     pointer-events: none;
 }
 
 .symbolSvg {
-    width: min(340px, 55vw);
-    height: min(340px, 55vw);
+    width: 25vw;
+    max-width: 300px;
+    min-width: 160px;
+    height: auto;
     animation: symbolSpin 60s linear infinite;
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
 }
 
 @keyframes symbolSpin {
@@ -82,11 +85,12 @@
 }
 
 /* ================================================================
-   LAYER 3 — Gate foreground (black silhouette, moves fastest)
+   LAYER 3 — Gate + landscape  z-index: 3
    ================================================================ */
 .layerGate {
     position: absolute;
-    inset: 0;
+    inset: -5%;
+    z-index: 3;
     will-change: transform;
     transition: transform 0.08s ease-out;
     pointer-events: none;
@@ -96,54 +100,39 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 110%;
+    height: 110%;
 }
 
 /* ================================================================
-   LAYER 4 — UI overlay (no parallax)
+   Post-processing (above layers, below UI)
    ================================================================ */
-.layerUi {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding-bottom: 14vh;
-    z-index: 20;
-    pointer-events: none;
-}
-
-/* CRT scanlines over everything */
 .scanlines {
     position: absolute;
     inset: 0;
-    z-index: 15;
+    z-index: 10;
     pointer-events: none;
     background: repeating-linear-gradient(
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.18) 2px,
-        rgba(0, 0, 0, 0.18) 4px
+        rgba(0, 0, 0, 0.16) 2px,
+        rgba(0, 0, 0, 0.16) 4px
     );
 }
 
-/* Vignette */
 .vignette {
     position: absolute;
     inset: 0;
-    z-index: 16;
+    z-index: 11;
     pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%);
+    background: radial-gradient(ellipse at center, transparent 28%, rgba(0,0,0,0.65) 100%);
 }
 
-/* Glitch flash */
 .glitchFlash {
     position: absolute;
     inset: 0;
-    z-index: 17;
+    z-index: 12;
     pointer-events: none;
     animation: glitchFlash 11s ease-in-out infinite;
 }
@@ -156,16 +145,66 @@
     97% { opacity: 0; }
 }
 
-/* ---- Title text ---- */
-.titleText {
-    font-size: clamp(13px, 2.5vw, 20px);
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0.5em;
+/* ================================================================
+   LAYER 4 — UI (no parallax)  z-index: 100
+   ================================================================ */
+.layerUi {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* ---- SIGNALIS title — right side ---- */
+.signalisTitle {
+    position: absolute;
+    right: 12%;
+    top: 38%;
+    transform: translateY(-50%);
+    font-size: clamp(1.6rem, 3.5vw, 3rem);
+    color: #fff;
+    letter-spacing: 1.2rem;
     text-transform: uppercase;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
+    animation: fadeSlideIn 2s ease-out 0.5s both;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ---- Lore text — below SIGNALIS ---- */
+.loreText {
+    position: absolute;
+    right: 12%;
+    top: 55%;
+    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.9;
+    letter-spacing: 0.06em;
+    text-align: right;
+    max-width: 380px;
+    animation: fadeSlideIn 2s ease-out 2s both;
+    pointer-events: none;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- REMEMBER OUR PROMISE — above button ---- */
+.promiseText {
+    position: absolute;
+    bottom: calc(10% + 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(0.65rem, 1.4vw, 1rem);
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    white-space: nowrap;
     text-align: center;
-    margin-bottom: 28px;
-    min-height: 1.5em;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    min-height: 1.4em;
+    animation: none;
     pointer-events: none;
 }
 
@@ -181,45 +220,30 @@
     50%       { opacity: 0; }
 }
 
-/* ---- Lore text (right side) ---- */
-.loreText {
-    position: absolute;
-    right: 5vw;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.25);
-    letter-spacing: 0.12em;
-    line-height: 2;
-    text-align: right;
-    pointer-events: none;
-    animation: textFadeIn 2s ease-out 4s both;
-}
-
-@keyframes textFadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-/* ---- Wake button ---- */
+/* ---- Wake button — bottom center ---- */
 .wakeBtn {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
     font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    padding: 10px 36px;
+    font-size: clamp(0.8rem, 1.4vw, 1.2rem);
+    padding: 12px 40px;
     cursor: pointer;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.2rem;
     text-transform: uppercase;
     transition: all 0.3s;
     pointer-events: all;
-    animation: textFadeIn 2s ease-out 5s both;
+    animation: fadeSlideIn 2s ease-out 4.5s both;
+    white-space: nowrap;
 }
 
 .wakeBtn:hover {
-    border-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.7);
     color: #fff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.12);
-    letter-spacing: 0.4em;
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.3rem;
 }

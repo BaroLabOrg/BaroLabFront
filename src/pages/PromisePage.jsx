@@ -24,29 +24,22 @@ function useAmbientAudio() {
             const data = buf.getChannelData(0);
             for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.012;
             const crackle = ctx.createBufferSource();
-            crackle.buffer = buf;
-            crackle.loop = true;
+            crackle.buffer = buf; crackle.loop = true;
             const cf = ctx.createBiquadFilter();
-            cf.type = 'bandpass';
-            cf.frequency.value = 2800;
-            cf.Q.value = 0.4;
-            const cg = ctx.createGain();
-            cg.gain.value = 0.15;
+            cf.type = 'bandpass'; cf.frequency.value = 2800; cf.Q.value = 0.4;
+            const cg = ctx.createGain(); cg.gain.value = 0.15;
             crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination);
-            crackle.start();
-            nodes.push(crackle);
+            crackle.start(); nodes.push(crackle);
 
             // Sub rumble
             const rumble = ctx.createOscillator();
             const rg = ctx.createGain();
-            rumble.type = 'sine'; rumble.frequency.value = 38;
-            rg.gain.value = 0;
-            rumble.connect(rg); rg.connect(ctx.destination);
-            rumble.start();
+            rumble.type = 'sine'; rumble.frequency.value = 38; rg.gain.value = 0;
+            rumble.connect(rg); rg.connect(ctx.destination); rumble.start();
             rg.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 5);
             nodes.push(rumble);
 
-            // Piano notes — Chopin Raindrop feel
+            // Piano notes
             [220, 165, 110, 277, 220, 165, 294, 220].forEach((freq, i) => {
                 const t = ctx.currentTime + 3 + i * 4.8;
                 const osc = ctx.createOscillator();
@@ -58,8 +51,7 @@ function useAmbientAudio() {
                 gain.gain.linearRampToValueAtTime(0.065, t + 0.025);
                 gain.gain.exponentialRampToValueAtTime(0.001, t + 3.8);
                 osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
-                osc.start(t); osc.stop(t + 4.2);
-                nodes.push(osc);
+                osc.start(t); osc.stop(t + 4.2); nodes.push(osc);
             });
 
             nodesRef.current = nodes;
@@ -100,155 +92,144 @@ function useTypewriter(text, speed = 80, delay = 2000) {
 }
 
 /* ----------------------------------------------------------------
-   Hexagonal Tesseract Symbol SVG
-   Isometric cube illusion inside a hexagon, white strokes
+   Hexagonal Tesseract Symbol — white strokes, thin lines
    ---------------------------------------------------------------- */
 function TesseractSymbol() {
-    // Flat-top hexagon points at radius r centered at cx,cy
-    const hexPts = (cx, cy, r, rot = 0) =>
-        Array.from({ length: 6 }, (_, i) => {
-            const a = (Math.PI / 3) * i + rot;
-            return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`;
-        }).join(' ');
-
     const cx = 170; const cy = 170;
-    const R = 140; // outer hex radius
-    const r2 = R * 0.577; // inner radius for cube illusion ≈ R/√3
+    const R = 140;
+    const r2 = R * 0.577;
 
-    // Outer hex vertices
     const outerVerts = Array.from({ length: 6 }, (_, i) => {
         const a = (Math.PI / 3) * i;
         return { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) };
     });
-
-    // Inner hex vertices (rotated 30°)
     const innerVerts = Array.from({ length: 6 }, (_, i) => {
         const a = (Math.PI / 3) * i + Math.PI / 6;
         return { x: cx + r2 * Math.cos(a), y: cy + r2 * Math.sin(a) };
     });
 
-    // Center hex (empty)
-    const centerR = R * 0.18;
+    const hexPts = (r, rot = 0) =>
+        Array.from({ length: 6 }, (_, i) => {
+            const a = (Math.PI / 3) * i + rot;
+            return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`;
+        }).join(' ');
 
-    // Isometric cube faces: 3 rhombus faces connecting inner to outer
-    // Each face uses 2 adjacent outer verts + 2 adjacent inner verts
     const faces = [
         [outerVerts[0], outerVerts[1], innerVerts[1], innerVerts[0]],
         [outerVerts[2], outerVerts[3], innerVerts[3], innerVerts[2]],
         [outerVerts[4], outerVerts[5], innerVerts[5], innerVerts[4]],
     ];
-
     const ptStr = (pts) => pts.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
 
     return (
-        <svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
-            {/* Outer hexagon */}
-            <polygon points={hexPts(cx, cy, R)} fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5"/>
-
-            {/* Cube face rhombuses */}
+        <svg className={styles.symbolSvg} viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+            {/* Outer hex */}
+            <polygon points={hexPts(R)} fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2"/>
+            {/* Cube faces */}
             {faces.map((face, i) => (
                 <polygon key={i} points={ptStr(face)}
-                    fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.7)" strokeWidth="1"/>
+                    fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.65)" strokeWidth="1"/>
             ))}
-
-            {/* Spokes from center to inner hex vertices */}
+            {/* Spokes center → inner */}
             {innerVerts.map((v, i) => (
                 <line key={i} x1={cx} y1={cy} x2={v.x} y2={v.y}
-                    stroke="rgba(255,255,255,0.5)" strokeWidth="0.8"/>
+                    stroke="rgba(255,255,255,0.45)" strokeWidth="0.8"/>
             ))}
-
             {/* Inner hex */}
-            <polygon points={hexPts(cx, cy, r2, Math.PI / 6)}
-                fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1"/>
-
-            {/* Center empty hexagon */}
-            <polygon points={hexPts(cx, cy, centerR)}
-                fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
-
-            {/* 6 small squares at outer hex vertices */}
+            <polygon points={hexPts(r2, Math.PI / 6)}
+                fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1"/>
+            {/* Center hex */}
+            <polygon points={hexPts(R * 0.18)}
+                fill="rgba(0,0,0,0.25)" stroke="rgba(255,255,255,0.75)" strokeWidth="1"/>
+            {/* 6 small squares at outer vertices */}
             {outerVerts.map((v, i) => (
-                <rect key={i}
-                    x={v.x - 6} y={v.y - 6} width="12" height="12"
-                    fill="#000" stroke="#fff" strokeWidth="1.2"/>
+                <rect key={i} x={v.x - 5} y={v.y - 5} width="10" height="10"
+                    fill="#000" stroke="#fff" strokeWidth="1"/>
             ))}
-
-            {/* Lines from outer verts to inner verts (alternate) */}
+            {/* Alternate spokes outer → inner */}
             {[0, 2, 4].map(i => (
                 <line key={i}
                     x1={outerVerts[i].x} y1={outerVerts[i].y}
                     x2={innerVerts[i].x} y2={innerVerts[i].y}
-                    stroke="rgba(255,255,255,0.4)" strokeWidth="0.6"/>
+                    stroke="rgba(255,255,255,0.35)" strokeWidth="0.6"/>
             ))}
         </svg>
     );
 }
 
 /* ----------------------------------------------------------------
-   Gate foreground SVG
-   Two massive rectangular pillars + crossbar + ruined landscape
+   Gate SVG — П-shape left of center + full-width ruined landscape
    ---------------------------------------------------------------- */
 function GateSvg() {
-    const W = 1200; const H = 700;
-    const pillarW = 90;
-    const pillarH = 480;
-    const gateLeft = W / 2 - 160;
-    const gateRight = W / 2 + 160 - pillarW;
-    const crossbarY = H - pillarH - 20;
-    const crossbarH = 28;
+    // viewBox covers full screen proportions
+    const W = 1600; const H = 900;
+
+    // Gate positioned at ~30% from left
+    const gateCenterX = W * 0.30;
+    const pillarW = 70;
+    const pillarH = 520;
+    const gateOpeningW = 220;
+    const leftPillarX = gateCenterX - gateOpeningW / 2 - pillarW;
+    const rightPillarX = gateCenterX + gateOpeningW / 2;
+    const crossbarY = H - pillarH - 10;
+    const crossbarH = 32;
+    const crossbarX = leftPillarX;
+    const crossbarW = rightPillarX + pillarW - leftPillarX;
 
     return (
         <svg viewBox={`0 0 ${W} ${H}`} xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="xMidYMax meet">
 
             {/* Left pillar */}
-            <rect x={gateLeft} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
+            <rect x={leftPillarX} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
             {/* Right pillar */}
-            <rect x={gateRight} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
-            {/* Crossbar */}
-            <rect x={gateLeft} y={crossbarY} width={gateRight + pillarW - gateLeft} height={crossbarH} fill="#000"/>
+            <rect x={rightPillarX} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
+            {/* Top crossbar */}
+            <rect x={crossbarX} y={crossbarY} width={crossbarW} height={crossbarH} fill="#000"/>
 
-            {/* Pillar detail lines */}
-            <line x1={gateLeft + 10} y1={crossbarY + crossbarH} x2={gateLeft + 10} y2={H}
-                stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
-            <line x1={gateRight + pillarW - 10} y1={crossbarY + crossbarH} x2={gateRight + pillarW - 10} y2={H}
-                stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+            {/* Subtle inner glow lines on pillars */}
+            <line x1={leftPillarX + 8} y1={crossbarY + crossbarH} x2={leftPillarX + 8} y2={H}
+                stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
+            <line x1={rightPillarX + pillarW - 8} y1={crossbarY + crossbarH}
+                x2={rightPillarX + pillarW - 8} y2={H}
+                stroke="rgba(255,255,255,0.03)" strokeWidth="1"/>
 
-            {/* Ruined landscape — left side */}
+            {/* Full-width ruined landscape silhouette */}
             <polygon points={`
                 0,${H}
-                0,${H - 80}
-                60,${H - 120}
-                100,${H - 90}
-                160,${H - 160}
-                220,${H - 100}
-                280,${H - 180}
-                340,${H - 130}
-                ${gateLeft},${H - 60}
-                ${gateLeft},${H}
+                0,${H - 70}
+                55,${H - 110}
+                90,${H - 80}
+                140,${H - 150}
+                190,${H - 95}
+                240,${H - 170}
+                300,${H - 120}
+                360,${H - 190}
+                420,${H - 140}
+                ${leftPillarX},${H - 55}
+                ${leftPillarX},${H}
             `} fill="#000"/>
 
-            {/* Ruined landscape — right side */}
+            {/* Between pillars — ground */}
+            <rect x={leftPillarX + pillarW} y={H - 55} width={gateOpeningW} height="55" fill="#000"/>
+
             <polygon points={`
-                ${gateRight + pillarW},${H - 60}
-                ${W - 340},${H - 130}
-                ${W - 280},${H - 180}
-                ${W - 220},${H - 100}
-                ${W - 160},${H - 160}
-                ${W - 100},${H - 90}
-                ${W - 60},${H - 120}
-                ${W},${H - 80}
+                ${rightPillarX + pillarW},${H - 55}
+                ${W - 420},${H - 140}
+                ${W - 360},${H - 190}
+                ${W - 300},${H - 120}
+                ${W - 240},${H - 170}
+                ${W - 190},${H - 95}
+                ${W - 140},${H - 150}
+                ${W - 90},${H - 80}
+                ${W - 55},${H - 110}
+                ${W},${H - 70}
                 ${W},${H}
-                ${gateRight + pillarW},${H}
+                ${rightPillarX + pillarW},${H}
             `} fill="#000"/>
 
-            {/* Ground strip */}
-            <rect x="0" y={H - 55} width={W} height="55" fill="#000"/>
-
-            {/* Subtle gate glow outline */}
-            <rect x={gateLeft} y={crossbarY} width={pillarW} height={pillarH}
-                fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
-            <rect x={gateRight} y={crossbarY} width={pillarW} height={pillarH}
-                fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+            {/* Ground strip full width */}
+            <rect x="0" y={H - 50} width={W} height="50" fill="#000"/>
         </svg>
     );
 }
@@ -256,36 +237,28 @@ function GateSvg() {
 /* ----------------------------------------------------------------
    Main page
    ---------------------------------------------------------------- */
-const MAIN_TEXT = 'REMEMBER OUR PROMISE';
+const PROMISE_TEXT = 'REMEMBER OUR PROMISE';
 
 export default function PromisePage() {
     const navigate = useNavigate();
     const { resetQuest } = useQuest();
     const audio = useAmbientAudio();
     const [hoverWake, setHoverWake] = useState(false);
-    const { displayed, done } = useTypewriter(MAIN_TEXT, 80, 2000);
+    const { displayed, done } = useTypewriter(PROMISE_TEXT, 80, 2200);
 
-    // Parallax refs
     const bgRef = useRef(null);
     const symbolRef = useRef(null);
     const gateRef = useRef(null);
 
     const handleMouseMove = useCallback((e) => {
-        const xAxis = (window.innerWidth / 2 - e.clientX);
-        const yAxis = (window.innerHeight / 2 - e.clientY);
-
-        if (bgRef.current) {
-            bgRef.current.style.transform =
-                `translate(${xAxis / 100}px, ${yAxis / 100}px)`;
-        }
-        if (symbolRef.current) {
-            symbolRef.current.style.transform =
-                `translate(${xAxis / 45}px, ${yAxis / 45}px)`;
-        }
-        if (gateRef.current) {
-            gateRef.current.style.transform =
-                `translate(${xAxis / 18}px, ${yAxis / 18}px)`;
-        }
+        const xAxis = window.innerWidth / 2 - e.clientX;
+        const yAxis = window.innerHeight / 2 - e.clientY;
+        if (bgRef.current)
+            bgRef.current.style.transform = `translate(${xAxis / 100}px, ${yAxis / 100}px)`;
+        if (symbolRef.current)
+            symbolRef.current.style.transform = `translate(${xAxis / 45}px, ${yAxis / 45}px)`;
+        if (gateRef.current)
+            gateRef.current.style.transform = `translate(${xAxis / 18}px, ${yAxis / 18}px)`;
     }, []);
 
     useEffect(() => {
@@ -310,12 +283,12 @@ export default function PromisePage() {
                 <div className={styles.bgNoise} aria-hidden="true" />
             </div>
 
-            {/* Layer 2 — Tesseract symbol */}
+            {/* Layer 2 — Tesseract symbol (centered, small) */}
             <div className={styles.layerSymbol} ref={symbolRef} aria-hidden="true">
                 <TesseractSymbol />
             </div>
 
-            {/* Layer 3 — Gate foreground */}
+            {/* Layer 3 — Gate + landscape (left of center) */}
             <div className={styles.layerGate} ref={gateRef} aria-hidden="true">
                 <GateSvg />
             </div>
@@ -325,23 +298,28 @@ export default function PromisePage() {
             <div className={styles.vignette} aria-hidden="true" />
             <div className={styles.glitchFlash} aria-hidden="true" />
 
-            {/* Lore text — right side, no parallax */}
-            <p className={styles.loreText} aria-hidden="true">
-                S I G N A L I S<br />
-                ——————————<br />
-                Синхронизация завершена.<br />
-                Капсула Penrose-512<br />
-                достигла дна Европы.<br />
-                Возможно, это ад.
-            </p>
-
-            {/* UI layer — title + button */}
+            {/* Layer 4 — UI (no parallax) */}
             <div className={styles.layerUi}>
-                <div className={styles.titleText} aria-live="polite">
+                {/* SIGNALIS — right side */}
+                <div className={styles.signalisTitle} aria-hidden="true">
+                    S I G N A L I S
+                </div>
+
+                {/* Lore text — below SIGNALIS */}
+                <p className={styles.loreText}>
+                    Синхронизация завершена.<br />
+                    Капсула Penrose-512<br />
+                    достигла дна Европы.<br />
+                    Возможно, это ад.
+                </p>
+
+                {/* REMEMBER OUR PROMISE — above button */}
+                <div className={styles.promiseText} aria-live="polite">
                     {displayed}
                     {!done && <span className={styles.titleCursor}>█</span>}
                 </div>
 
+                {/* Wake button — bottom center */}
                 <button
                     className={styles.wakeBtn}
                     onClick={handleWake}
