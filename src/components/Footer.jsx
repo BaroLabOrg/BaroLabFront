@@ -188,12 +188,14 @@ export default function Footer({ totalMods }) {
             <div className="footer-bottom">
                 <div className="footer-bottom-inner container">
                     <span className="footer-logo">◉ BAROLAB</span>
-                    <span className="footer-ticker">
-                        BUILD: v1.0.4 &nbsp;|&nbsp; ACTIVE CREW: 142 &nbsp;|&nbsp; JOVIAN RADS: NOMINAL &nbsp;|&nbsp;
-                        ARCHIVES: {totalMods != null ? totalMods.toLocaleString('en-US') : '—'} &nbsp;|&nbsp;
-                        BUILD: v1.0.4 &nbsp;|&nbsp; ACTIVE CREW: 142 &nbsp;|&nbsp; JOVIAN RADS: NOMINAL &nbsp;|&nbsp;
-                        ARCHIVES: {totalMods != null ? totalMods.toLocaleString('en-US') : '—'}
-                    </span>
+                    <div className="footer-ticker-wrap">
+                        <span className="footer-ticker">
+                            BUILD: v1.0.4 &nbsp;·&nbsp; ACTIVE CREW: 142 &nbsp;·&nbsp; JOVIAN RADS: NOMINAL &nbsp;·&nbsp;
+                            ARCHIVES: {totalMods != null ? totalMods.toLocaleString('en-US') : '—'} &nbsp;·&nbsp;
+                            BUILD: v1.0.4 &nbsp;·&nbsp; ACTIVE CREW: 142 &nbsp;·&nbsp; JOVIAN RADS: NOMINAL &nbsp;·&nbsp;
+                            ARCHIVES: {totalMods != null ? totalMods.toLocaleString('en-US') : '—'} &nbsp;·&nbsp;
+                        </span>
+                    </div>
                 </div>
             </div>
         </footer>

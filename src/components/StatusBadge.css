@@ -1,39 +1,73 @@
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--tag-default-border);
-  background: var(--tag-default-bg);
-  color: var(--tag-default-color);
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: box-shadow var(--transition-fast);
 }
 
-.status-badge[data-variant='danger'] {
-  background: var(--tag-danger-bg);
-  color: var(--tag-danger-color);
-  border-color: var(--tag-danger-border);
-}
-
-.status-badge[data-variant='success'] {
+.status-badge--active,
+.status-badge--online,
+.status-badge--success {
   background: var(--tag-success-bg);
   color: var(--tag-success-color);
   border-color: var(--tag-success-border);
 }
 
-.status-badge[data-variant='warning'] {
+.status-badge--active:hover,
+.status-badge--online:hover,
+.status-badge--success:hover {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+}
+
+.status-badge--inactive,
+.status-badge--offline,
+.status-badge--danger,
+.status-badge--error {
+  background: var(--tag-danger-bg);
+  color: var(--tag-danger-color);
+  border-color: var(--tag-danger-border);
+}
+
+.status-badge--warning,
+.status-badge--pending {
   background: var(--tag-warning-bg);
   color: var(--tag-warning-color);
   border-color: var(--tag-warning-border);
 }
 
-.status-badge[data-variant='muted'] {
+.status-badge--info,
+.status-badge--default {
+  background: var(--tag-default-bg);
+  color: var(--tag-default-color);
+  border-color: var(--tag-default-border);
+}
+
+.status-badge--muted {
   background: var(--tag-muted-bg);
   color: var(--tag-muted-color);
   border-color: var(--tag-muted-border);
+}
+
+.status-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.status-badge--active .status-badge-dot,
+.status-badge--online .status-badge-dot,
+.status-badge--success .status-badge-dot {
+  animation: pulseGlow 2s ease-in-out infinite;
 }

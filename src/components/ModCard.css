@@ -9,27 +9,58 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  position: relative;
+}
+
+.mod-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), #fb923c);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+  z-index: 1;
 }
 
 .mod-card:hover {
-  border-color: var(--accent);
+  border-color: rgba(249, 115, 22, 0.35);
   box-shadow: var(--shadow-accent-soft);
+  transform: translateY(-3px);
+}
+
+.mod-card:hover::before {
+  transform: scaleX(1);
 }
 
 .mod-card-banner {
   width: 100%;
-  height: 140px;
+  height: 148px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
+  overflow: hidden;
+  position: relative;
+}
+
+.mod-card-banner img,
+.mod-card-banner [style*="background-image"] {
+  transition: transform var(--transition-slow);
+}
+
+.mod-card:hover .mod-card-banner {
+  border-bottom-color: rgba(249, 115, 22, 0.2);
 }
 
 .mod-card-banner-placeholder {
-  font-size: 2.2rem;
-  opacity: 0.45;
+  font-size: 2.4rem;
+  opacity: 0.3;
 }
 
 .mod-card-body {
@@ -44,7 +75,7 @@
   margin: 0;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1.3;
@@ -54,14 +85,24 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.mod-card:hover .mod-card-title {
+  color: #ffffff;
 }
 
 .mod-card-content {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.55;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .mod-card-footer {
@@ -69,16 +110,18 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 2px;
-  gap: 12px;
+  gap: 8px;
 }
 
 .mod-card-author,
 .mod-card-date {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  letter-spacing: 0.02em;
 }
 
 .mod-card-stats {
@@ -88,11 +131,17 @@
   margin-top: 6px;
   padding-top: 10px;
   border-top: 1px solid var(--border-color);
+  transition: border-color var(--transition-fast);
+}
+
+.mod-card:hover .mod-card-stats {
+  border-top-color: rgba(249, 115, 22, 0.15);
 }
 
 .mod-card-transitions {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -101,12 +150,16 @@
 .mod-card-read {
   color: var(--accent);
   font-family: var(--font-heading);
-  font-size: 12px;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: color var(--transition-fast);
+  transition: color var(--transition-fast), letter-spacing var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .mod-card:hover .mod-card-read {
   color: var(--accent-hover);
+  letter-spacing: 0.1em;
 }

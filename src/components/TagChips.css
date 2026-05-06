@@ -1,66 +1,89 @@
 .tag-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
 }
 
 .tag-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 3px 10px;
-  border-radius: var(--radius-sm);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
   border: 1px solid var(--tag-default-border);
   background: var(--tag-default-bg);
   color: var(--tag-default-color);
-  font-family: var(--font-heading);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.2;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   cursor: default;
 }
 
-.tag-chip[data-variant='danger'] {
+.tag-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.tag-chip--removable {
+  cursor: pointer;
+  padding-right: 6px;
+}
+
+.tag-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: currentColor;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.tag-chip-remove:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: var(--accent-red);
+}
+
+/* Variants */
+.tag-chip--danger {
   background: var(--tag-danger-bg);
   color: var(--tag-danger-color);
   border-color: var(--tag-danger-border);
 }
 
-.tag-chip[data-variant='success'] {
+.tag-chip--success {
   background: var(--tag-success-bg);
   color: var(--tag-success-color);
   border-color: var(--tag-success-border);
 }
 
-.tag-chip[data-variant='warning'] {
+.tag-chip--warning {
   background: var(--tag-warning-bg);
   color: var(--tag-warning-color);
   border-color: var(--tag-warning-border);
 }
 
-.tag-chip[data-variant='muted'] {
+.tag-chip--muted {
   background: var(--tag-muted-bg);
   color: var(--tag-muted-color);
   border-color: var(--tag-muted-border);
 }
 
-.tag-remove-btn {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font-size: 14px;
-  line-height: 1;
-  opacity: 0.75;
-  cursor: pointer;
-}
-
-.tag-remove-btn:hover {
-  opacity: 1;
-}
-
-.tag-chips-empty {
-  color: var(--text-muted);
-  font-size: 0.82rem;
+.tag-chip--accent {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--accent);
+  border-color: rgba(249, 115, 22, 0.3);
 }
