@@ -1,14 +1,24 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuest } from '../context/QuestContext';
 import './NotFoundPage.css';
+import notFoundQuestStyles from './NotFoundPage.quest.module.css';
 
 export default function NotFoundPage() {
     const navigate = useNavigate();
+    const { stage, setStage, openInspect } = useQuest();
 
     const handleGoBack = () => {
         if (window.history.length > 2) {
             navigate(-1);
         } else {
             navigate('/');
+        }
+    };
+
+    const handleEtherClick = () => {
+        if (stage === 1) {
+            setStage(2);
+            openInspect(2);
         }
     };
 
@@ -55,6 +65,19 @@ export default function NotFoundPage() {
                                 <span className="not-found-log-level not-found-log-level--info">INFO</span>
                                 <span className="not-found-log-text">Manual navigation required</span>
                             </div>
+                            {/* Quest Stage 2 trigger — only visible when stage === 1 */}
+                            {stage === 1 && (
+                                <div className="not-found-log-line">
+                                    <button
+                                        type="button"
+                                        className={notFoundQuestStyles.etherLink}
+                                        onClick={handleEtherClick}
+                                        aria-label="Check ether frequency"
+                                    >
+                                        ~Проверить частоту эфира~
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="not-found-actions">

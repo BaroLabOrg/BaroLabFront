@@ -1,0 +1,28 @@
+/* ============================================================
+   GLITCH PAGINATION — Quest Stage 1 trigger styles
+   Applied only to the Back button when stage === 0
+   ============================================================ */
+
+/* The glitch animation on the Back button */
+@keyframes backBtnGlitch {
+    0%   { transform: none; text-shadow: none; }
+    92%  { transform: none; text-shadow: none; }
+    93%  { transform: translateX(1px); text-shadow: 1px 0 0 rgba(255,0,0,0.8), -1px 0 0 rgba(0,200,255,0.5); }
+    94%  { transform: translateX(-1px) skewX(1deg); text-shadow: -1px 0 0 rgba(255,0,0,0.6); }
+    95%  { transform: translateX(1px); text-shadow: 1px 0 0 rgba(0,200,255,0.4); }
+    96%  { transform: none; text-shadow: none; }
+    100% { transform: none; text-shadow: none; }
+}
+
+.backGlitch {
+    animation: backBtnGlitch 6s ease-in-out infinite !important;
+    cursor: pointer !important;
+    /* Override disabled pointer-events */
+    pointer-events: all !important;
+}
+
+/* Subtle red tint on the disabled-but-clickable button */
+.backGlitch:hover {
+    color: rgba(255, 0, 0, 0.5) !important;
+    border-color: rgba(255, 0, 0, 0.3) !important;
+}

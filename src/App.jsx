@@ -2,8 +2,18 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { useServerError } from './context/ServerErrorContext';
+import { QuestProvider, useQuest } from './context/QuestContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import ItemInspectModal from './components/quest/ItemInspectModal';
+import QuestTerminal from './components/quest/QuestTerminal';
+
+// Guard: /promise is only accessible when all 3 items are collected (stage >= 3)
+function QuestRoute({ children }) {
+    const { stage } = useQuest();
+    if (stage < 3) return <Navigate to="/" replace />;
+    return children;
+}
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -25,6 +35,7 @@ const VanillaDataPage = lazy(() => import('./pages/VanillaDataPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ForbiddenPage = lazy(() => import('./pages/ForbiddenPage'));
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'));
+const PromisePage = lazy(() => import('./pages/PromisePage'));
 
 function RouteFallback() {
     return (
@@ -50,10 +61,16 @@ export default function App() {
     }
 
     return (
-        <>
+        <QuestProvider>
             <Navbar />
+            {/* Global quest modals — rendered outside Routes so they persist across navigation */}
+            <ItemInspectModal />
+            <QuestTerminal />
             <Suspense fallback={<RouteFallback />}>
                 <Routes>
+                    {/* Secret quest ending — only accessible with all 3 items collected */}
+                    <Route path="/promise" element={<QuestRoute><PromisePage /></QuestRoute>} />
+
                     {/* Public */}
                     <Route
                         path="/login"
@@ -165,6 +182,6 @@ export default function App() {
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Suspense>
-        </>
+        </QuestProvider>
     );
 }

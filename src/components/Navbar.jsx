@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import QuestInventory from './quest/QuestInventory';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -14,6 +15,9 @@ export default function Navbar() {
 
     return (
         <nav className="navbar">
+            {/* Quest inventory — absolutely positioned outside the flex layout so it never breaks the navbar */}
+            <QuestInventory />
+
             <div className="navbar-inner container">
                 <NavLink to="/" className="navbar-logo">
                     <span className="logo-icon">◉</span>
