@@ -60,9 +60,8 @@
   border-radius: var(--radius-lg);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-lg), 0 0 40px rgba(249, 115, 22, 0.05);
+  box-shadow: var(--shadow-lg);
   position: relative;
-  overflow: hidden;
 }
 
 /* Top accent line */

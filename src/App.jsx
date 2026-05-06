@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { useServerError } from './context/ServerErrorContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -21,6 +22,9 @@ const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
 const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
 const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
 const VanillaDataPage = lazy(() => import('./pages/VanillaDataPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ForbiddenPage = lazy(() => import('./pages/ForbiddenPage'));
+const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'));
 
 function RouteFallback() {
     return (
@@ -34,6 +38,16 @@ function RouteFallback() {
 
 export default function App() {
     const { isAuthenticated } = useAuth();
+    const { serverDown } = useServerError();
+
+    // If server is completely down, show error page instead of routes
+    if (serverDown) {
+        return (
+            <Suspense fallback={<RouteFallback />}>
+                <ServerErrorPage />
+            </Suspense>
+        );
+    }
 
     return (
         <>
@@ -143,8 +157,12 @@ export default function App() {
                         )}
                     />
 
-                    {/* Fallback */}
-                    <Route path="*" element={<Navigate to={isAuthenticated ? '/mods' : '/login'} replace />} />
+                    {/* Error pages — for preview/testing */}
+                    <Route path="/403" element={<ForbiddenPage />} />
+                    <Route path="/500" element={<ServerErrorPage />} />
+
+                    {/* Fallback — 404 */}
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Suspense>
         </>

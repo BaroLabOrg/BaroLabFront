@@ -49,9 +49,8 @@ export default function SignUpPage() {
         <div className="auth-page">
             <div className="auth-bg-glow" />
             <div className="auth-container">
-                <div className="auth-card glass-card">
+                <div className="auth-card">
                     <div className="auth-header">
-                        <span className="auth-logo">◆</span>
                         <h1 className="auth-title">Create account</h1>
                         <p className="auth-subtitle">Join the BaroLab community</p>
                     </div>

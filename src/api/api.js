@@ -61,11 +61,18 @@ export async function request(path, options = {}) {
         ...options.headers,
     };
 
-    const response = await fetch(buildUrl(path, options.query), {
-        method: options.method || 'GET',
-        headers,
-        body: buildRequestBody(options.body, headers),
-    });
+    let response;
+    try {
+        response = await fetch(buildUrl(path, options.query), {
+            method: options.method || 'GET',
+            headers,
+            body: buildRequestBody(options.body, headers),
+        });
+    } catch (networkError) {
+        // Server is completely unreachable (no network, server down, CORS preflight failed)
+        window.dispatchEvent(new CustomEvent('server:unavailable'));
+        throw networkError;
+    }
 
     const responseBody = await readJsonSafely(response);
     if (!response.ok) {
