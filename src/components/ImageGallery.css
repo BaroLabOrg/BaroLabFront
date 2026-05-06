@@ -26,7 +26,26 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 4px 0;
+  padding: 4px 0 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) transparent;
+}
+
+.image-gallery-thumbnails::-webkit-scrollbar {
+  height: 5px;
+}
+
+.image-gallery-thumbnails::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.image-gallery-thumbnails::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 999px;
+}
+
+.image-gallery-thumbnails::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-blue);
 }
 
 .image-gallery-thumbnail {
