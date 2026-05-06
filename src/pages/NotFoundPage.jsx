@@ -18,11 +18,6 @@ export default function NotFoundPage() {
                 <div className="not-found-terminal glass-card">
                     {/* Terminal header */}
                     <div className="not-found-terminal-header">
-                        <div className="not-found-terminal-dots">
-                            <span className="not-found-dot not-found-dot--red" />
-                            <span className="not-found-dot not-found-dot--yellow" />
-                            <span className="not-found-dot not-found-dot--green" />
-                        </div>
                         <span className="not-found-terminal-title">NAVIGATION ERROR</span>
                         <span className="not-found-terminal-minimize">—  □  ✕</span>
                     </div>

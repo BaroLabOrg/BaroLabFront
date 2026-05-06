@@ -19,7 +19,6 @@
 .hero-bg-link,
 .hero-overlay,
 .hero-bg,
-.hero-corner,
 .hero-stub-version,
 .hero-content,
 .hero-dots,
@@ -68,43 +67,6 @@
     background:
         linear-gradient(to right, rgba(8, 10, 15, 0.96) 0%, rgba(8, 10, 15, 0.65) 50%, rgba(8, 10, 15, 0.2) 100%),
         linear-gradient(to top, rgba(8, 10, 15, 0.7) 0%, transparent 50%);
-}
-
-/* Corner decorations */
-.hero-corner {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    z-index: 3;
-    opacity: 0.5;
-}
-
-.hero-corner--tl {
-    top: 16px;
-    left: 16px;
-    border-top: 2px solid var(--accent);
-    border-left: 2px solid var(--accent);
-}
-
-.hero-corner--tr {
-    top: 16px;
-    right: 16px;
-    border-top: 2px solid var(--accent);
-    border-right: 2px solid var(--accent);
-}
-
-.hero-corner--bl {
-    bottom: 16px;
-    left: 16px;
-    border-bottom: 2px solid var(--accent);
-    border-left: 2px solid var(--accent);
-}
-
-.hero-corner--br {
-    bottom: 16px;
-    right: 16px;
-    border-bottom: 2px solid var(--accent);
-    border-right: 2px solid var(--accent);
 }
 
 .hero-stub-version {
@@ -220,6 +182,8 @@
     padding: 16px;
     backdrop-filter: blur(8px);
     animation: fadeIn 0.5s ease 0.2s both;
+    align-self: flex-end;
+    margin-bottom: -32px;
 }
 
 .hero-meta-row {
@@ -233,14 +197,14 @@
 }
 
 .hero-meta-label {
-    color: var(--text-muted);
+    color: #ffffff;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-size: 10px;
 }
 
 .hero-meta-val {
-    color: var(--text-primary);
+    color: #ffffff;
     font-weight: 600;
 }
 
