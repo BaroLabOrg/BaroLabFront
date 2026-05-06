@@ -63,7 +63,7 @@ const ITEMS = {
 Батарея: 3% // KRITISCH`,
         hint: 'Сигнал скрыт в основании системы',
         backText: 'СИГНАЛ В ОСНОВАНИИ',
-        backSub: 'BUILD: v5.1.2',
+        backSub: '↓ FOOTER // BUILD VERSION ↓',
         svgContent: (
             <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
                 {/* Main body */}

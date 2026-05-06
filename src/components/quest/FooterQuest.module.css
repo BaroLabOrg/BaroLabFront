@@ -1,48 +1,70 @@
 /* ============================================================
-   FOOTER QUEST — Stage 3 version glitch styles
+   FOOTER QUEST — Stage 2 version glitch styles
    ============================================================ */
+
+/* Subtle idle pulse — always visible at stage=2 */
+@keyframes versionIdle {
+    0%, 100% {
+        color: rgba(255, 0, 0, 0.55);
+        text-shadow: none;
+    }
+    50% {
+        color: rgba(255, 0, 0, 0.9);
+        text-shadow: 0 0 6px rgba(255, 0, 0, 0.4);
+    }
+}
 
 @keyframes versionGlitch {
     0%, 100% {
-        color: inherit;
+        color: rgba(255, 0, 0, 0.55);
         text-shadow: none;
         transform: none;
     }
     10% {
         color: #ff0000;
-        text-shadow: 1px 0 0 rgba(0, 200, 255, 0.6), -1px 0 0 rgba(255, 0, 0, 0.6);
-        transform: translateX(1px);
+        text-shadow: 2px 0 0 rgba(0, 200, 255, 0.7), -2px 0 0 rgba(255, 0, 0, 0.7);
+        transform: translateX(2px);
     }
     20% {
         color: #ff0000;
-        text-shadow: -1px 0 0 rgba(0, 200, 255, 0.4);
-        transform: translateX(-1px);
+        text-shadow: -2px 0 0 rgba(0, 200, 255, 0.5);
+        transform: translateX(-2px);
     }
     30% {
+        color: #ff0000;
+        text-shadow: 1px 0 0 rgba(0, 200, 255, 0.3);
+        transform: translateX(1px) scaleX(1.02);
+    }
+    40% {
         color: #ff0000;
         text-shadow: none;
         transform: none;
     }
     100% {
-        color: inherit;
+        color: rgba(255, 0, 0, 0.55);
         text-shadow: none;
         transform: none;
     }
 }
 
-.versionGlitching {
-    color: #ff0000 !important;
+/* Always-on state at stage=2: red + slow pulse */
+.versionClickable {
+    color: rgba(255, 0, 0, 0.55) !important;
     cursor: pointer;
-    text-shadow: 1px 0 0 rgba(0, 200, 255, 0.5), -1px 0 0 rgba(255, 0, 0, 0.5);
-    animation: versionGlitch 1.5s ease-in-out;
+    animation: versionIdle 3s ease-in-out infinite;
+    transition: color 0.1s;
     user-select: none;
 }
 
-.versionClickable {
-    cursor: pointer;
-    transition: color 0.1s;
+.versionClickable:hover {
+    color: rgba(255, 0, 0, 0.8) !important;
 }
 
-.versionClickable:hover {
-    color: rgba(255, 0, 0, 0.4);
+/* Active glitch burst — overrides idle */
+.versionGlitching {
+    color: #ff0000 !important;
+    cursor: pointer;
+    text-shadow: 2px 0 0 rgba(0, 200, 255, 0.6), -2px 0 0 rgba(255, 0, 0, 0.6);
+    animation: versionGlitch 1.5s ease-in-out !important;
+    user-select: none;
 }
