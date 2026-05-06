@@ -3,142 +3,181 @@ import { useQuest } from '../../context/QuestContext';
 import styles from './ItemInspectModal.module.css';
 
 /* ----------------------------------------------------------------
-   Item data — SVG illustrations + descriptions + back-side hints
+   Item data — updated lore, SVG illustrations, Signalis-style
    ---------------------------------------------------------------- */
 const ITEMS = {
     1: {
-        name: 'ПОВРЕЖДЕННАЯ КЛЮЧ-КАРТА',
-        id: 'ITEM-KY-404',
-        desc: `Магнитная полоса частично размагничена.
-Идентификационный чип — нечитаем.
-Последняя авторизация: [ДАННЫЕ УДАЛЕНЫ]
+        name: 'ПРОПУСК ГЕШТАЛЬТА — S-23 SIERPINSKI',
+        id: 'ITEM-GS-404',
+        desc: `Пластик оплавлен. Имя стерто,
+видна только должность:
+Офицер безопасности.
 
-Карта выдана сотруднику уровня доступа Ω.
-Статус: АННУЛИРОВАНА`,
-        hint: 'Сектор 404',
+Чип биорезонанса всё ещё активен.
+Статус носителя: [GELÖSCHT]`,
+        hint: 'Ищи там, где данных больше нет',
         backText: 'СЕКТОР 404',
-        backSub: '[ ДОСТУП ОГРАНИЧЕН ]',
-        // SVG path data for a keycard
+        backSub: 'Ищи там, где данных больше нет',
         svgContent: (
             <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-                <rect x="20" y="55" width="140" height="90" rx="6" fill="#111" stroke="#ff0000" strokeWidth="1.5"/>
-                <rect x="20" y="55" width="140" height="22" rx="6" fill="#1a0000"/>
-                <rect x="20" y="66" width="140" height="11" fill="#220000"/>
-                <rect x="30" y="88" width="60" height="8" rx="2" fill="#1e1e1e" stroke="rgba(255,0,0,0.3)" strokeWidth="0.5"/>
-                <rect x="30" y="100" width="40" height="4" rx="1" fill="rgba(255,0,0,0.15)"/>
-                <rect x="30" y="108" width="55" height="4" rx="1" fill="rgba(255,0,0,0.1)"/>
-                <rect x="30" y="116" width="30" height="4" rx="1" fill="rgba(255,0,0,0.08)"/>
-                <rect x="130" y="88" width="20" height="20" rx="2" fill="#0d0d0d" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
-                <line x1="130" y1="98" x2="150" y2="98" stroke="rgba(255,0,0,0.2)" strokeWidth="0.5"/>
-                <line x1="140" y1="88" x2="140" y2="108" stroke="rgba(255,0,0,0.2)" strokeWidth="0.5"/>
-                {/* Damage scratches */}
-                <line x1="45" y1="60" x2="80" y2="72" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8" strokeDasharray="3,2"/>
-                <line x1="90" y1="58" x2="110" y2="75" stroke="rgba(255,0,0,0.3)" strokeWidth="0.6" strokeDasharray="2,3"/>
-                <text x="30" y="82" fontFamily="Courier New" fontSize="7" fill="rgba(255,0,0,0.5)" letterSpacing="1">BAROLAB SYSTEMS</text>
-                <text x="30" y="135" fontFamily="Courier New" fontSize="6" fill="rgba(255,0,0,0.25)" letterSpacing="0.5">ID: [CORRUPTED]</text>
+                {/* Card body */}
+                <rect x="15" y="50" width="150" height="95" rx="5" fill="#0d0000" stroke="#ff0000" strokeWidth="1.2"/>
+                {/* Magnetic stripe */}
+                <rect x="15" y="50" width="150" height="18" fill="#1a0000"/>
+                <rect x="15" y="58" width="150" height="8" fill="#220000" opacity="0.8"/>
+                {/* Sierpinski triangle watermark */}
+                <polygon points="90,65 75,90 105,90" fill="none" stroke="rgba(255,0,0,0.15)" strokeWidth="0.8"/>
+                <polygon points="90,72 82,85 98,85" fill="none" stroke="rgba(255,0,0,0.1)" strokeWidth="0.5"/>
+                {/* Bioresonance chip */}
+                <rect x="125" y="82" width="28" height="22" rx="2" fill="#0d0000" stroke="rgba(255,0,0,0.5)" strokeWidth="0.8"/>
+                <line x1="125" y1="93" x2="153" y2="93" stroke="rgba(255,0,0,0.2)" strokeWidth="0.4"/>
+                <line x1="139" y1="82" x2="139" y2="104" stroke="rgba(255,0,0,0.2)" strokeWidth="0.4"/>
+                <circle cx="139" cy="93" r="4" fill="none" stroke="rgba(255,0,0,0.4)" strokeWidth="0.6"/>
+                <circle cx="139" cy="93" r="1.5" fill="rgba(255,0,0,0.6)"/>
+                {/* Text fields */}
+                <rect x="25" y="82" width="88" height="7" rx="1" fill="#1a0000" stroke="rgba(255,0,0,0.2)" strokeWidth="0.4"/>
+                <rect x="25" y="94" width="60" height="4" rx="1" fill="rgba(255,0,0,0.08)"/>
+                <rect x="25" y="102" width="75" height="4" rx="1" fill="rgba(255,0,0,0.06)"/>
+                <rect x="25" y="110" width="45" height="4" rx="1" fill="rgba(255,0,0,0.05)"/>
+                {/* Burn damage */}
+                <ellipse cx="60" cy="130" rx="25" ry="6" fill="rgba(255,0,0,0.04)" stroke="rgba(255,0,0,0.1)" strokeWidth="0.5"/>
+                <text x="25" y="76" fontFamily="Courier New" fontSize="6" fill="rgba(255,0,0,0.4)" letterSpacing="1">GESTALTEN SICHERHEIT</text>
+                <text x="25" y="140" fontFamily="Courier New" fontSize="5" fill="rgba(255,0,0,0.2)" letterSpacing="0.5">S-23 // SIERPINSKI // [GELÖSCHT]</text>
+                {/* Melt marks */}
+                <path d="M 15 95 Q 18 100 15 105" stroke="rgba(255,0,0,0.3)" strokeWidth="1" fill="none"/>
+                <path d="M 165 80 Q 162 85 165 90" stroke="rgba(255,0,0,0.2)" strokeWidth="0.8" fill="none"/>
             </svg>
         ),
     },
     2: {
-        name: 'СЛОМАННЫЙ РАДИОМОДУЛЬ',
-        id: 'ITEM-RD-512',
-        desc: `Портативный приёмопередатчик серии RD-7.
-Антенна сломана. Корпус оплавлен.
-Последний принятый сигнал: [ЗАШИФРОВАНО]
+        name: 'СЛОМАННЫЙ МОДУЛЬ РЕПЛИКИ',
+        id: 'ITEM-RP-512',
+        desc: `Деталь не соответствует ванильным
+чертежам Barotrauma.
 
-Частота настройки сохранена в памяти.
-Батарея: 3%`,
-        hint: 'Сигнал в основании / Версия сборки',
-        backText: 'FREQ: 240.0 MHz',
+В логах устройства сохранилась
+цикличная запись:
+
+"Правило Шести."
+
+Батарея: 3% // KRITISCH`,
+        hint: 'Сигнал скрыт в основании системы',
+        backText: 'СИГНАЛ В ОСНОВАНИИ',
         backSub: 'BUILD: v5.1.2',
         svgContent: (
             <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-                <rect x="35" y="40" width="110" height="100" rx="4" fill="#0d0d0d" stroke="#ff0000" strokeWidth="1.5"/>
+                {/* Main body */}
+                <rect x="30" y="35" width="120" height="110" rx="4" fill="#0a0000" stroke="#ff0000" strokeWidth="1.2"/>
                 {/* Screen */}
-                <rect x="45" y="50" width="70" height="40" rx="2" fill="#050505" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
-                <text x="50" y="68" fontFamily="Courier New" fontSize="8" fill="rgba(255,0,0,0.6)" letterSpacing="1">240.0 MHz</text>
-                <text x="50" y="80" fontFamily="Courier New" fontSize="6" fill="rgba(255,0,0,0.3)" letterSpacing="0.5">SIGNAL: ---</text>
+                <rect x="40" y="45" width="80" height="45" rx="2" fill="#050000" stroke="rgba(255,0,0,0.5)" strokeWidth="0.8"/>
+                {/* Hexagon on screen — Rule of Six */}
+                <polygon points="80,52 92,59 92,73 80,80 68,73 68,59"
+                    fill="none" stroke="rgba(255,0,0,0.7)" strokeWidth="1"/>
+                <polygon points="80,57 88,62 88,72 80,77 72,72 72,62"
+                    fill="none" stroke="rgba(255,0,0,0.3)" strokeWidth="0.5"/>
+                <text x="80" y="68" fontFamily="Courier New" fontSize="7" fill="rgba(255,0,0,0.6)"
+                    textAnchor="middle" letterSpacing="0.5">VI</text>
+                <text x="80" y="88" fontFamily="Courier New" fontSize="5" fill="rgba(255,0,0,0.3)"
+                    textAnchor="middle" letterSpacing="1">REGEL DER SECHS</text>
                 {/* Broken antenna */}
-                <line x1="120" y1="50" x2="130" y2="20" stroke="rgba(255,0,0,0.5)" strokeWidth="1.5"/>
-                <line x1="130" y1="20" x2="145" y2="35" stroke="rgba(255,0,0,0.3)" strokeWidth="1" strokeDasharray="3,2"/>
-                {/* Buttons */}
-                <circle cx="50" cy="110" r="5" fill="#111" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
-                <circle cx="65" cy="110" r="5" fill="#111" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
-                <circle cx="80" cy="110" r="5" fill="#1a0000" stroke="rgba(255,0,0,0.6)" strokeWidth="0.8"/>
+                <line x1="130" y1="45" x2="140" y2="18" stroke="rgba(255,0,0,0.5)" strokeWidth="1.5"/>
+                <line x1="140" y1="18" x2="155" y2="30" stroke="rgba(255,0,0,0.25)" strokeWidth="1" strokeDasharray="3,2"/>
+                {/* Buttons row */}
+                <circle cx="45" cy="115" r="5" fill="#0d0000" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
+                <circle cx="60" cy="115" r="5" fill="#0d0000" stroke="rgba(255,0,0,0.4)" strokeWidth="0.8"/>
+                <circle cx="75" cy="115" r="5" fill="#1a0000" stroke="rgba(255,0,0,0.7)" strokeWidth="0.8"/>
                 {/* Dial */}
-                <circle cx="120" cy="105" r="14" fill="#0d0d0d" stroke="rgba(255,0,0,0.35)" strokeWidth="1"/>
-                <line x1="120" y1="105" x2="120" y2="93" stroke="rgba(255,0,0,0.5)" strokeWidth="1.5"/>
-                {/* Burn mark */}
-                <ellipse cx="90" cy="130" rx="20" ry="8" fill="rgba(255,0,0,0.06)" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
-                <text x="75" y="133" fontFamily="Courier New" fontSize="5" fill="rgba(255,0,0,0.2)">THERMAL DAMAGE</text>
+                <circle cx="125" cy="110" r="16" fill="#0a0000" stroke="rgba(255,0,0,0.35)" strokeWidth="1"/>
+                <line x1="125" y1="110" x2="125" y2="96" stroke="rgba(255,0,0,0.5)" strokeWidth="1.5"/>
+                {/* Burn */}
+                <ellipse cx="85" cy="138" rx="22" ry="7" fill="rgba(255,0,0,0.05)" stroke="rgba(255,0,0,0.12)" strokeWidth="0.5"/>
+                <text x="74" y="141" fontFamily="Courier New" fontSize="5" fill="rgba(255,0,0,0.2)">THERMAL DAMAGE</text>
             </svg>
         ),
     },
     3: {
-        name: 'СТАРАЯ ФОТОГРАФИЯ',
-        id: 'ITEM-PH-001',
-        desc: `Выцветший снимок на фотобумаге.
-Изображение почти неразличимо.
-На обороте — карандашная надпись.
+        name: 'ОБЛОЖКА — "КОРОЛЬ В ЖЁЛТОМ"',
+        id: 'ITEM-KY-001',
+        desc: `Страницы отсутствуют.
 
-Дата: [НЕИЗВЕСТНО]
-Субъект: [НЕИЗВЕСТНО]`,
+От обложки исходит слабое
+электромагнитное излучение.
+
+Автор: [UNBEKANNT]
+Издание: [VERBOTEN]`,
         hint: 'Переверни — там написано',
-        backText: 'ПРОТОКОЛ: 512\nЧАСТОТА: 240.0',
-        backSub: '[ ПОМНИ ]',
+        backText: 'Protokoll: 512\nFrequenz: 240.0',
+        backSub: '[ REMEMBER OUR PROMISE ]',
         svgContent: (
             <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-                {/* Photo border */}
-                <rect x="25" y="20" width="130" height="140" fill="#0e0c0c" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
-                <rect x="30" y="25" width="120" height="110" fill="#080808"/>
-                {/* Faded image — abstract silhouette */}
-                <ellipse cx="90" cy="65" rx="20" ry="22" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"/>
-                <rect x="65" y="85" width="50" height="40" rx="2" fill="rgba(255,255,255,0.04)"/>
-                {/* Noise/grain */}
-                <rect x="30" y="25" width="120" height="110"
-                    fill="url(#grain)" opacity="0.3"/>
-                <defs>
-                    <filter id="grain">
-                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
-                        <feColorMatrix type="saturate" values="0"/>
-                    </filter>
-                </defs>
-                {/* Vignette */}
-                <rect x="30" y="25" width="120" height="110"
-                    fill="none" stroke="rgba(0,0,0,0.8)" strokeWidth="15"/>
-                {/* Caption area */}
-                <rect x="25" y="135" width="130" height="25" fill="#0a0808"/>
-                <text x="90" y="151" fontFamily="Courier New" fontSize="7" fill="rgba(255,255,255,0.15)"
-                    textAnchor="middle" letterSpacing="1">[ CLASSIFIED ]</text>
-                {/* Corner damage */}
-                <polygon points="25,20 45,20 25,40" fill="rgba(0,0,0,0.6)"/>
-                <polygon points="155,160 155,140 135,160" fill="rgba(0,0,0,0.5)"/>
+                {/* Book cover */}
+                <rect x="30" y="15" width="120" height="155" rx="3" fill="#0a0000" stroke="rgba(255,0,0,0.4)" strokeWidth="1"/>
+                {/* Spine */}
+                <rect x="30" y="15" width="8" height="155" fill="#0d0000" stroke="rgba(255,0,0,0.2)" strokeWidth="0.5"/>
+                {/* Yellow King symbol — stylized crown */}
+                <polygon points="90,45 75,75 85,68 90,78 95,68 105,75"
+                    fill="none" stroke="rgba(255,200,0,0.25)" strokeWidth="1"/>
+                {/* Tattered pages hint */}
+                <line x1="45" y1="170" x2="150" y2="170" stroke="rgba(255,0,0,0.1)" strokeWidth="0.5"/>
+                {/* EM radiation waves */}
+                <circle cx="90" cy="90" r="20" fill="none" stroke="rgba(255,0,0,0.06)" strokeWidth="0.8"/>
+                <circle cx="90" cy="90" r="30" fill="none" stroke="rgba(255,0,0,0.04)" strokeWidth="0.6"/>
+                <circle cx="90" cy="90" r="40" fill="none" stroke="rgba(255,0,0,0.03)" strokeWidth="0.5"/>
+                {/* Title area */}
+                <rect x="45" y="95" width="90" height="30" fill="rgba(255,0,0,0.03)" stroke="rgba(255,0,0,0.1)" strokeWidth="0.5"/>
+                <text x="90" y="107" fontFamily="Courier New" fontSize="7" fill="rgba(255,200,0,0.3)"
+                    textAnchor="middle" letterSpacing="1">DER KÖNIG</text>
+                <text x="90" y="118" fontFamily="Courier New" fontSize="7" fill="rgba(255,200,0,0.2)"
+                    textAnchor="middle" letterSpacing="1">IN GELB</text>
+                {/* Damage */}
+                <polygon points="30,15 50,15 30,35" fill="rgba(0,0,0,0.7)"/>
+                <polygon points="150,170 150,150 130,170" fill="rgba(0,0,0,0.6)"/>
+                <text x="90" y="155" fontFamily="Courier New" fontSize="5" fill="rgba(255,0,0,0.15)"
+                    textAnchor="middle" letterSpacing="0.5">[ SEITEN FEHLEN ]</text>
             </svg>
         ),
     },
 };
 
 /* ----------------------------------------------------------------
-   Back-side SVG content (shown when rotated past center)
+   Back-side SVG content
    ---------------------------------------------------------------- */
 function BackSideContent({ item }) {
     return (
         <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="10" width="160" height="160" fill="#050505" stroke="rgba(255,0,0,0.3)" strokeWidth="0.8"/>
-            {/* Lined paper effect */}
+            <rect x="10" y="10" width="160" height="160" fill="#050000" stroke="rgba(255,0,0,0.3)" strokeWidth="0.8"/>
             {[40, 55, 70, 85, 100, 115, 130].map((y) => (
-                <line key={y} x1="20" y1={y} x2="160" y2={y} stroke="rgba(255,0,0,0.08)" strokeWidth="0.5"/>
+                <line key={y} x1="20" y1={y} x2="160" y2={y} stroke="rgba(255,0,0,0.07)" strokeWidth="0.5"/>
             ))}
-            <text x="90" y="35" fontFamily="Courier New" fontSize="8"
-                fill="rgba(255,0,0,0.3)" textAnchor="middle" letterSpacing="2">— ОБОРОТ —</text>
+            <text x="90" y="32" fontFamily="Courier New" fontSize="7"
+                fill="rgba(255,0,0,0.3)" textAnchor="middle" letterSpacing="2">— RÜCKSEITE —</text>
             {item.backText.split('\n').map((line, i) => (
-                <text key={i} x="90" y={65 + i * 20} fontFamily="Courier New" fontSize="13"
+                <text key={i} x="90" y={62 + i * 22} fontFamily="Courier New" fontSize="12"
                     fill="#ff0000" textAnchor="middle" letterSpacing="1">{line}</text>
             ))}
-            <text x="90" y="145" fontFamily="Courier New" fontSize="8"
+            <text x="90" y="148" fontFamily="Courier New" fontSize="7"
                 fill="rgba(255,255,255,0.2)" textAnchor="middle" letterSpacing="1">{item.backSub}</text>
         </svg>
     );
+}
+
+/* ----------------------------------------------------------------
+   Typewriter hook
+   ---------------------------------------------------------------- */
+function useTypewriter(text, speed = 18, active = true) {
+    const [displayed, setDisplayed] = useState('');
+    useEffect(() => {
+        if (!active) { setDisplayed(text); return; }
+        setDisplayed('');
+        let i = 0;
+        const id = setInterval(() => {
+            i++;
+            setDisplayed(text.slice(0, i));
+            if (i >= text.length) clearInterval(id);
+        }, speed);
+        return () => clearInterval(id);
+    }, [text, active]);
+    return displayed;
 }
 
 /* ----------------------------------------------------------------
@@ -147,39 +186,33 @@ function BackSideContent({ item }) {
 export default function ItemInspectModal() {
     const { inspectingItem, closeInspect, resetQuest } = useQuest();
     const viewerRef = useRef(null);
-    const [rotateX, setRotateX] = useState(0); // -1 to 1 normalized
+    const [rotateX, setRotateX] = useState(0);
     const [isGlitch, setIsGlitch] = useState(false);
 
-    // rotateX in range [-1, 1]; past ±0.5 = back side visible
     const showBack = Math.abs(rotateX) > 0.5;
-    // Map to CSS skewX for pseudo-3D feel
-    const skewDeg = rotateX * 25;
     const scaleX = 1 - Math.abs(rotateX) * 0.35;
+    const skewDeg = rotateX * 25;
 
     const item = ITEMS[inspectingItem];
+    const typedDesc = useTypewriter(item?.desc || '', 16, !!inspectingItem);
 
     const handleMouseMove = useCallback((e) => {
         if (!viewerRef.current) return;
         const rect = viewerRef.current.getBoundingClientRect();
-        const relX = (e.clientX - rect.left) / rect.width; // 0..1
-        setRotateX(relX * 2 - 1); // -1..1
+        setRotateX((e.clientX - rect.left) / rect.width * 2 - 1);
     }, []);
 
-    const handleMouseLeave = useCallback(() => {
-        setRotateX(0);
-    }, []);
+    const handleMouseLeave = useCallback(() => setRotateX(0), []);
 
-    // Occasional glitch on the item
     useEffect(() => {
         if (!inspectingItem) return;
-        const interval = setInterval(() => {
+        const id = setInterval(() => {
             setIsGlitch(true);
             setTimeout(() => setIsGlitch(false), 150);
         }, 4000 + Math.random() * 3000);
-        return () => clearInterval(interval);
+        return () => clearInterval(id);
     }, [inspectingItem]);
 
-    // Close on Escape
     useEffect(() => {
         const handler = (e) => { if (e.key === 'Escape') closeInspect(); };
         window.addEventListener('keydown', handler);
@@ -196,23 +229,14 @@ export default function ItemInspectModal() {
                 {/* Header */}
                 <div className={styles.header}>
                     <span className={styles.headerTitle}>
-                        ОСМОТР ПРЕДМЕТА // ITEM-{inspectingItem.toString().padStart(2, '0')}
+                        GEGENSTAND PRÜFEN // ITEM-{String(inspectingItem).padStart(2, '0')}
                     </span>
                     <div className={styles.headerControls}>
-                        <button
-                            className={styles.btnReset}
-                            onClick={resetQuest}
-                            title="Сброс протокола"
-                            aria-label="Reset quest"
-                        >
-                            [СБРОС ПРОТОКОЛА]
+                        <button className={styles.btnReset} onClick={resetQuest} title="Protokoll zurücksetzen" aria-label="Reset quest">
+                            [PROTOKOLL ZURÜCKSETZEN]
                         </button>
-                        <button
-                            className={styles.btnClose}
-                            onClick={closeInspect}
-                            aria-label="Close"
-                        >
-                            [ЗАКРЫТЬ]
+                        <button className={styles.btnClose} onClick={closeInspect} aria-label="Close">
+                            [SCHLIESSEN]
                         </button>
                     </div>
                 </div>
@@ -227,7 +251,7 @@ export default function ItemInspectModal() {
                         onMouseLeave={handleMouseLeave}
                         aria-hidden="true"
                     >
-                        {/* Front face */}
+                        {/* Front */}
                         <div
                             className={`${styles.itemImage} ${isGlitch ? styles.glitch : ''}`}
                             style={{
@@ -238,8 +262,7 @@ export default function ItemInspectModal() {
                         >
                             {item.svgContent}
                         </div>
-
-                        {/* Back face */}
+                        {/* Back */}
                         <div
                             className={styles.itemImage}
                             style={{
@@ -251,19 +274,21 @@ export default function ItemInspectModal() {
                         >
                             <BackSideContent item={item} />
                         </div>
-
                         <span className={styles.viewerHint}>
-                            {showBack ? '[ ОБОРОТ ]' : '← ВРАЩАТЬ →'}
+                            {showBack ? '[ RÜCKSEITE ]' : '← DREHEN →'}
                         </span>
                     </div>
 
                     {/* Info */}
                     <div className={styles.info}>
                         <h2 className={styles.itemName}>{item.name}</h2>
-                        <span className={styles.itemId}>{item.id} // STAGE-{inspectingItem}</span>
-                        <p className={styles.itemDesc}>{item.desc}</p>
+                        <span className={styles.itemId}>{item.id} // STUFE-{inspectingItem}</span>
+                        <p className={styles.itemDesc}>
+                            {typedDesc}
+                            <span className={styles.cursor}>█</span>
+                        </p>
                         <div className={styles.itemHint}>
-                            <span className={styles.hintLabel}>// СИСТЕМНАЯ ЗАМЕТКА</span>
+                            <span className={styles.hintLabel}>// SYSTEMNOTIZ</span>
                             {item.hint}
                         </div>
                     </div>
@@ -271,7 +296,7 @@ export default function ItemInspectModal() {
 
                 {/* Status bar */}
                 <div className={styles.statusBar}>
-                    <span>BAROLAB SYSTEMS // INVENTORY MODULE v2.4</span>
+                    <span>BAROLAB SYSTEMS // INVENTARMODUL v2.4</span>
                     <span>{now}</span>
                 </div>
             </div>

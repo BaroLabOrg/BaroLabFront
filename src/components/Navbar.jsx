@@ -15,6 +15,9 @@ export default function Navbar() {
 
     return (
         <nav className="navbar">
+            {/* Quest inventory — absolutely positioned outside the flex layout so it never breaks the navbar */}
+            <QuestInventory />
+
             <div className="navbar-inner container">
                 <NavLink to="/" className="navbar-logo">
                     <span className="logo-icon">◉</span>
@@ -54,9 +57,6 @@ export default function Navbar() {
                 </div>
 
                 <div className="navbar-user">
-                    {/* Quest inventory — appears when stage >= 1 */}
-                    <QuestInventory />
-
                     {user ? (
                         <>
                             {user.username && <span className="user-name-badge">@{user.username}</span>}

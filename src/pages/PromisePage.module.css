@@ -1,6 +1,6 @@
 /* ============================================================
-   PROMISE PAGE — Secret ending page, Signalis-style
-   No standard layout. Fully isolated styles.
+   PROMISE PAGE — Secret ending, Signalis-style
+   Fully isolated via CSS Modules
    ============================================================ */
 
 .page {
@@ -16,153 +16,184 @@
     z-index: 10000;
 }
 
-/* CRT scanlines over everything */
-.page::before {
-    content: '';
+/* ---- VHS static noise ---- */
+.noise {
     position: absolute;
     inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    animation: noiseShift 0.08s steps(1) infinite;
+}
+
+@keyframes noiseShift {
+    0%   { background-position: 0 0; }
+    25%  { background-position: -10px 5px; }
+    50%  { background-position: 5px -8px; }
+    75%  { background-position: -5px 10px; }
+    100% { background-position: 8px -3px; }
+}
+
+/* CRT scanlines */
+.scanlines {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
     background: repeating-linear-gradient(
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.25) 2px,
-        rgba(0, 0, 0, 0.25) 4px
+        rgba(0, 0, 0, 0.22) 2px,
+        rgba(0, 0, 0, 0.22) 4px
     );
-    pointer-events: none;
-    z-index: 5;
 }
 
 /* Vignette */
-.page::after {
-    content: '';
+.vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+    z-index: 3;
     pointer-events: none;
-    z-index: 6;
+    background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.88) 100%);
 }
 
-/* ---- Eye / central image ---- */
-.eyeWrapper {
+/* Glitch flash */
+.glitchFlash {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    animation: glitchFlash 9s ease-in-out infinite;
+}
+
+@keyframes glitchFlash {
+    0%, 94%, 100% { opacity: 0; transform: none; background: transparent; }
+    95% { opacity: 1; transform: translateX(3px); background: rgba(255,0,0,0.04); }
+    96% { opacity: 0; transform: translateX(-2px); background: transparent; }
+    97% { opacity: 1; transform: translateX(1px); background: rgba(0,200,255,0.02); }
+    98% { opacity: 0; }
+}
+
+/* ---- Central content ---- */
+.content {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
-    max-width: 480px;
+    gap: 40px;
+    max-width: 520px;
     padding: 0 24px;
     text-align: center;
-    animation: pageIn 1.5s ease-out both;
+    animation: contentIn 2s ease-out both;
 }
 
-@keyframes pageIn {
-    from { opacity: 0; transform: scale(0.97); }
+@keyframes contentIn {
+    from { opacity: 0; transform: scale(0.96); }
     to   { opacity: 1; transform: scale(1); }
 }
 
-.eyeSvg {
-    width: 160px;
-    height: 160px;
-    animation: eyePulse 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
+/* ---- Hexagon / Red Gate SVG ---- */
+.geoWrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-@keyframes eyePulse {
-    0%, 100% {
-        filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
-        transform: scale(1);
-    }
-    50% {
-        filter: drop-shadow(0 0 40px rgba(255, 0, 0, 0.7));
-        transform: scale(1.04);
-    }
+.hexSvg {
+    width: 180px;
+    height: 180px;
+    animation: hexRotate 20s linear infinite;
+    filter: drop-shadow(0 0 18px rgba(255, 0, 0, 0.5));
 }
 
-/* Slow blink animation for the eye pupil */
-.eyePupil {
-    animation: eyeBlink 5s ease-in-out infinite;
-    transform-origin: center 55%;
+@keyframes hexRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 
-@keyframes eyeBlink {
-    0%, 40%, 60%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.05); }
+.hexInner {
+    animation: hexRotate 12s linear infinite reverse;
+}
+
+.hexPulse {
+    animation: hexPulseAnim 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes hexPulseAnim {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1; }
+}
+
+/* ---- Main title — typewriter ---- */
+.mainTitle {
+    font-size: clamp(18px, 4vw, 26px);
+    color: #fff;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    min-height: 1.4em;
+}
+
+.titleCursor {
+    display: inline-block;
+    color: #ff0000;
+    animation: cursorBlink 0.8s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
 }
 
 /* ---- Lore text ---- */
 .loreText {
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 13px;
-    line-height: 2;
+    font-size: 11px;
+    color: rgba(180, 0, 0, 0.65);
+    line-height: 1.9;
     letter-spacing: 0.06em;
-    white-space: pre-line;
-    animation: textFadeIn 2s ease-out 0.8s both;
+    animation: textFadeIn 1.5s ease-out 4s both;
 }
 
 @keyframes textFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
-}
-
-.loreHighlight {
-    color: #ff0000;
-    display: block;
-    font-size: 15px;
-    letter-spacing: 0.15em;
-    margin-bottom: 8px;
-}
-
-/* ---- Chromatic aberration on text ---- */
-.aberration {
-    position: relative;
-    display: inline-block;
-}
-
-.aberration::before,
-.aberration::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.aberration::before {
-    color: rgba(255, 0, 0, 0.5);
-    transform: translateX(-2px);
-}
-
-.aberration::after {
-    color: rgba(0, 200, 255, 0.3);
-    transform: translateX(2px);
 }
 
 /* ---- Wake button ---- */
 .wakeBtn {
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.35);
     font-family: 'Courier New', Courier, monospace;
     font-size: 11px;
-    padding: 10px 28px;
+    padding: 10px 32px;
     cursor: pointer;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     transition: all 0.3s;
-    animation: textFadeIn 2s ease-out 2s both;
+    animation: textFadeIn 1.5s ease-out 5.5s both;
     position: relative;
     z-index: 10;
 }
 
 .wakeBtn:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
+    letter-spacing: 0.3em;
 }
 
-/* ---- Ambient particles ---- */
+/* ---- Particles ---- */
 .particles {
     position: absolute;
     inset: 0;
@@ -172,34 +203,14 @@
 
 .particle {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    background: rgba(255, 0, 0, 0.4);
+    background: rgba(255, 0, 0, 0.35);
     border-radius: 50%;
     animation: particleDrift linear infinite;
 }
 
 @keyframes particleDrift {
-    from { transform: translateY(100vh) translateX(0); opacity: 0; }
+    from { transform: translateY(100vh); opacity: 0; }
     10%  { opacity: 1; }
-    90%  { opacity: 0.5; }
-    to   { transform: translateY(-10vh) translateX(20px); opacity: 0; }
-}
-
-/* ---- Glitch flash ---- */
-.glitchFlash {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 0, 0, 0.03);
-    pointer-events: none;
-    z-index: 4;
-    animation: glitchFlash 8s ease-in-out infinite;
-}
-
-@keyframes glitchFlash {
-    0%, 95%, 100% { opacity: 0; transform: none; }
-    96% { opacity: 1; transform: translateX(2px); }
-    97% { opacity: 0; transform: translateX(-2px); }
-    98% { opacity: 1; transform: translateX(1px); }
-    99% { opacity: 0; }
+    90%  { opacity: 0.4; }
+    to   { transform: translateY(-10vh) translateX(15px); opacity: 0; }
 }

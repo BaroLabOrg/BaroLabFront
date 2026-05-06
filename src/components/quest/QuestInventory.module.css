@@ -14,8 +14,14 @@
     font-size: 11px;
     letter-spacing: 0.05em;
     cursor: default;
-    position: relative;
     user-select: none;
+
+    /* Positioned absolutely inside .navbar so it doesn't participate in flex layout */
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
 }
 
 /* Subtle scanline overlay on the widget */

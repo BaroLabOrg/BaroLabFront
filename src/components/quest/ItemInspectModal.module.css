@@ -248,6 +248,21 @@
     letter-spacing: 0.08em;
 }
 
+/* ---- Typewriter cursor ---- */
+.cursor {
+    display: inline-block;
+    color: #ff0000;
+    animation: cursorBlink 0.9s step-end infinite;
+    margin-left: 1px;
+    font-size: 11px;
+    line-height: 1;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
 /* ---- Status bar ---- */
 .statusBar {
     border-top: 1px solid rgba(255, 0, 0, 0.2);
