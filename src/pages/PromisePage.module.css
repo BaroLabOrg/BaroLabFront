@@ -1,0 +1,205 @@
+/* ============================================================
+   PROMISE PAGE — Secret ending page, Signalis-style
+   No standard layout. Fully isolated styles.
+   ============================================================ */
+
+.page {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    z-index: 10000;
+}
+
+/* CRT scanlines over everything */
+.page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.25) 2px,
+        rgba(0, 0, 0, 0.25) 4px
+    );
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Vignette */
+.page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+    pointer-events: none;
+    z-index: 6;
+}
+
+/* ---- Eye / central image ---- */
+.eyeWrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    max-width: 480px;
+    padding: 0 24px;
+    text-align: center;
+    animation: pageIn 1.5s ease-out both;
+}
+
+@keyframes pageIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.eyeSvg {
+    width: 160px;
+    height: 160px;
+    animation: eyePulse 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
+}
+
+@keyframes eyePulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.4));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 40px rgba(255, 0, 0, 0.7));
+        transform: scale(1.04);
+    }
+}
+
+/* Slow blink animation for the eye pupil */
+.eyePupil {
+    animation: eyeBlink 5s ease-in-out infinite;
+    transform-origin: center 55%;
+}
+
+@keyframes eyeBlink {
+    0%, 40%, 60%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.05); }
+}
+
+/* ---- Lore text ---- */
+.loreText {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 13px;
+    line-height: 2;
+    letter-spacing: 0.06em;
+    white-space: pre-line;
+    animation: textFadeIn 2s ease-out 0.8s both;
+}
+
+@keyframes textFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.loreHighlight {
+    color: #ff0000;
+    display: block;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+}
+
+/* ---- Chromatic aberration on text ---- */
+.aberration {
+    position: relative;
+    display: inline-block;
+}
+
+.aberration::before,
+.aberration::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.aberration::before {
+    color: rgba(255, 0, 0, 0.5);
+    transform: translateX(-2px);
+}
+
+.aberration::after {
+    color: rgba(0, 200, 255, 0.3);
+    transform: translateX(2px);
+}
+
+/* ---- Wake button ---- */
+.wakeBtn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    padding: 10px 28px;
+    cursor: pointer;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    animation: textFadeIn 2s ease-out 2s both;
+    position: relative;
+    z-index: 10;
+}
+
+.wakeBtn:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Ambient particles ---- */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.particle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: rgba(255, 0, 0, 0.4);
+    border-radius: 50%;
+    animation: particleDrift linear infinite;
+}
+
+@keyframes particleDrift {
+    from { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.5; }
+    to   { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+}
+
+/* ---- Glitch flash ---- */
+.glitchFlash {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 0, 0, 0.03);
+    pointer-events: none;
+    z-index: 4;
+    animation: glitchFlash 8s ease-in-out infinite;
+}
+
+@keyframes glitchFlash {
+    0%, 95%, 100% { opacity: 0; transform: none; }
+    96% { opacity: 1; transform: translateX(2px); }
+    97% { opacity: 0; transform: translateX(-2px); }
+    98% { opacity: 1; transform: translateX(1px); }
+    99% { opacity: 0; }
+}

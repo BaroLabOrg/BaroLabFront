@@ -1,0 +1,276 @@
+/* ============================================================
+   QUEST TERMINAL — Final DOS-style input modal
+   ============================================================ */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9100;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.terminal {
+    width: min(520px, 95vw);
+    background: #000;
+    border: 1px solid #ff0000;
+    box-shadow:
+        0 0 60px rgba(255, 0, 0, 0.3),
+        0 0 120px rgba(255, 0, 0, 0.1),
+        inset 0 0 40px rgba(0, 0, 0, 0.9);
+    font-family: 'Courier New', Courier, monospace;
+    position: relative;
+    overflow: hidden;
+    animation: terminalBoot 0.5s ease-out;
+}
+
+/* CRT scanlines */
+.terminal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.18) 2px,
+        rgba(0, 0, 0, 0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* Vignette */
+.terminal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+    z-index: 21;
+}
+
+@keyframes terminalBoot {
+    0%   { clip-path: inset(50% 0 50% 0); opacity: 0.5; }
+    60%  { clip-path: inset(0% 0 0% 0);   opacity: 1; }
+    100% { clip-path: inset(0% 0 0% 0);   opacity: 1; }
+}
+
+/* ---- Title bar ---- */
+.titleBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.6);
+    background: rgba(255, 0, 0, 0.08);
+}
+
+.titleText {
+    font-size: 10px;
+    color: #ff0000;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.btnClose {
+    background: none;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    color: rgba(255, 0, 0, 0.6);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.15s;
+}
+
+.btnClose:hover {
+    background: rgba(255, 0, 0, 0.15);
+    color: #ff0000;
+}
+
+/* ---- Body ---- */
+.body {
+    padding: 20px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.bootLines {
+    font-size: 10px;
+    color: rgba(255, 0, 0, 0.4);
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+}
+
+.bootLine {
+    display: block;
+    animation: typeIn 0.05s ease-out both;
+}
+
+.bootLine:nth-child(1) { animation-delay: 0.05s; }
+.bootLine:nth-child(2) { animation-delay: 0.15s; }
+.bootLine:nth-child(3) { animation-delay: 0.25s; }
+.bootLine:nth-child(4) { animation-delay: 0.35s; }
+
+@keyframes typeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid rgba(255, 0, 0, 0.2);
+    margin: 0;
+}
+
+.prompt {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+}
+
+.promptHighlight {
+    color: #ff0000;
+}
+
+/* ---- Input fields ---- */
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fieldRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fieldLabel {
+    font-size: 10px;
+    color: rgba(255, 0, 0, 0.6);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.fieldInput {
+    flex: 1;
+    background: #050505;
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    color: #ff0000;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    padding: 6px 10px;
+    letter-spacing: 0.1em;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.fieldInput:focus {
+    border-color: rgba(255, 0, 0, 0.8);
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.2);
+}
+
+.fieldInput::placeholder {
+    color: rgba(255, 0, 0, 0.2);
+}
+
+/* ---- Status messages ---- */
+.statusError {
+    font-size: 11px;
+    color: #ff0000;
+    letter-spacing: 0.1em;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    background: rgba(255, 0, 0, 0.06);
+    animation: blink 0.3s ease-out;
+}
+
+.statusSuccess {
+    font-size: 11px;
+    color: #ff0000;
+    letter-spacing: 0.1em;
+    padding: 8px 12px;
+    border: 1px solid #ff0000;
+    background: rgba(255, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    animation: successFlash 0.5s ease-out;
+    text-align: center;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+@keyframes successFlash {
+    0%   { opacity: 0; transform: scale(0.95); }
+    50%  { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---- Submit button ---- */
+.btnSubmit {
+    background: none;
+    border: 1px solid rgba(255, 0, 0, 0.6);
+    color: #ff0000;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    align-self: flex-end;
+}
+
+.btnSubmit:hover:not(:disabled) {
+    background: rgba(255, 0, 0, 0.15);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+}
+
+.btnSubmit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ---- Cursor blink ---- */
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 13px;
+    background: #ff0000;
+    vertical-align: middle;
+    animation: cursorBlink 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* ---- Status bar ---- */
+.statusBar {
+    border-top: 1px solid rgba(255, 0, 0, 0.15);
+    padding: 4px 14px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.08em;
+}

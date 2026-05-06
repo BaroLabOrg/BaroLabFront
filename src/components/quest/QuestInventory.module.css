@@ -1,0 +1,105 @@
+/* ============================================================
+   QUEST INVENTORY — Signalis-style header widget
+   Scoped via CSS Modules — no style leakage
+   ============================================================ */
+
+.inventory {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.6);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    cursor: default;
+    position: relative;
+    user-select: none;
+}
+
+/* Subtle scanline overlay on the widget */
+.inventory::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.label {
+    color: rgba(255, 0, 0, 0.6);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-right: 4px;
+}
+
+.slot {
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 0, 0, 0.3);
+    font-size: 12px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    position: relative;
+    z-index: 2;
+    cursor: default;
+}
+
+.slotFilled {
+    border-color: rgba(255, 0, 0, 0.9);
+    color: #ff0000;
+    background: rgba(255, 0, 0, 0.08);
+    cursor: pointer;
+    animation: slotAppear 0.4s ease-out;
+}
+
+.slotFilled:hover {
+    background: rgba(255, 0, 0, 0.18);
+    box-shadow: 0 0 6px rgba(255, 0, 0, 0.4);
+}
+
+/* All 3 filled — pulse to signal readiness */
+.inventoryReady .slotFilled {
+    animation: slotPulse 1.5s ease-in-out infinite;
+}
+
+.inventoryReady {
+    cursor: pointer;
+    border-color: rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.25);
+    animation: inventoryGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes slotAppear {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes slotPulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(255, 0, 0, 0.4); }
+    50%       { box-shadow: 0 0 10px rgba(255, 0, 0, 0.9); }
+}
+
+@keyframes inventoryGlow {
+    0%, 100% { box-shadow: 0 0 8px rgba(255, 0, 0, 0.25); }
+    50%       { box-shadow: 0 0 16px rgba(255, 0, 0, 0.6); }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .label { display: none; }
+    .inventory { padding: 3px 5px; gap: 3px; }
+    .slot { width: 18px; height: 18px; font-size: 10px; }
+}

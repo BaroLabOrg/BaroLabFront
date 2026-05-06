@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useQuest } from '../context/QuestContext';
 import './Footer.css';
+import footerQuestStyles from './quest/FooterQuest.module.css';
 
 const INFO_BOXES = {
     'Upload Guidelines': {
@@ -91,6 +93,43 @@ Check back later for ways to support the project.`,
 
 export default function Footer({ totalMods }) {
     const [activeBox, setActiveBox] = useState(null);
+    const { stage, setStage, openInspect } = useQuest();
+
+    // Stage 3 version glitch state
+    const [versionGlitching, setVersionGlitching] = useState(false);
+    const glitchTimerRef = useRef(null);
+
+    useEffect(() => {
+        if (stage !== 2) return;
+
+        const scheduleGlitch = () => {
+            // Random interval 15–20 seconds
+            const delay = 15000 + Math.random() * 5000;
+            glitchTimerRef.current = setTimeout(() => {
+                setVersionGlitching(true);
+                // Glitch lasts 1.5s (matches CSS animation), then reset and reschedule
+                setTimeout(() => {
+                    setVersionGlitching(false);
+                    scheduleGlitch();
+                }, 1600);
+            }, delay);
+        };
+
+        scheduleGlitch();
+
+        return () => {
+            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
+        };
+    }, [stage]);
+
+    const handleVersionClick = () => {
+        if (stage === 2 && versionGlitching) {
+            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
+            setVersionGlitching(false);
+            setStage(3);
+            openInspect(3);
+        }
+    };
 
     const openBox = (key) => setActiveBox(key);
     const closeBox = () => setActiveBox(null);
@@ -174,7 +213,14 @@ export default function Footer({ totalMods }) {
                     <span className="footer-manifest-line">front: @crew_member_4 [WIP]</span>
                 </div>
                 <div className="footer-manifest-right">
-                    <span className="footer-manifest-stat">BUILD: v1.0.4</span>
+                    <span
+                        className={`footer-manifest-stat${stage === 2 ? ` ${footerQuestStyles.versionClickable}` : ''}${versionGlitching ? ` ${footerQuestStyles.versionGlitching}` : ''}`}
+                        onClick={handleVersionClick}
+                        title={stage === 2 && versionGlitching ? 'АНОМАЛИЯ ОБНАРУЖЕНА' : undefined}
+                        aria-label="Build version"
+                    >
+                        BUILD: {versionGlitching ? 'v5.1.2' : 'v1.0.4'}
+                    </span>
                     <span className="footer-manifest-stat">ACTIVE CREW: 142</span>
                     <span className="footer-manifest-stat">
                         JOVIAN RADS: NOMINAL <span className="footer-rads-dot" />

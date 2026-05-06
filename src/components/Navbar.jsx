@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import QuestInventory from './quest/QuestInventory';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -53,6 +54,9 @@ export default function Navbar() {
                 </div>
 
                 <div className="navbar-user">
+                    {/* Quest inventory — appears when stage >= 1 */}
+                    <QuestInventory />
+
                     {user ? (
                         <>
                             {user.username && <span className="user-name-badge">@{user.username}</span>}

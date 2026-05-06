@@ -1,0 +1,36 @@
+/* ============================================================
+   NOT FOUND PAGE QUEST — Stage 2 trigger styles
+   ============================================================ */
+
+.etherLink {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.3);
+    text-decoration: line-through;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-top: 12px;
+    padding: 4px 0;
+    transition: color 0.2s;
+    user-select: none;
+    border: none;
+    background: none;
+}
+
+.etherLink:hover {
+    color: rgba(255, 0, 0, 0.5);
+    text-decoration: line-through;
+}
+
+/* Subtle flicker to draw attention */
+@keyframes etherFlicker {
+    0%, 90%, 100% { opacity: 0.3; }
+    92% { opacity: 0.6; }
+    94% { opacity: 0.2; }
+    96% { opacity: 0.5; }
+}
+
+.etherLink {
+    animation: etherFlicker 8s ease-in-out infinite;
+}
