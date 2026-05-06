@@ -16,14 +16,13 @@ function formatDate(iso) {
 }
 
 function JsonViewer({ data }) {
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
     if (data === null || data === undefined) return <span className="vd-null">null</span>;
     const text = JSON.stringify(data, null, 2);
     const lines = text.split('\n');
-    const preview = lines.slice(0, 4).join('\n') + (lines.length > 4 ? '\n  ...' : '');
     return (
         <div className="vd-json-viewer">
-            <pre className="vd-json-pre">{collapsed ? preview : text}</pre>
+            <pre className="vd-json-pre">{collapsed ? lines.slice(0, 4).join('\n') + (lines.length > 4 ? '\n  ...' : '') : text}</pre>
             {lines.length > 4 && (
                 <button className="vd-json-toggle btn btn-ghost btn-sm" onClick={() => setCollapsed(c => !c)}>
                     {collapsed ? '▼ expand' : '▲ collapse'}
@@ -46,9 +45,19 @@ function DetailModal({ item, onClose }) {
         <div className="vd-modal-overlay" onClick={onClose}>
             <div className="vd-modal glass-card" onClick={e => e.stopPropagation()}>
                 <div className="vd-modal-header">
-                    <div>
-                        <h2 className="vd-modal-title">{item.display_name || item.identifier}</h2>
-                        <span className="vd-modal-identifier">{item.identifier}</span>
+                    <div className="vd-modal-title-row">
+                        {item.icon_s3_key && (
+                            <img
+                                className="vd-modal-icon"
+                                src={item.icon_s3_key}
+                                alt={item.display_name || item.identifier}
+                                onError={e => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        )}
+                        <div>
+                            <h2 className="vd-modal-title">{item.display_name || item.identifier}</h2>
+                            <span className="vd-modal-identifier">{item.identifier}</span>
+                        </div>
                     </div>
                     <button className="btn btn-ghost btn-sm vd-modal-close" onClick={onClose}>✕</button>
                 </div>
@@ -191,7 +200,7 @@ function ContentTab({ typePath }) {
                 </div>
                 <p className="vd-toolbar-hint">
                     {total > 0
-                        ? <><strong style={{ color: 'var(--text-primary)' }}>{total}</strong> records total · click a row to inspect payload</>
+                        ? <><strong className="vd-hint-count">{total}</strong> records · <span className="vd-hint-action">↗ click a row to inspect payload</span></>
                         : 'No records ingested yet for this type'}
                 </p>
             </div>
@@ -215,8 +224,6 @@ function ContentTab({ typePath }) {
                             <tr>
                                 <th>Identifier</th>
                                 <th>Display Name</th>
-                                <th>Variant Of</th>
-                                <th>Source File</th>
                                 <th>Updated</th>
                             </tr>
                         </thead>
@@ -230,11 +237,6 @@ function ContentTab({ typePath }) {
                                 >
                                     <td className="vd-cell-identifier vd-mono">{item.identifier}</td>
                                     <td className="vd-cell-name">{item.display_name || <span className="vd-null">—</span>}</td>
-                                    <td className="vd-cell-variant vd-mono">{item.variant_of || <span className="vd-null">—</span>}</td>
-                                    <td className="vd-cell-source vd-mono">{item.source_file
-                                        ? item.source_file.split(/[\\/]/).pop()
-                                        : <span className="vd-null">—</span>}
-                                    </td>
                                     <td className="vd-cell-date">{formatDate(item.updated_at)}</td>
                                 </tr>
                             ))}
