@@ -123,7 +123,7 @@ export default function Footer({ totalMods }) {
     }, [stage]);
 
     const handleVersionClick = () => {
-        if (stage === 2 && versionGlitching) {
+        if (stage === 2) {
             if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
             setVersionGlitching(false);
             setStage(3);
