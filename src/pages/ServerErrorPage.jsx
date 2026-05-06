@@ -22,11 +22,6 @@ export default function ServerErrorPage() {
                 <div className="error-terminal error-terminal--server glass-card">
                     {/* Terminal header */}
                     <div className="error-terminal-header">
-                        <div className="error-terminal-dots">
-                            <span className="error-dot error-dot--red" />
-                            <span className="error-dot error-dot--yellow" />
-                            <span className="error-dot error-dot--green" />
-                        </div>
                         <span className="error-terminal-title">SYSTEM DIAGNOSTICS</span>
                         <span className="error-terminal-minimize">—  □  ✕</span>
                     </div>

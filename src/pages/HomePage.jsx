@@ -5,7 +5,7 @@ import { searchSubmarines, getSubmarines } from '../api/submarines';
 import { getAllGuides } from '../api/modGuides';
 import HeroCarousel from '../components/HeroCarousel';
 import HomeModCard from '../components/HomeModCard';
-import HomeSubCard from '../components/HomeSubCard';
+import SubmarineCard from '../components/SubmarineCard';
 import Footer from '../components/Footer';
 import './HomePage.css';
 
@@ -164,7 +164,7 @@ export default function HomePage() {
                 ) : (
                     <div className="home-cards-grid">
                         {topSubs.map((sub) => (
-                            <HomeSubCard key={sub.external_id || sub.externalId} submarine={sub} />
+                            <SubmarineCard key={sub.external_id || sub.externalId} submarine={sub} />
                         ))}
                     </div>
                 )}
@@ -179,11 +179,6 @@ export default function HomePage() {
                 <div className="home-logs-terminal">
                     <div className="home-logs-topbar">
                         <div className="home-logs-topbar-left">
-                            <div className="home-logs-dots">
-                                <span className="home-logs-dot home-logs-dot--red" />
-                                <span className="home-logs-dot home-logs-dot--yellow" />
-                                <span className="home-logs-dot home-logs-dot--green" />
-                            </div>
                             <span className="home-logs-prompt">&gt; root@barolab:~# tail -f sys.log</span>
                         </div>
                         <span className="home-logs-minimize">—  □  ✕</span>

@@ -110,15 +110,6 @@ export default function HeroCarousel() {
                 <div className="hero-overlay" />
             </Link>
 
-            {/* Corner decorations */}
-            <div className="hero-corner hero-corner--tl" />
-            <div className="hero-corner hero-corner--tr" />
-            <div className="hero-corner hero-corner--bl" />
-            <div className="hero-corner hero-corner--br" />
-
-            {/* Version tag */}
-            <div className="hero-stub-version">V_CORE: 1.4.2</div>
-
             {/* Main content */}
             <div className="hero-content container">
                 <div className="hero-left" key={current}>
@@ -141,7 +132,7 @@ export default function HeroCarousel() {
                         </Link>
                     </div>
                     <div className="hero-stub-status">
-                        STATUS: TRENDING &nbsp;·&nbsp; SLOT {current + 1}/{mods.length}
+                        STATUS: TRENDING
                     </div>
                 </div>
 
