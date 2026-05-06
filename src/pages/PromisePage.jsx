@@ -4,11 +4,13 @@ import { useQuest } from '../context/QuestContext';
 import styles from './PromisePage.module.css';
 
 /* ----------------------------------------------------------------
-   Web Audio — vinyl crackle + slow piano notes
+   Web Audio — vinyl crackle + slow piano notes + deep ambient
    ---------------------------------------------------------------- */
 function useAmbientAudio() {
     const ctxRef = useRef(null);
     const nodesRef = useRef([]);
+    // Separate gain node for the deep ambient layer (started in phase 2)
+    const ambientGainRef = useRef(null);
 
     const start = () => {
         try {
@@ -31,7 +33,7 @@ function useAmbientAudio() {
             crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination);
             crackle.start(); nodes.push(crackle);
 
-            // Sub rumble
+            // Sub rumble (terminal phase)
             const rumble = ctx.createOscillator();
             const rg = ctx.createGain();
             rumble.type = 'sine'; rumble.frequency.value = 38; rg.gain.value = 0;
@@ -54,7 +56,46 @@ function useAmbientAudio() {
                 osc.start(t); osc.stop(t + 4.2); nodes.push(osc);
             });
 
+            // ---- Deep ambient layer (starts silent, faded in during phase 2) ----
+            // Two detuned sine oscillators + filtered noise = underwater pressure feel
+            const ambGain = ctx.createGain();
+            ambGain.gain.value = 0; // starts silent
+            ambientGainRef.current = ambGain;
+
+            [28, 31.5].forEach((freq) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                osc.connect(ambGain);
+                osc.start();
+                nodes.push(osc);
+            });
+
+            // Filtered noise for "radio static / pressure" texture
+            const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+            const nd = noiseBuf.getChannelData(0);
+            for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * 0.3;
+            const noiseSrc = ctx.createBufferSource();
+            noiseSrc.buffer = noiseBuf; noiseSrc.loop = true;
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'lowpass'; noiseFilter.frequency.value = 180;
+            noiseSrc.connect(noiseFilter); noiseFilter.connect(ambGain);
+            noiseSrc.start(); nodes.push(noiseSrc);
+
+            ambGain.connect(ctx.destination);
             nodesRef.current = nodes;
+        } catch { /* silent */ }
+    };
+
+    // Call this when phase transitions to 2 — fades ambient in over 3s
+    const startAmbient = () => {
+        try {
+            const ctx = ctxRef.current;
+            const ag = ambientGainRef.current;
+            if (!ctx || !ag) return;
+            ag.gain.cancelScheduledValues(ctx.currentTime);
+            ag.gain.setValueAtTime(0, ctx.currentTime);
+            ag.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 3);
         } catch { /* silent */ }
     };
 
@@ -62,11 +103,12 @@ function useAmbientAudio() {
         try {
             nodesRef.current.forEach((n) => { try { n.stop(); } catch {} });
             nodesRef.current = [];
+            ambientGainRef.current = null;
             if (ctxRef.current) { ctxRef.current.close(); ctxRef.current = null; }
         } catch {}
     };
 
-    return { start, stop };
+    return { start, startAmbient, stop };
 }
 
 /* ----------------------------------------------------------------
@@ -114,8 +156,11 @@ export default function PromisePage() {
         // Start glitch phase after fatal error line
         const glitchTimer = setTimeout(() => setPhase(1), 6700);
 
-        // Transition to final calm screen
-        const finalTimer = setTimeout(() => setPhase(2), 8000);
+        // Transition to final calm screen + start deep ambient fade-in
+        const finalTimer = setTimeout(() => {
+            setPhase(2);
+            audio.startAmbient();
+        }, 8000);
 
         return () => {
             [...timers, hideCursorTimer, glitchTimer, finalTimer].forEach(clearTimeout);
