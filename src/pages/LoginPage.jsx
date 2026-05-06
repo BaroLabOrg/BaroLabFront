@@ -54,9 +54,8 @@ export default function LoginPage() {
         <div className="auth-page">
             <div className="auth-bg-glow" />
             <div className="auth-container">
-                <div className="auth-card glass-card">
+                <div className="auth-card">
                     <div className="auth-header">
-                        <span className="auth-logo">◆</span>
                         <h1 className="auth-title">Welcome back</h1>
                         <p className="auth-subtitle">Sign in to your BaroLab account</p>
                     </div>
