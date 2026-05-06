@@ -1,5 +1,5 @@
 /* ============================================================
-   PROMISE PAGE — corrected composition & z-index
+   PROMISE PAGE — 4-layer parallax, corrected depth
    ============================================================ */
 
 .page {
@@ -12,18 +12,17 @@
 }
 
 /* ================================================================
-   LAYER 1 — Red background  z-index: 1
+   LAYER 1 — Red background  z-index: 1  (slowest)
    ================================================================ */
 .layerBg {
     position: absolute;
-    inset: -5%;          /* slightly oversized so parallax shift doesn't show edges */
+    inset: -6%;
     z-index: 1;
     background: #e60000;
     will-change: transform;
-    transition: transform 0.14s ease-out;
+    transition: transform 0.16s ease-out;
 }
 
-/* Letterbox bars */
 .layerBg::before,
 .layerBg::after {
     content: '';
@@ -36,7 +35,6 @@
 .layerBg::before { top: 0; }
 .layerBg::after  { bottom: 0; }
 
-/* VHS noise */
 .bgNoise {
     position: absolute;
     inset: 0;
@@ -56,27 +54,29 @@
 }
 
 /* ================================================================
-   LAYER 2 — Symbol (small, centered)  z-index: 2
+   LAYER 2 — Symbol (bioresonance hexagon)  z-index: 2
    ================================================================ */
 .layerSymbol {
     position: absolute;
-    inset: -5%;
+    inset: -6%;
     z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* Shift symbol slightly left so it aligns with gate opening */
+    justify-content: flex-start;
+    padding-left: 22%;
     will-change: transform;
-    transition: transform 0.11s ease-out;
+    transition: transform 0.12s ease-out;
     pointer-events: none;
 }
 
 .symbolSvg {
-    width: 25vw;
-    max-width: 300px;
-    min-width: 160px;
+    width: 22vw;
+    max-width: 260px;
+    min-width: 140px;
     height: auto;
-    animation: symbolSpin 60s linear infinite;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+    animation: symbolSpin 80s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.18));
 }
 
 @keyframes symbolSpin {
@@ -85,14 +85,14 @@
 }
 
 /* ================================================================
-   LAYER 3 — Gate + landscape  z-index: 3
+   LAYER 3 — Gate (П-shape, left of center)  z-index: 3
    ================================================================ */
 .layerGate {
     position: absolute;
-    inset: -5%;
+    inset: -6%;
     z-index: 3;
     will-change: transform;
-    transition: transform 0.08s ease-out;
+    transition: transform 0.09s ease-out;
     pointer-events: none;
 }
 
@@ -100,12 +100,32 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 110%;
-    height: 110%;
+    width: 112%;
+    height: 112%;
 }
 
 /* ================================================================
-   Post-processing (above layers, below UI)
+   LAYER 4 — Foreground blocks (fastest parallax)  z-index: 4
+   ================================================================ */
+.layerFg {
+    position: absolute;
+    inset: -6%;
+    z-index: 4;
+    will-change: transform;
+    transition: transform 0.06s ease-out;
+    pointer-events: none;
+}
+
+.fgSvg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 112%;
+    height: 112%;
+}
+
+/* ================================================================
+   Post-processing
    ================================================================ */
 .scanlines {
     position: absolute;
@@ -116,8 +136,8 @@
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.16) 2px,
-        rgba(0, 0, 0, 0.16) 4px
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
     );
 }
 
@@ -126,7 +146,7 @@
     inset: 0;
     z-index: 11;
     pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 28%, rgba(0,0,0,0.65) 100%);
+    background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.6) 100%);
 }
 
 .glitchFlash {
@@ -146,7 +166,7 @@
 }
 
 /* ================================================================
-   LAYER 4 — UI (no parallax)  z-index: 100
+   LAYER 5 — UI (no parallax)  z-index: 100
    ================================================================ */
 .layerUi {
     position: absolute;
@@ -155,56 +175,54 @@
     pointer-events: none;
 }
 
-/* ---- SIGNALIS title — right side ---- */
+/* SIGNALIS — top right, well above gate */
 .signalisTitle {
     position: absolute;
-    right: 12%;
-    top: 38%;
-    transform: translateY(-50%);
-    font-size: clamp(1.6rem, 3.5vw, 3rem);
+    right: 8%;
+    top: 22%;
+    font-size: clamp(1.4rem, 3vw, 2.6rem);
     color: #fff;
-    letter-spacing: 1.2rem;
+    letter-spacing: 1.1rem;
     text-transform: uppercase;
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
+    text-shadow: 0 0 28px rgba(255, 255, 255, 0.22);
     animation: fadeSlideIn 2s ease-out 0.5s both;
     pointer-events: none;
     white-space: nowrap;
 }
 
-/* ---- Lore text — below SIGNALIS ---- */
+/* Lore text — below SIGNALIS */
 .loreText {
     position: absolute;
-    right: 12%;
-    top: 55%;
-    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.9;
+    right: 8%;
+    top: 42%;
+    font-size: clamp(0.65rem, 1vw, 0.85rem);
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 2;
     letter-spacing: 0.06em;
     text-align: right;
-    max-width: 380px;
+    max-width: 340px;
     animation: fadeSlideIn 2s ease-out 2s both;
     pointer-events: none;
 }
 
 @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- REMEMBER OUR PROMISE — above button ---- */
+/* REMEMBER OUR PROMISE — bottom center, above button */
 .promiseText {
     position: absolute;
-    bottom: calc(10% + 60px);
+    bottom: calc(10% + 58px);
     left: 50%;
     transform: translateX(-50%);
-    font-size: clamp(0.65rem, 1.4vw, 1rem);
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 0.35em;
+    font-size: clamp(0.6rem, 1.2vw, 0.9rem);
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.32em;
     text-transform: uppercase;
     white-space: nowrap;
     text-align: center;
     min-height: 1.4em;
-    animation: none;
     pointer-events: none;
 }
 
@@ -220,18 +238,18 @@
     50%       { opacity: 0; }
 }
 
-/* ---- Wake button — bottom center ---- */
+/* Wake button — bottom center */
 .wakeBtn {
     position: absolute;
     bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.55);
     font-family: 'Courier New', Courier, monospace;
-    font-size: clamp(0.8rem, 1.4vw, 1.2rem);
-    padding: 12px 40px;
+    font-size: clamp(0.75rem, 1.3vw, 1.1rem);
+    padding: 11px 38px;
     cursor: pointer;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
@@ -242,8 +260,8 @@
 }
 
 .wakeBtn:hover {
-    border-color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.65);
     color: #fff;
-    box-shadow: 0 0 24px rgba(255, 255, 255, 0.15);
-    letter-spacing: 0.3rem;
+    box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
+    letter-spacing: 0.28rem;
 }
