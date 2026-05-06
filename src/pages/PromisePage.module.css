@@ -1,53 +1,132 @@
 /* ============================================================
-   PROMISE PAGE — Secret ending, Signalis-style
-   Fully isolated via CSS Modules
+   PROMISE PAGE — 3-layer parallax scene, Signalis-style
    ============================================================ */
 
 .page {
     position: fixed;
     inset: 0;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Courier New', Courier, monospace;
     overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
     z-index: 10000;
+    cursor: none;
 }
 
-/* ---- VHS static noise ---- */
-.noise {
+/* ================================================================
+   LAYER 1 — Background (blood red, moves slowest)
+   ================================================================ */
+.layerBg {
     position: absolute;
     inset: 0;
+    background: #e60000;
+    will-change: transform;
+    transition: transform 0.12s ease-out;
+}
+
+/* Letterbox bars */
+.layerBg::before,
+.layerBg::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 10vh;
+    background: #000;
     z-index: 1;
-    pointer-events: none;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.layerBg::before { top: 0; }
+.layerBg::after  { bottom: 0; }
+
+/* VHS noise on bg */
+.bgNoise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
-    animation: noiseShift 0.08s steps(1) infinite;
+    animation: noiseShift 0.1s steps(1) infinite;
+    pointer-events: none;
 }
 
 @keyframes noiseShift {
     0%   { background-position: 0 0; }
-    25%  { background-position: -10px 5px; }
-    50%  { background-position: 5px -8px; }
-    75%  { background-position: -5px 10px; }
-    100% { background-position: 8px -3px; }
+    25%  { background-position: -12px 6px; }
+    50%  { background-position: 6px -9px; }
+    75%  { background-position: -6px 12px; }
+    100% { background-position: 9px -4px; }
 }
 
-/* CRT scanlines */
+/* ================================================================
+   LAYER 2 — Symbol (hexagonal tesseract, moves at medium speed)
+   ================================================================ */
+.layerSymbol {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+    pointer-events: none;
+}
+
+.symbolSvg {
+    width: min(340px, 55vw);
+    height: min(340px, 55vw);
+    animation: symbolSpin 60s linear infinite;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
+}
+
+@keyframes symbolSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   LAYER 3 — Gate foreground (black silhouette, moves fastest)
+   ================================================================ */
+.layerGate {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transition: transform 0.08s ease-out;
+    pointer-events: none;
+}
+
+.gateSvg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ================================================================
+   LAYER 4 — UI overlay (no parallax)
+   ================================================================ */
+.layerUi {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 14vh;
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* CRT scanlines over everything */
 .scanlines {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 15;
     pointer-events: none;
     background: repeating-linear-gradient(
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.22) 2px,
-        rgba(0, 0, 0, 0.22) 4px
+        rgba(0, 0, 0, 0.18) 2px,
+        rgba(0, 0, 0, 0.18) 4px
     );
 }
 
@@ -55,97 +134,44 @@
 .vignette {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 16;
     pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.88) 100%);
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%);
 }
 
 /* Glitch flash */
 .glitchFlash {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: 17;
     pointer-events: none;
-    animation: glitchFlash 9s ease-in-out infinite;
+    animation: glitchFlash 11s ease-in-out infinite;
 }
 
 @keyframes glitchFlash {
-    0%, 94%, 100% { opacity: 0; transform: none; background: transparent; }
-    95% { opacity: 1; transform: translateX(3px); background: rgba(255,0,0,0.04); }
-    96% { opacity: 0; transform: translateX(-2px); background: transparent; }
-    97% { opacity: 1; transform: translateX(1px); background: rgba(0,200,255,0.02); }
-    98% { opacity: 0; }
+    0%, 93%, 100% { opacity: 0; transform: none; }
+    94% { opacity: 1; transform: translateX(4px); background: rgba(255,0,0,0.05); }
+    95% { opacity: 0; transform: translateX(-3px); }
+    96% { opacity: 1; transform: translateX(2px); background: rgba(0,200,255,0.03); }
+    97% { opacity: 0; }
 }
 
-/* ---- Central content ---- */
-.content {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    max-width: 520px;
-    padding: 0 24px;
-    text-align: center;
-    animation: contentIn 2s ease-out both;
-}
-
-@keyframes contentIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to   { opacity: 1; transform: scale(1); }
-}
-
-/* ---- Hexagon / Red Gate SVG ---- */
-.geoWrapper {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hexSvg {
-    width: 180px;
-    height: 180px;
-    animation: hexRotate 20s linear infinite;
-    filter: drop-shadow(0 0 18px rgba(255, 0, 0, 0.5));
-}
-
-@keyframes hexRotate {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-.hexInner {
-    animation: hexRotate 12s linear infinite reverse;
-}
-
-.hexPulse {
-    animation: hexPulseAnim 3s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes hexPulseAnim {
-    0%, 100% { opacity: 0.6; }
-    50%       { opacity: 1; }
-}
-
-/* ---- Main title — typewriter ---- */
-.mainTitle {
-    font-size: clamp(18px, 4vw, 26px);
-    color: #fff;
-    letter-spacing: 0.25em;
+/* ---- Title text ---- */
+.titleText {
+    font-size: clamp(13px, 2.5vw, 20px);
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.5em;
     text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    min-height: 1.4em;
+    text-align: center;
+    margin-bottom: 28px;
+    min-height: 1.5em;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    pointer-events: none;
 }
 
 .titleCursor {
     display: inline-block;
-    color: #ff0000;
+    color: #fff;
     animation: cursorBlink 0.8s step-end infinite;
     margin-left: 2px;
 }
@@ -155,62 +181,45 @@
     50%       { opacity: 0; }
 }
 
-/* ---- Lore text ---- */
+/* ---- Lore text (right side) ---- */
 .loreText {
-    font-size: 11px;
-    color: rgba(180, 0, 0, 0.65);
-    line-height: 1.9;
-    letter-spacing: 0.06em;
-    animation: textFadeIn 1.5s ease-out 4s both;
+    position: absolute;
+    right: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.12em;
+    line-height: 2;
+    text-align: right;
+    pointer-events: none;
+    animation: textFadeIn 2s ease-out 4s both;
 }
 
 @keyframes textFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* ---- Wake button ---- */
 .wakeBtn {
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.5);
     font-family: 'Courier New', Courier, monospace;
     font-size: 11px;
-    padding: 10px 32px;
+    padding: 10px 36px;
     cursor: pointer;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
     transition: all 0.3s;
-    animation: textFadeIn 1.5s ease-out 5.5s both;
-    position: relative;
-    z-index: 10;
+    pointer-events: all;
+    animation: textFadeIn 2s ease-out 5s both;
 }
 
 .wakeBtn:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
-    letter-spacing: 0.3em;
-}
-
-/* ---- Particles ---- */
-.particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.particle {
-    position: absolute;
-    background: rgba(255, 0, 0, 0.35);
-    border-radius: 50%;
-    animation: particleDrift linear infinite;
-}
-
-@keyframes particleDrift {
-    from { transform: translateY(100vh); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 0.4; }
-    to   { transform: translateY(-10vh) translateX(15px); opacity: 0; }
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.12);
+    letter-spacing: 0.4em;
 }

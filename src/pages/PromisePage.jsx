@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuest } from '../context/QuestContext';
 import styles from './PromisePage.module.css';
 
 /* ----------------------------------------------------------------
-   Web Audio — vinyl crackle + slow piano notes (Chopin-inspired)
+   Web Audio — vinyl crackle + slow piano notes
    ---------------------------------------------------------------- */
 function useAmbientAudio() {
     const ctxRef = useRef(null);
@@ -18,68 +18,52 @@ function useAmbientAudio() {
             ctxRef.current = ctx;
             const nodes = [];
 
-            // --- Vinyl crackle: filtered white noise ---
+            // Vinyl crackle
             const bufSize = ctx.sampleRate * 2;
             const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
             const data = buf.getChannelData(0);
-            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.015;
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.012;
             const crackle = ctx.createBufferSource();
             crackle.buffer = buf;
             crackle.loop = true;
-            const crackleFilter = ctx.createBiquadFilter();
-            crackleFilter.type = 'bandpass';
-            crackleFilter.frequency.value = 3000;
-            crackleFilter.Q.value = 0.3;
-            const crackleGain = ctx.createGain();
-            crackleGain.gain.value = 0.18;
-            crackle.connect(crackleFilter);
-            crackleFilter.connect(crackleGain);
-            crackleGain.connect(ctx.destination);
+            const cf = ctx.createBiquadFilter();
+            cf.type = 'bandpass';
+            cf.frequency.value = 2800;
+            cf.Q.value = 0.4;
+            const cg = ctx.createGain();
+            cg.gain.value = 0.15;
+            crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination);
             crackle.start();
             nodes.push(crackle);
 
-            // --- Deep sub rumble ---
+            // Sub rumble
             const rumble = ctx.createOscillator();
-            const rumbleGain = ctx.createGain();
-            rumble.type = 'sine';
-            rumble.frequency.value = 40;
-            rumbleGain.gain.value = 0;
-            rumble.connect(rumbleGain);
-            rumbleGain.connect(ctx.destination);
+            const rg = ctx.createGain();
+            rumble.type = 'sine'; rumble.frequency.value = 38;
+            rg.gain.value = 0;
+            rumble.connect(rg); rg.connect(ctx.destination);
             rumble.start();
-            rumbleGain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 4);
+            rg.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 5);
             nodes.push(rumble);
 
-            // --- Piano notes: Chopin Raindrop Prelude feel ---
-            // Notes: A3(220), E3(165), A2(110), C#4(277), D4(294)
-            const pianoNotes = [220, 165, 110, 277, 220, 165, 294, 220];
-            const noteSpacing = 4.5; // seconds between notes
-
-            pianoNotes.forEach((freq, i) => {
-                const t = ctx.currentTime + 3 + i * noteSpacing;
+            // Piano notes — Chopin Raindrop feel
+            [220, 165, 110, 277, 220, 165, 294, 220].forEach((freq, i) => {
+                const t = ctx.currentTime + 3 + i * 4.8;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                const filter = ctx.createBiquadFilter();
-
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                filter.type = 'lowpass';
-                filter.frequency.value = 800;
-
+                const filt = ctx.createBiquadFilter();
+                osc.type = 'sine'; osc.frequency.value = freq;
+                filt.type = 'lowpass'; filt.frequency.value = 700;
                 gain.gain.setValueAtTime(0, t);
-                gain.gain.linearRampToValueAtTime(0.07, t + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 3.5);
-
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(t);
-                osc.stop(t + 4);
+                gain.gain.linearRampToValueAtTime(0.065, t + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 3.8);
+                osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+                osc.start(t); osc.stop(t + 4.2);
                 nodes.push(osc);
             });
 
             nodesRef.current = nodes;
-        } catch { /* silent fail */ }
+        } catch { /* silent */ }
     };
 
     const stop = () => {
@@ -96,13 +80,12 @@ function useAmbientAudio() {
 /* ----------------------------------------------------------------
    Typewriter hook
    ---------------------------------------------------------------- */
-function useTypewriter(text, speed = 60, delay = 1500) {
+function useTypewriter(text, speed = 80, delay = 2000) {
     const [displayed, setDisplayed] = useState('');
     const [done, setDone] = useState(false);
     useEffect(() => {
-        setDisplayed('');
-        setDone(false);
-        const startTimer = setTimeout(() => {
+        setDisplayed(''); setDone(false);
+        const t = setTimeout(() => {
             let i = 0;
             const id = setInterval(() => {
                 i++;
@@ -111,73 +94,161 @@ function useTypewriter(text, speed = 60, delay = 1500) {
             }, speed);
             return () => clearInterval(id);
         }, delay);
-        return () => clearTimeout(startTimer);
+        return () => clearTimeout(t);
     }, [text, speed, delay]);
     return { displayed, done };
 }
 
 /* ----------------------------------------------------------------
-   Particles
+   Hexagonal Tesseract Symbol SVG
+   Isometric cube illusion inside a hexagon, white strokes
    ---------------------------------------------------------------- */
-const PARTICLES = Array.from({ length: 25 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    delay: `${Math.random() * 14}s`,
-    duration: `${9 + Math.random() * 10}s`,
-    size: `${1 + Math.random() * 1.5}px`,
-}));
-
-/* ----------------------------------------------------------------
-   Red Gate / Hexagon SVG
-   ---------------------------------------------------------------- */
-function RedGateSvg({ hexClass, innerClass, pulseClass }) {
-    // Hexagon points helper
-    const hex = (cx, cy, r, offset = 0) => {
-        return Array.from({ length: 6 }, (_, i) => {
-            const a = (Math.PI / 3) * i + offset;
-            return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+function TesseractSymbol() {
+    // Flat-top hexagon points at radius r centered at cx,cy
+    const hexPts = (cx, cy, r, rot = 0) =>
+        Array.from({ length: 6 }, (_, i) => {
+            const a = (Math.PI / 3) * i + rot;
+            return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`;
         }).join(' ');
-    };
+
+    const cx = 170; const cy = 170;
+    const R = 140; // outer hex radius
+    const r2 = R * 0.577; // inner radius for cube illusion ≈ R/√3
+
+    // Outer hex vertices
+    const outerVerts = Array.from({ length: 6 }, (_, i) => {
+        const a = (Math.PI / 3) * i;
+        return { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) };
+    });
+
+    // Inner hex vertices (rotated 30°)
+    const innerVerts = Array.from({ length: 6 }, (_, i) => {
+        const a = (Math.PI / 3) * i + Math.PI / 6;
+        return { x: cx + r2 * Math.cos(a), y: cy + r2 * Math.sin(a) };
+    });
+
+    // Center hex (empty)
+    const centerR = R * 0.18;
+
+    // Isometric cube faces: 3 rhombus faces connecting inner to outer
+    // Each face uses 2 adjacent outer verts + 2 adjacent inner verts
+    const faces = [
+        [outerVerts[0], outerVerts[1], innerVerts[1], innerVerts[0]],
+        [outerVerts[2], outerVerts[3], innerVerts[3], innerVerts[2]],
+        [outerVerts[4], outerVerts[5], innerVerts[5], innerVerts[4]],
+    ];
+
+    const ptStr = (pts) => pts.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
 
     return (
-        <svg className={hexClass} viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-            {/* Outer rotating ring */}
-            <polygon points={hex(90, 90, 82)} fill="none" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
+        <svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+            {/* Outer hexagon */}
+            <polygon points={hexPts(cx, cy, R)} fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.5"/>
 
-            {/* Mid ring — counter-rotates via CSS on group */}
-            <g className={innerClass}>
-                <polygon points={hex(90, 90, 68)} fill="none" stroke="rgba(255,0,0,0.3)" strokeWidth="0.8"/>
-                <polygon points={hex(90, 90, 68, Math.PI / 6)} fill="none" stroke="rgba(255,0,0,0.12)" strokeWidth="0.4"/>
-            </g>
+            {/* Cube face rhombuses */}
+            {faces.map((face, i) => (
+                <polygon key={i} points={ptStr(face)}
+                    fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.7)" strokeWidth="1"/>
+            ))}
 
-            {/* Inner gate — pulses */}
-            <g className={pulseClass}>
-                <polygon points={hex(90, 90, 50)} fill="rgba(255,0,0,0.04)" stroke="#ff0000" strokeWidth="1.2"/>
-                <polygon points={hex(90, 90, 50, Math.PI / 6)} fill="none" stroke="rgba(255,0,0,0.25)" strokeWidth="0.6"/>
-                {/* Core */}
-                <polygon points={hex(90, 90, 28)} fill="rgba(255,0,0,0.06)" stroke="#ff0000" strokeWidth="1"/>
-                <polygon points={hex(90, 90, 14)} fill="rgba(255,0,0,0.12)" stroke="rgba(255,0,0,0.6)" strokeWidth="0.8"/>
-                {/* Center dot */}
-                <circle cx="90" cy="90" r="4" fill="#ff0000" opacity="0.8"/>
-                <circle cx="90" cy="90" r="2" fill="#fff" opacity="0.4"/>
-            </g>
+            {/* Spokes from center to inner hex vertices */}
+            {innerVerts.map((v, i) => (
+                <line key={i} x1={cx} y1={cy} x2={v.x} y2={v.y}
+                    stroke="rgba(255,255,255,0.5)" strokeWidth="0.8"/>
+            ))}
 
-            {/* Decorative spokes */}
-            {[0, 60, 120, 180, 240, 300].map((deg) => {
-                const rad = (deg * Math.PI) / 180;
-                return (
-                    <line key={deg}
-                        x1={90 + 28 * Math.cos(rad)} y1={90 + 28 * Math.sin(rad)}
-                        x2={90 + 50 * Math.cos(rad)} y2={90 + 50 * Math.sin(rad)}
-                        stroke="rgba(255,0,0,0.2)" strokeWidth="0.5"/>
-                );
-            })}
+            {/* Inner hex */}
+            <polygon points={hexPts(cx, cy, r2, Math.PI / 6)}
+                fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1"/>
 
-            {/* Circuit traces */}
-            <line x1="90" y1="8" x2="90" y2="22" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
-            <line x1="90" y1="158" x2="90" y2="172" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
-            <line x1="8" y1="90" x2="22" y2="90" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
-            <line x1="158" y1="90" x2="172" y2="90" stroke="rgba(255,0,0,0.15)" strokeWidth="0.5"/>
+            {/* Center empty hexagon */}
+            <polygon points={hexPts(cx, cy, centerR)}
+                fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.2"/>
+
+            {/* 6 small squares at outer hex vertices */}
+            {outerVerts.map((v, i) => (
+                <rect key={i}
+                    x={v.x - 6} y={v.y - 6} width="12" height="12"
+                    fill="#000" stroke="#fff" strokeWidth="1.2"/>
+            ))}
+
+            {/* Lines from outer verts to inner verts (alternate) */}
+            {[0, 2, 4].map(i => (
+                <line key={i}
+                    x1={outerVerts[i].x} y1={outerVerts[i].y}
+                    x2={innerVerts[i].x} y2={innerVerts[i].y}
+                    stroke="rgba(255,255,255,0.4)" strokeWidth="0.6"/>
+            ))}
+        </svg>
+    );
+}
+
+/* ----------------------------------------------------------------
+   Gate foreground SVG
+   Two massive rectangular pillars + crossbar + ruined landscape
+   ---------------------------------------------------------------- */
+function GateSvg() {
+    const W = 1200; const H = 700;
+    const pillarW = 90;
+    const pillarH = 480;
+    const gateLeft = W / 2 - 160;
+    const gateRight = W / 2 + 160 - pillarW;
+    const crossbarY = H - pillarH - 20;
+    const crossbarH = 28;
+
+    return (
+        <svg viewBox={`0 0 ${W} ${H}`} xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMax meet">
+
+            {/* Left pillar */}
+            <rect x={gateLeft} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
+            {/* Right pillar */}
+            <rect x={gateRight} y={crossbarY} width={pillarW} height={pillarH} fill="#000"/>
+            {/* Crossbar */}
+            <rect x={gateLeft} y={crossbarY} width={gateRight + pillarW - gateLeft} height={crossbarH} fill="#000"/>
+
+            {/* Pillar detail lines */}
+            <line x1={gateLeft + 10} y1={crossbarY + crossbarH} x2={gateLeft + 10} y2={H}
+                stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+            <line x1={gateRight + pillarW - 10} y1={crossbarY + crossbarH} x2={gateRight + pillarW - 10} y2={H}
+                stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+
+            {/* Ruined landscape — left side */}
+            <polygon points={`
+                0,${H}
+                0,${H - 80}
+                60,${H - 120}
+                100,${H - 90}
+                160,${H - 160}
+                220,${H - 100}
+                280,${H - 180}
+                340,${H - 130}
+                ${gateLeft},${H - 60}
+                ${gateLeft},${H}
+            `} fill="#000"/>
+
+            {/* Ruined landscape — right side */}
+            <polygon points={`
+                ${gateRight + pillarW},${H - 60}
+                ${W - 340},${H - 130}
+                ${W - 280},${H - 180}
+                ${W - 220},${H - 100}
+                ${W - 160},${H - 160}
+                ${W - 100},${H - 90}
+                ${W - 60},${H - 120}
+                ${W},${H - 80}
+                ${W},${H}
+                ${gateRight + pillarW},${H}
+            `} fill="#000"/>
+
+            {/* Ground strip */}
+            <rect x="0" y={H - 55} width={W} height="55" fill="#000"/>
+
+            {/* Subtle gate glow outline */}
+            <rect x={gateLeft} y={crossbarY} width={pillarW} height={pillarH}
+                fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
+            <rect x={gateRight} y={crossbarY} width={pillarW} height={pillarH}
+                fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
         </svg>
     );
 }
@@ -192,13 +263,39 @@ export default function PromisePage() {
     const { resetQuest } = useQuest();
     const audio = useAmbientAudio();
     const [hoverWake, setHoverWake] = useState(false);
+    const { displayed, done } = useTypewriter(MAIN_TEXT, 80, 2000);
 
-    const { displayed, done } = useTypewriter(MAIN_TEXT, 80, 1800);
+    // Parallax refs
+    const bgRef = useRef(null);
+    const symbolRef = useRef(null);
+    const gateRef = useRef(null);
+
+    const handleMouseMove = useCallback((e) => {
+        const xAxis = (window.innerWidth / 2 - e.clientX);
+        const yAxis = (window.innerHeight / 2 - e.clientY);
+
+        if (bgRef.current) {
+            bgRef.current.style.transform =
+                `translate(${xAxis / 100}px, ${yAxis / 100}px)`;
+        }
+        if (symbolRef.current) {
+            symbolRef.current.style.transform =
+                `translate(${xAxis / 45}px, ${yAxis / 45}px)`;
+        }
+        if (gateRef.current) {
+            gateRef.current.style.transform =
+                `translate(${xAxis / 18}px, ${yAxis / 18}px)`;
+        }
+    }, []);
 
     useEffect(() => {
         audio.start();
-        return () => audio.stop();
-    }, []);
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => {
+            audio.stop();
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [handleMouseMove]);
 
     const handleWake = () => {
         audio.stop();
@@ -208,48 +305,43 @@ export default function PromisePage() {
 
     return (
         <div className={styles.page}>
-            {/* Layers */}
-            <div className={styles.noise} aria-hidden="true" />
+            {/* Layer 1 — Red background */}
+            <div className={styles.layerBg} ref={bgRef}>
+                <div className={styles.bgNoise} aria-hidden="true" />
+            </div>
+
+            {/* Layer 2 — Tesseract symbol */}
+            <div className={styles.layerSymbol} ref={symbolRef} aria-hidden="true">
+                <TesseractSymbol />
+            </div>
+
+            {/* Layer 3 — Gate foreground */}
+            <div className={styles.layerGate} ref={gateRef} aria-hidden="true">
+                <GateSvg />
+            </div>
+
+            {/* Post-processing */}
             <div className={styles.scanlines} aria-hidden="true" />
             <div className={styles.vignette} aria-hidden="true" />
             <div className={styles.glitchFlash} aria-hidden="true" />
 
-            {/* Particles */}
-            <div className={styles.particles} aria-hidden="true">
-                {PARTICLES.map((p) => (
-                    <div key={p.id} className={styles.particle} style={{
-                        left: p.left, bottom: '-4px',
-                        animationDelay: p.delay, animationDuration: p.duration,
-                        width: p.size, height: p.size,
-                    }} />
-                ))}
-            </div>
+            {/* Lore text — right side, no parallax */}
+            <p className={styles.loreText} aria-hidden="true">
+                S I G N A L I S<br />
+                ——————————<br />
+                Синхронизация завершена.<br />
+                Капсула Penrose-512<br />
+                достигла дна Европы.<br />
+                Возможно, это ад.
+            </p>
 
-            {/* Main content */}
-            <div className={styles.content}>
-                {/* Rotating hexagon / Red Gate */}
-                <div className={styles.geoWrapper} aria-hidden="true">
-                    <RedGateSvg
-                        hexClass={styles.hexSvg}
-                        innerClass={styles.hexInner}
-                        pulseClass={styles.hexPulse}
-                    />
-                </div>
-
-                {/* Typewriter title */}
-                <div className={styles.mainTitle} aria-live="polite">
+            {/* UI layer — title + button */}
+            <div className={styles.layerUi}>
+                <div className={styles.titleText} aria-live="polite">
                     {displayed}
                     {!done && <span className={styles.titleCursor}>█</span>}
                 </div>
 
-                {/* Lore text */}
-                <p className={styles.loreText}>
-                    Синхронизация завершена.<br />
-                    Капсула Penrose-512 достигла дна Европы.<br />
-                    Возможно, это ад.
-                </p>
-
-                {/* Wake button */}
                 <button
                     className={styles.wakeBtn}
                     onClick={handleWake}
