@@ -47,40 +47,40 @@ function DetailModal({ item, onClose }) {
             <div className="vd-modal glass-card" onClick={e => e.stopPropagation()}>
                 <div className="vd-modal-header">
                     <div>
-                        <h2 className="vd-modal-title">{item.displayName || item.identifier}</h2>
+                        <h2 className="vd-modal-title">{item.display_name || item.identifier}</h2>
                         <span className="vd-modal-identifier">{item.identifier}</span>
                     </div>
                     <button className="btn btn-ghost btn-sm vd-modal-close" onClick={onClose}>✕</button>
                 </div>
                 <div className="vd-modal-body">
-                    {item.displayDescription && (
-                        <p className="vd-modal-desc">{item.displayDescription}</p>
+                    {item.display_description && (
+                        <p className="vd-modal-desc">{item.display_description}</p>
                     )}
                     <div className="vd-modal-meta">
-                        {item.sourceFile && (
+                        {item.source_file && (
                             <div className="vd-meta-row">
                                 <span className="vd-meta-label">Source file</span>
-                                <span className="vd-meta-value vd-mono">{item.sourceFile}</span>
+                                <span className="vd-meta-value vd-mono">{item.source_file}</span>
                             </div>
                         )}
-                        {item.variantOf && (
+                        {item.variant_of && (
                             <div className="vd-meta-row">
                                 <span className="vd-meta-label">Variant of</span>
-                                <span className="vd-meta-value vd-mono">{item.variantOf}</span>
+                                <span className="vd-meta-value vd-mono">{item.variant_of}</span>
                             </div>
                         )}
                         <div className="vd-meta-row">
                             <span className="vd-meta-label">Created</span>
-                            <span className="vd-meta-value">{formatDate(item.createdAt)}</span>
+                            <span className="vd-meta-value">{formatDate(item.created_at)}</span>
                         </div>
                         <div className="vd-meta-row">
                             <span className="vd-meta-label">Updated</span>
-                            <span className="vd-meta-value">{formatDate(item.updatedAt)}</span>
+                            <span className="vd-meta-value">{formatDate(item.updated_at)}</span>
                         </div>
                     </div>
                     <div className="vd-modal-payload">
                         <p className="vd-payload-label">payload_json</p>
-                        <JsonViewer data={item.payloadJson} />
+                        <JsonViewer data={item.payload_json} />
                     </div>
                 </div>
             </div>
@@ -229,13 +229,13 @@ function ContentTab({ typePath }) {
                                     title="Click to inspect payload"
                                 >
                                     <td className="vd-cell-identifier vd-mono">{item.identifier}</td>
-                                    <td className="vd-cell-name">{item.displayName || <span className="vd-null">—</span>}</td>
-                                    <td className="vd-cell-variant vd-mono">{item.variantOf || <span className="vd-null">—</span>}</td>
-                                    <td className="vd-cell-source vd-mono">{item.sourceFile
-                                        ? item.sourceFile.split(/[\\/]/).pop()
+                                    <td className="vd-cell-name">{item.display_name || <span className="vd-null">—</span>}</td>
+                                    <td className="vd-cell-variant vd-mono">{item.variant_of || <span className="vd-null">—</span>}</td>
+                                    <td className="vd-cell-source vd-mono">{item.source_file
+                                        ? item.source_file.split(/[\\/]/).pop()
                                         : <span className="vd-null">—</span>}
                                     </td>
-                                    <td className="vd-cell-date">{formatDate(item.updatedAt)}</td>
+                                    <td className="vd-cell-date">{formatDate(item.updated_at)}</td>
                                 </tr>
                             ))}
                         </tbody>
