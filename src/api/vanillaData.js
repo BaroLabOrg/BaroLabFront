@@ -19,6 +19,7 @@ const CONTENT_TYPES = [
     { key: 'corpses',               label: 'Corpses',                path: 'corpses' },
     { key: 'npc-sets',              label: 'NPC Sets',               path: 'npc-sets' },
     { key: 'disembark-perks',       label: 'Disembark Perks',        path: 'disembark-perks' },
+    { key: 'item-tags',             label: 'Item Tags',              path: 'item-tags' },
 ];
 
 export { CONTENT_TYPES };
