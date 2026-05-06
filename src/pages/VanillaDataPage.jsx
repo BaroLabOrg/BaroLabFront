@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CONTENT_TYPES, listVanillaContent, getVanillaContentByIdentifier } from '../api/vanillaData.js';
+import { CONTENT_TYPES, ITEM_CATEGORIES, listVanillaContent, getVanillaContentByIdentifier } from '../api/vanillaData.js';
 import Pagination from '../components/Pagination';
 import './VanillaDataPage.css';
 
@@ -89,6 +89,8 @@ function DetailModal({ item, onClose }) {
 }
 
 function ContentTab({ typePath }) {
+    const isItems = typePath === 'items';
+
     const [items, setItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -97,12 +99,13 @@ function ContentTab({ typePath }) {
     const [page, setPage] = useState(0);
     const [searchDraft, setSearchDraft] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
+    const [activeCategory, setActiveCategory] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
 
-    const load = useCallback(async (targetPage, q) => {
+    const load = useCallback(async (targetPage, q, category) => {
         setLoading(true);
         setError('');
         try {
@@ -112,6 +115,7 @@ function ContentTab({ typePath }) {
                 sortBy: 'identifier',
                 direction: 'asc',
                 q: q || undefined,
+                category: category || undefined,
             });
             setItems(data.items);
             setTotal(data.total);
@@ -129,13 +133,14 @@ function ContentTab({ typePath }) {
         setPage(0);
         setSearchDraft('');
         setAppliedSearch('');
+        setActiveCategory('');
         setItems([]);
         setSelectedItem(null);
     }, [typePath]);
 
     useEffect(() => {
-        load(page, appliedSearch);
-    }, [page, appliedSearch, load]);
+        load(page, appliedSearch, activeCategory);
+    }, [page, appliedSearch, activeCategory, load]);
 
     const handleSearch = () => {
         setAppliedSearch(searchDraft);
@@ -149,6 +154,11 @@ function ContentTab({ typePath }) {
     const handleClear = () => {
         setSearchDraft('');
         setAppliedSearch('');
+        setPage(0);
+    };
+
+    const handleCategoryChange = (cat) => {
+        setActiveCategory(cat);
         setPage(0);
     };
 
@@ -189,6 +199,19 @@ function ContentTab({ typePath }) {
                         </button>
                     )}
                 </div>
+                {isItems && (
+                    <div className="vd-category-row">
+                        {ITEM_CATEGORIES.map(cat => (
+                            <button
+                                key={cat.key}
+                                className={`vd-category-btn ${activeCategory === cat.key ? 'active' : ''}`}
+                                onClick={() => handleCategoryChange(cat.key)}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
                 <p className="vd-toolbar-hint">
                     {total > 0
                         ? <><strong style={{ color: 'var(--text-primary)' }}>{total}</strong> records total · click a row to inspect payload</>

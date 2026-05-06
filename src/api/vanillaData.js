@@ -23,9 +23,28 @@ const CONTENT_TYPES = [
 
 export { CONTENT_TYPES };
 
+// Known item categories from item_resolver.
+// 'misc' key is a special sentinel — backend maps it to payload_json->>'category' IS NULL.
+const ITEM_CATEGORIES = [
+    { key: '',            label: 'All' },
+    { key: 'Medical',     label: 'Medical' },
+    { key: 'Weapon',      label: 'Weapon' },
+    { key: 'Equipment',   label: 'Equipment' },
+    { key: 'Diving',      label: 'Diving' },
+    { key: 'Material',    label: 'Material' },
+    { key: 'Electrical',  label: 'Electrical' },
+    { key: 'Machine',     label: 'Machine' },
+    { key: 'Fuel',        label: 'Fuel' },
+    { key: 'Alien',       label: 'Alien' },
+    { key: 'Misc',        label: 'Misc' },
+    { key: 'misc',        label: 'No Category (null)' },
+];
+
+export { ITEM_CATEGORIES };
+
 /**
  * @param {string} typePath  - e.g. 'items', 'talent-trees'
- * @param {{ page?, size?, sortBy?, direction?, q? }} params
+ * @param {{ page?, size?, sortBy?, direction?, q?, category? }} params
  */
 export async function listVanillaContent(typePath, {
     page = 0,
@@ -33,9 +52,10 @@ export async function listVanillaContent(typePath, {
     sortBy = 'identifier',
     direction = 'asc',
     q,
+    category,
 } = {}) {
     const response = await request(`${BASE}/${typePath}`, {
-        query: { page, size, sortBy, direction, q: q || undefined },
+        query: { page, size, sortBy, direction, q: q || undefined, category: category || undefined },
     });
     // Spring Page response shape: { content, totalElements, totalPages, number, size, ... }
     return normalizeSpringPage(response);
