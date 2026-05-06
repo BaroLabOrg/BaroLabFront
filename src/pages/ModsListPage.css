@@ -1,26 +1,38 @@
 .mods-header-box {
   margin-bottom: 20px;
-  padding: 20px;
+  padding: 24px;
   border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mods-header-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
 .mods-title {
   margin: 0 0 8px;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .mods-subtitle {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .mods-grid {
@@ -31,13 +43,18 @@
 
 .mods-search-panel {
   margin-bottom: 16px;
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+.mods-search-panel:focus-within {
+  border-color: var(--border-hover);
 }
 
 .mods-search-form,
@@ -50,9 +67,9 @@
 .mods-search-label {
   color: var(--text-muted);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -87,6 +104,7 @@
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
+  font-family: var(--font-mono);
 }
 
 .mods-tags-error {
@@ -105,6 +123,18 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.create-mod-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
 .create-mod-form .form-title {
@@ -112,7 +142,7 @@
   color: var(--text-primary);
   font-family: var(--font-heading);
   font-size: 22px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -124,7 +154,11 @@
 
 .create-mod-form .form-label {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
+  font-family: var(--font-heading);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .create-mod-form input,
@@ -137,20 +171,23 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 64px 16px;
+  gap: 12px;
+  padding: 72px 16px;
   color: var(--text-muted);
   text-align: center;
 }
 
 .empty-icon {
-  font-size: 2.3rem;
-  opacity: 0.45;
+  font-size: 2.6rem;
+  opacity: 0.3;
+  animation: pulse 3s ease-in-out infinite;
 }
 
 .empty-state p {
   margin: 0;
   font-size: 0.9rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
 }
 
 @media (max-width: 768px) {

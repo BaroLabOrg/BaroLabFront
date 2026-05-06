@@ -5,27 +5,39 @@
 
 .guides-header-box {
   margin-bottom: 16px;
-  padding: 20px;
+  padding: 24px;
   text-align: center;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.guides-header-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
 }
 
 .guides-title {
   margin: 0 0 8px;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .guides-subtitle {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .guides-grid {
@@ -42,25 +54,44 @@
   overflow: hidden;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  position: relative;
+}
+
+.guide-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-green), #14b8a6);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+  z-index: 1;
 }
 
 .hover-glow:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(249, 115, 22, 0.15);
-  transform: translateY(-2px);
+  border-color: rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.1), var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.hover-glow:hover::before {
+  transform: scaleX(1);
 }
 
 .guide-card-content {
-  padding: 16px;
+  padding: 18px;
   flex: 1;
 }
 
 .guide-card-title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-family: var(--font-heading);
-  font-size: 20px;
-  letter-spacing: 0.04em;
+  font-size: 18px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   line-height: 1.2;
 }
@@ -68,67 +99,81 @@
 .guide-card-title a {
   color: var(--text-primary);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .guide-card-title a:hover {
-  color: var(--accent);
+  color: var(--accent-green);
 }
 
 .guide-card-meta {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
 }
 
 .guide-card-snippet {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-size: 0.88rem;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .guide-card-footer {
-  padding: 12px 16px;
+  padding: 12px 18px;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: rgba(8, 10, 15, 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  transition: border-color var(--transition-fast);
+}
+
+.hover-glow:hover .guide-card-footer {
+  border-top-color: rgba(34, 197, 94, 0.15);
 }
 
 .guide-card-mod-link {
-  color: var(--accent);
+  color: var(--accent-green);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  transition: color var(--transition-fast);
 }
 
 .guide-card-mod-link:hover {
-  color: var(--accent-hover);
+  color: #4ade80;
 }
 
 .no-guides-message {
   grid-column: 1 / -1;
-  padding: 40px 20px;
+  padding: 48px 20px;
   text-align: center;
   color: var(--text-muted);
   border: 1px dashed var(--border-color);
   border-radius: var(--radius-md);
   background: var(--bg-card);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
 }
 
+/* ── Modal ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -136,9 +181,10 @@
   justify-content: center;
   align-items: center;
   padding: 16px;
-  background: var(--overlay-strong);
-  backdrop-filter: blur(2px);
+  background: rgba(8, 10, 15, 0.88);
+  backdrop-filter: blur(8px);
   z-index: 1000;
+  animation: fadeIn 0.2s ease;
 }
 
 .modal-content {
@@ -146,41 +192,63 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  animation: fadeInScale 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--border-color);
+  background: var(--bg-card-hover);
 }
 
 .modal-header h3 {
   margin: 0;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  letter-spacing: 0.04em;
+  font-size: 16px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .btn-close {
-  border: 0;
+  border: 1px solid var(--border-color);
   background: transparent;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .btn-close:hover {
   color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .modal-body {
-  padding: 16px;
+  padding: 18px;
   overflow-y: auto;
 }
 
@@ -191,21 +259,29 @@
 }
 
 .mod-list-item {
-  padding: 12px;
+  padding: 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+  cursor: pointer;
 }
 
 .mod-list-item:hover {
   background: var(--bg-card-hover);
-  border-color: var(--accent);
+  border-color: rgba(249, 115, 22, 0.35);
   transform: translateY(-2px);
 }
 
 .mod-item-title {
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color var(--transition-fast);
+}
+
+.mod-list-item:hover .mod-item-title {
+  color: var(--accent);
 }

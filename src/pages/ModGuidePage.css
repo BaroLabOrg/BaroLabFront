@@ -1,38 +1,60 @@
 .guide-container {
-    padding: 6rem 2rem 2rem 2rem;
+    padding: calc(var(--nav-height) + 32px) 2rem 3rem;
     max-width: 1200px;
-    margin: 2rem auto;
-    color: #e0e0e0;
+    margin: 0 auto;
+    color: var(--text-primary);
+    animation: fadeInUp 0.4s ease forwards;
 }
 
 .guide-header {
-    border-bottom: 1px solid #333;
-    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
     margin-bottom: 2rem;
+    position: relative;
+}
+
+.guide-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
 }
 
 .guide-header h1 {
-    margin: 0 0 0.5rem 0;
-    font-size: 2.5rem;
-    color: #fff;
+    margin: 0 0 0.75rem 0;
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    line-height: 1.1;
 }
 
 .guide-meta {
-    font-size: 0.9rem;
-    color: #888;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
 }
 
 .guide-meta a {
-    color: #4da6ff;
+    color: var(--accent);
     text-decoration: none;
+    transition: color var(--transition-fast);
 }
 
 .guide-meta a:hover {
-    text-decoration: underline;
+    color: var(--accent-hover);
 }
 
 .guide-meta span {
-    margin-right: 15px;
+    margin-right: 16px;
 }
 
 .guide-content-wrapper {
@@ -40,139 +62,282 @@
     flex-direction: column;
 }
 
-/* React Markdown Styles */
+/* ── Markdown body ── */
 .guide-markdown-body {
-    line-height: 1.6;
-    font-size: 1.1rem;
+    line-height: 1.75;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.guide-markdown-body h1,
+.guide-markdown-body h2,
+.guide-markdown-body h3,
+.guide-markdown-body h4 {
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .guide-markdown-body h2 {
-    margin-top: 2rem;
-    border-bottom: 1px solid #333;
+    font-size: 1.4rem;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
+    position: relative;
+}
+
+.guide-markdown-body h2::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.guide-markdown-body h3 {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+}
+
+.guide-markdown-body p {
+    margin: 0 0 1rem;
+}
+
+.guide-markdown-body a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(249, 115, 22, 0.3);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.guide-markdown-body a:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent);
 }
 
 .guide-markdown-body img {
     max-width: 100%;
-    border-radius: 4px;
-    margin: 1rem 0;
+    border-radius: var(--radius-md);
+    margin: 1.25rem 0;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
 }
 
 .guide-markdown-body code {
-    background-color: #1a1a1a;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: monospace;
+    background: rgba(249, 115, 22, 0.08);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--accent);
+}
+
+.guide-markdown-body pre {
+    background: #060810;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+    position: relative;
+}
+
+.guide-markdown-body pre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-green), transparent);
 }
 
 .guide-markdown-body pre code {
-    display: block;
-    padding: 1rem;
-    overflow-x: auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--accent-green);
+    font-size: 0.88rem;
 }
 
-/* Custom Components Styles */
+.guide-markdown-body ul,
+.guide-markdown-body ol {
+    padding-left: 1.5rem;
+    margin: 0 0 1rem;
+}
 
+.guide-markdown-body li {
+    margin-bottom: 0.4rem;
+}
+
+.guide-markdown-body blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 1.5rem 0;
+    padding: 0.75rem 1.25rem;
+    background: rgba(249, 115, 22, 0.05);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.guide-markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.guide-markdown-body th,
+.guide-markdown-body td {
+    border: 1px solid var(--border-color);
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+}
+
+.guide-markdown-body th {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.guide-markdown-body td {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.guide-markdown-body tr:hover td {
+    background: var(--bg-card-hover);
+}
+
+/* ── Custom components ── */
 .guide-quote {
-    border-left: 4px solid #4da6ff;
+    border-left: 3px solid var(--accent-blue);
     margin: 1.5rem 0;
     padding: 1rem 1.5rem;
-    background-color: rgba(77, 166, 255, 0.05);
-    border-radius: 0 4px 4px 0;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .quote-text {
     font-style: italic;
     margin: 0;
-    color: #ccc;
-    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
 }
 
 .quote-author {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     text-align: right;
-    font-weight: bold;
-    color: #888;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
 }
 
-/* Table / Infobox */
-.guide-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1.5rem 0;
-}
-
-.guide-table th,
-.guide-table td {
-    border: 1px solid #333;
-    padding: 0.75rem;
-}
-
-.guide-table th {
-    background-color: #1a1a1a;
-}
-
-/* Infobox Specific Styling (floated right) */
+/* ── Infobox ── */
 .guide-infobox {
     float: right;
     width: 300px;
-    margin: 0 0 1rem 2rem;
-    border: 1px solid #333;
-    background-color: #111;
-    border-radius: 8px;
+    margin: 0 0 1.5rem 2rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
     overflow: hidden;
+    box-shadow: var(--shadow-md);
 }
 
 .guide-infobox th {
-    background-color: #222;
-    color: #fff;
-    padding: 0.75rem;
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .guide-infobox td {
-    padding: 0.75rem;
-    border-bottom: 1px solid #222;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.88rem;
 }
 
-/* Clearfix for floated infobox */
 .guide-markdown-body::after {
     content: "";
     display: table;
     clear: both;
 }
 
-
-/* Admin Actions */
+/* ── Admin actions ── */
 .guide-admin-actions {
     margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #333;
-    text-align: right;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .guide-create-btn,
 .guide-edit-btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: #333;
-    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 4px;
-    transition: background 0.2s;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .guide-create-btn:hover,
 .guide-edit-btn:hover {
-    background-color: #4da6ff;
-    color: #000;
+    color: var(--accent);
+    border-color: rgba(249, 115, 22, 0.4);
+    background: var(--accent-dim);
 }
 
 .guide-loading,
 .guide-error {
     text-align: center;
     padding: 4rem;
-    font-size: 1.2rem;
-    color: #888;
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+    .guide-container {
+        padding: calc(var(--nav-height) + 20px) 1rem 2rem;
+    }
+
+    .guide-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .guide-infobox {
+        float: none;
+        width: 100%;
+        margin: 0 0 1.5rem 0;
+    }
 }
