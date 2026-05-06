@@ -1,234 +1,126 @@
 /* ============================================================
-   PROMISE PAGE — 4-layer parallax, corrected depth
+   PROMISE PAGE — Penrose-512 Terminal, CRT style
+   No SVG, pure CSS animations
    ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 .page {
     position: fixed;
     inset: 0;
+    background: #000;
     overflow: hidden;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'VT323', 'Courier New', Courier, monospace;
     z-index: 10000;
     cursor: crosshair;
-}
-
-/* ================================================================
-   LAYER 1 — Red background  z-index: 1  (slowest)
-   ================================================================ */
-.layerBg {
-    position: absolute;
-    inset: -6%;
-    z-index: 1;
-    background: #e60000;
-    will-change: transform;
-    transition: transform 0.16s ease-out;
-}
-
-.layerBg::before,
-.layerBg::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    height: 9vh;
-    background: #000;
-    z-index: 2;
-}
-.layerBg::before { top: 0; }
-.layerBg::after  { bottom: 0; }
-
-.bgNoise {
-    position: absolute;
-    inset: 0;
-    opacity: 0.055;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-    animation: noiseShift 0.1s steps(1) infinite;
-    pointer-events: none;
-}
-
-@keyframes noiseShift {
-    0%   { background-position: 0 0; }
-    25%  { background-position: -12px 6px; }
-    50%  { background-position: 6px -9px; }
-    75%  { background-position: -6px 12px; }
-    100% { background-position: 9px -4px; }
-}
-
-/* ================================================================
-   LAYER 2 — Symbol (bioresonance hexagon)  z-index: 2
-   ================================================================ */
-.layerSymbol {
-    position: absolute;
-    inset: -6%;
-    z-index: 2;
     display: flex;
-    align-items: center;
-    /* Shift symbol slightly left so it aligns with gate opening */
-    justify-content: flex-start;
-    padding-left: 22%;
-    will-change: transform;
-    transition: transform 0.12s ease-out;
-    pointer-events: none;
+    flex-direction: column;
 }
 
-.symbolSvg {
-    width: 22vw;
-    max-width: 260px;
-    min-width: 140px;
-    height: auto;
-    animation: symbolSpin 80s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.18));
-}
-
-@keyframes symbolSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-/* ================================================================
-   LAYER 3 — Gate (П-shape, left of center)  z-index: 3
-   ================================================================ */
-.layerGate {
-    position: absolute;
-    inset: -6%;
-    z-index: 3;
-    will-change: transform;
-    transition: transform 0.09s ease-out;
-    pointer-events: none;
-}
-
-.gateSvg {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 112%;
-    height: 112%;
-}
-
-/* ================================================================
-   LAYER 4 — Foreground blocks (fastest parallax)  z-index: 4
-   ================================================================ */
-.layerFg {
-    position: absolute;
-    inset: -6%;
-    z-index: 4;
-    will-change: transform;
-    transition: transform 0.06s ease-out;
-    pointer-events: none;
-}
-
-.fgSvg {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 112%;
-    height: 112%;
-}
-
-/* ================================================================
-   Post-processing
-   ================================================================ */
+/* ---- CRT scanlines ---- */
 .scanlines {
     position: absolute;
     inset: 0;
-    z-index: 10;
+    z-index: 50;
     pointer-events: none;
     background: repeating-linear-gradient(
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.15) 2px,
-        rgba(0, 0, 0, 0.15) 4px
+        rgba(0, 0, 0, 0.25) 2px,
+        rgba(0, 0, 0, 0.25) 4px
     );
 }
 
+/* ---- CRT vignette ---- */
 .vignette {
     position: absolute;
     inset: 0;
-    z-index: 11;
+    z-index: 51;
     pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.6) 100%);
+    background: radial-gradient(
+        ellipse at center,
+        transparent 55%,
+        rgba(0, 0, 0, 0.75) 100%
+    );
 }
 
-.glitchFlash {
+/* ---- Red flash overlay (glitch phase) ---- */
+.redFlash {
     position: absolute;
     inset: 0;
-    z-index: 12;
+    z-index: 52;
     pointer-events: none;
-    animation: glitchFlash 11s ease-in-out infinite;
+    background: #cc0000;
+    opacity: 0;
+    animation: redFlashAnim 0.4s steps(1) infinite;
+    /* activated via .glitching class on .page */
 }
 
-@keyframes glitchFlash {
-    0%, 93%, 100% { opacity: 0; transform: none; }
-    94% { opacity: 1; transform: translateX(4px); background: rgba(255,0,0,0.05); }
-    95% { opacity: 0; transform: translateX(-3px); }
-    96% { opacity: 1; transform: translateX(2px); background: rgba(0,200,255,0.03); }
-    97% { opacity: 0; }
+.glitching .redFlash {
+    animation: redFlashAnim 0.35s steps(1) infinite;
+}
+
+@keyframes redFlashAnim {
+    0%   { opacity: 0; }
+    15%  { opacity: 0.18; }
+    30%  { opacity: 0; }
+    60%  { opacity: 0.08; }
+    100% { opacity: 0; }
 }
 
 /* ================================================================
-   LAYER 5 — UI (no parallax)  z-index: 100
+   LOG SECTION — top-left terminal output
    ================================================================ */
-.layerUi {
-    position: absolute;
-    inset: 0;
-    z-index: 100;
-    pointer-events: none;
+.logSection {
+    position: relative;
+    z-index: 10;
+    padding: 6vh 5vw 0;
+    flex: 1;
 }
 
-/* SIGNALIS — top right, well above gate */
-.signalisTitle {
-    position: absolute;
-    right: 8%;
-    top: 22%;
-    font-size: clamp(1.4rem, 3vw, 2.6rem);
-    color: #fff;
-    letter-spacing: 1.1rem;
-    text-transform: uppercase;
-    text-shadow: 0 0 28px rgba(255, 255, 255, 0.22);
-    animation: fadeSlideIn 2s ease-out 0.5s both;
-    pointer-events: none;
-    white-space: nowrap;
+.logLine {
+    display: block;
+    font-size: clamp(14px, 2vw, 20px);
+    color: #cc3300;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    white-space: pre;
+    overflow: hidden;
+    width: 0;
+    /* Each line animates its width from 0 to full — typing effect */
+    animation: typeLine 0.6s steps(40, end) forwards;
 }
 
-/* Lore text — below SIGNALIS */
-.loreText {
-    position: absolute;
-    right: 8%;
-    top: 42%;
-    font-size: clamp(0.65rem, 1vw, 0.85rem);
-    color: rgba(255, 255, 255, 0.65);
-    line-height: 2;
-    letter-spacing: 0.06em;
-    text-align: right;
-    max-width: 340px;
-    animation: fadeSlideIn 2s ease-out 2s both;
-    pointer-events: none;
+/* Delay classes — set per-line via inline style */
+.logLine.error {
+    color: #ff2200;
+    font-weight: bold;
 }
 
-@keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+.logLine.critical {
+    color: #ff0000;
+    animation: typeLine 0.6s steps(40, end) forwards,
+               criticalBlink 0.5s step-end 3;
 }
 
-/* REMEMBER OUR PROMISE — bottom center, above button */
-.promiseText {
-    position: absolute;
-    bottom: calc(10% + 58px);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(0.6rem, 1.2vw, 0.9rem);
-    color: rgba(255, 255, 255, 0.55);
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    text-align: center;
-    min-height: 1.4em;
-    pointer-events: none;
+@keyframes typeLine {
+    from { width: 0; }
+    to   { width: 100%; }
 }
 
-.titleCursor {
+@keyframes criticalBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* Blinking cursor after last line */
+.cursor {
     display: inline-block;
-    color: #fff;
+    width: 10px;
+    height: 1.1em;
+    background: #cc3300;
+    vertical-align: text-bottom;
     animation: cursorBlink 0.8s step-end infinite;
     margin-left: 2px;
 }
@@ -238,30 +130,106 @@
     50%       { opacity: 0; }
 }
 
-/* Wake button — bottom center */
-.wakeBtn {
+/* ================================================================
+   GLITCH CHAOS — floating ACHTUNG / FEHLER blocks
+   ================================================================ */
+.chaosBlock {
     position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
+    font-family: 'VT323', 'Courier New', monospace;
+    font-size: clamp(12px, 2vw, 18px);
+    color: #ff0000;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    animation: chaosAppear 0.3s ease-out forwards;
+}
+
+@keyframes chaosAppear {
+    from { opacity: 0; transform: translateY(-4px) scaleX(1.05); }
+    to   { opacity: 1; transform: translateY(0) scaleX(1); }
+}
+
+/* ================================================================
+   CENTRAL GLITCH TEXT — REMEMBER OUR PROMISE
+   ================================================================ */
+.centerSection {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    pointer-events: none;
+}
+
+.promiseGlitch {
+    font-size: clamp(22px, 4.5vw, 52px);
+    color: #fff;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    animation: promiseReveal 0.5s ease-out forwards;
+    /* Chromatic aberration via text-shadow */
+    text-shadow:
+        2px 0 0 rgba(255, 0, 0, 0.7),
+        -2px 0 0 rgba(0, 200, 255, 0.5);
+}
+
+.promiseGlitch.glitching {
+    animation: promiseReveal 0.5s ease-out forwards,
+               promiseGlitchAnim 0.15s steps(1) infinite;
+}
+
+.promiseGlitch.calm {
+    animation: none;
+    opacity: 1;
+    text-shadow: none;
+}
+
+@keyframes promiseReveal {
+    from { opacity: 0; transform: scaleX(1.04); }
+    to   { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes promiseGlitchAnim {
+    0%   { text-shadow: 3px 0 0 rgba(255,0,0,0.8), -3px 0 0 rgba(0,200,255,0.6); transform: translateX(0); }
+    25%  { text-shadow: -4px 0 0 rgba(255,0,0,0.9), 4px 0 0 rgba(0,200,255,0.7); transform: translateX(2px); }
+    50%  { text-shadow: 2px 0 0 rgba(255,0,0,0.5), -2px 0 0 rgba(0,200,255,0.4); transform: translateX(-1px); }
+    75%  { text-shadow: -3px 0 0 rgba(255,0,0,0.7), 3px 0 0 rgba(0,200,255,0.5); transform: translateX(1px); }
+    100% { text-shadow: 3px 0 0 rgba(255,0,0,0.8), -3px 0 0 rgba(0,200,255,0.6); transform: translateX(0); }
+}
+
+/* ================================================================
+   WAKE BUTTON — final state
+   ================================================================ */
+.wakeBtn {
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.55);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: clamp(0.75rem, 1.3vw, 1.1rem);
-    padding: 11px 38px;
+    font-family: 'VT323', 'Courier New', monospace;
+    font-size: clamp(16px, 2.2vw, 26px);
+    padding: 10px 40px;
     cursor: pointer;
-    letter-spacing: 0.2rem;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     transition: all 0.3s;
     pointer-events: all;
-    animation: fadeSlideIn 2s ease-out 4.5s both;
-    white-space: nowrap;
+    opacity: 0;
+    animation: fadeIn 1.5s ease-out forwards;
 }
 
 .wakeBtn:hover {
     border-color: rgba(255, 255, 255, 0.65);
     color: #fff;
-    box-shadow: 0 0 22px rgba(255, 255, 255, 0.12);
-    letter-spacing: 0.28rem;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.3em;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
