@@ -103,6 +103,40 @@
     50%       { box-shadow: 0 0 16px rgba(255, 0, 0, 0.6); }
 }
 
+/* ---- Reset button ---- */
+.btnReset {
+    background: none;
+    border: none;
+    color: rgba(255, 0, 0, 0.0);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9px;
+    cursor: pointer;
+    padding: 0 0 0 4px;
+    line-height: 1;
+    transition: color 0.2s;
+    position: relative;
+    z-index: 2;
+    /* Hidden by default, shown on hover of parent */
+}
+
+.inventory:hover .btnReset {
+    color: rgba(255, 0, 0, 0.3);
+}
+
+.btnReset:hover {
+    color: rgba(255, 0, 0, 0.8) !important;
+}
+
+.btnResetConfirm {
+    color: #ff0000 !important;
+    animation: resetBlink 0.5s step-end infinite;
+}
+
+@keyframes resetBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
 /* Mobile */
 @media (max-width: 600px) {
     .label { display: none; }

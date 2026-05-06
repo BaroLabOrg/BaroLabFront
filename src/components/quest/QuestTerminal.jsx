@@ -7,13 +7,15 @@ const CORRECT_PROTOCOL = '512';
 const CORRECT_FREQ = '240.0';
 
 export default function QuestTerminal() {
-    const { terminalOpen, closeTerminal } = useQuest();
+    const { terminalOpen, closeTerminal, resetQuest } = useQuest();
     const navigate = useNavigate();
 
     const [protocol, setProtocol] = useState('');
     const [freq, setFreq] = useState('');
     const [status, setStatus] = useState(null); // null | 'error' | 'success'
     const [submitting, setSubmitting] = useState(false);
+    const [showHint, setShowHint] = useState(false);
+    const [confirmReset, setConfirmReset] = useState(false);
 
     // Reset fields when opened
     useEffect(() => {
@@ -22,15 +24,25 @@ export default function QuestTerminal() {
             setFreq('');
             setStatus(null);
             setSubmitting(false);
+            setShowHint(false);
+            setConfirmReset(false);
         }
     }, [terminalOpen]);
 
     // Close on Escape
     useEffect(() => {
-        const handler = (e) => { if (e.key === 'Escape' && !submitting) closeTerminal(); };
+        const handler = (e) => {
+            if (e.key === 'Escape' && !submitting) {
+                if (confirmReset) {
+                    setConfirmReset(false);
+                } else {
+                    closeTerminal();
+                }
+            }
+        };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [closeTerminal, submitting]);
+    }, [closeTerminal, submitting, confirmReset]);
 
     if (!terminalOpen) return null;
 
@@ -47,9 +59,17 @@ export default function QuestTerminal() {
             }, 2200);
         } else {
             setStatus('error');
-            // Clear error after a moment
             setTimeout(() => setStatus(null), 2500);
         }
+    };
+
+    const handleReset = () => {
+        if (!confirmReset) {
+            setConfirmReset(true);
+            return;
+        }
+        resetQuest();
+        closeTerminal();
     };
 
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -153,12 +173,51 @@ export default function QuestTerminal() {
                             </button>
                         )}
                     </form>
+
+                    {/* Hint toggle */}
+                    {!submitting && (
+                        <div className={styles.hintSection}>
+                            <button
+                                className={styles.btnHint}
+                                onClick={() => setShowHint((v) => !v)}
+                                aria-expanded={showHint}
+                            >
+                                {showHint ? '[ СКРЫТЬ ПОДСКАЗКУ ]' : '[ ЗАБЫЛ КОД? ]'}
+                            </button>
+                            {showHint && (
+                                <div className={styles.hintBox} role="note">
+                                    <span className={styles.hintLine}>
+                                        {'>'} Коды записаны на оборотной стороне предметов.
+                                    </span>
+                                    <span className={styles.hintLine}>
+                                        {'>'} Осмотри предметы в инвентаре — нажми на слот ◈
+                                    </span>
+                                    <span className={styles.hintLine}>
+                                        {'>'} Переверни предмет и прочитай данные.
+                                    </span>
+                                    <span className={`${styles.hintLine} ${styles.hintSpoiler}`}>
+                                        {'>'} PROTOKOLL: <span className={styles.spoilerText}>512</span>
+                                        {'  '}FREQUENZ: <span className={styles.spoilerText}>240.0</span>
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                {/* Status bar */}
+                {/* Status bar with reset button */}
                 <div className={styles.statusBar}>
                     <span>DEEP SYSTEMS // SYNC MODULE</span>
                     <span>{now}</span>
+                    {!submitting && (
+                        <button
+                            className={`${styles.btnReset} ${confirmReset ? styles.btnResetConfirm : ''}`}
+                            onClick={handleReset}
+                            title="Сбросить прогресс квеста"
+                        >
+                            {confirmReset ? '[ПОДТВЕРДИТЬ СБРОС]' : '[СБРОС]'}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
