@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CONTENT_TYPES, ITEM_CATEGORIES, listVanillaContent, getVanillaContentByIdentifier } from '../api/vanillaData.js';
+import { API_BASE } from '../api/api.js';
 import Pagination from '../components/Pagination';
 import './VanillaDataPage.css';
+
+function iconUrl(key) {
+    if (!key) return null;
+    return `${API_BASE}api/v1/assets/icon?key=${encodeURIComponent(key)}`;
+}
 
 const PAGE_SIZE = 20;
 
@@ -49,7 +55,7 @@ function DetailModal({ item, onClose }) {
                         {item.icon_s3_key && (
                             <img
                                 className="vd-modal-icon"
-                                src={item.icon_s3_key}
+                                src={iconUrl(item.icon_s3_key)}
                                 alt={item.display_name || item.identifier}
                                 onError={e => { e.currentTarget.style.display = 'none'; }}
                             />
