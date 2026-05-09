@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CONTENT_TYPES, ITEM_CATEGORIES, listVanillaContent, getVanillaContentByIdentifier } from '../api/vanillaData.js';
 import { API_BASE } from '../api/api.js';
@@ -82,6 +82,12 @@ function DetailModal({ item, onClose }) {
                             <div className="vd-meta-row">
                                 <span className="vd-meta-label">Variant of</span>
                                 <span className="vd-meta-value vd-mono">{item.variant_of}</span>
+                            </div>
+                        )}
+                        {item.content_type && (
+                            <div className="vd-meta-row">
+                                <span className="vd-meta-label">Content type</span>
+                                <span className="vd-meta-value vd-mono">{item.content_type}</span>
                             </div>
                         )}
                         <div className="vd-meta-row">
@@ -227,11 +233,6 @@ function ContentTab({ typePath }) {
                         ))}
                     </div>
                 )}
-                <p className="vd-toolbar-hint">
-                    {total > 0
-                        ? <><strong className="vd-hint-count">{total}</strong> records · <span className="vd-hint-action">↗ click a row to inspect payload</span></>
-                        : 'No records ingested yet for this type'}
-                </p>
             </div>
 
             {error && <div className="auth-error vd-error">{error}</div>}
@@ -295,6 +296,29 @@ export default function VanillaDataPage() {
         setSearchParams({ type: key });
     };
 
+    const tabsRef = useRef(null);
+    const isDragging = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
+
+    const handleMouseDown = (e) => {
+        isDragging.current = true;
+        startX.current = e.pageX - tabsRef.current.offsetLeft;
+        scrollLeft.current = tabsRef.current.scrollLeft;
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging.current) return;
+        e.preventDefault();
+        const x = e.pageX - tabsRef.current.offsetLeft;
+        const walk = (x - startX.current) * 1.5;
+        tabsRef.current.scrollLeft = scrollLeft.current - walk;
+    };
+
+    const handleMouseUp = () => {
+        isDragging.current = false;
+    };
+
     return (
         <div className="page">
             <div className="container">
@@ -305,7 +329,14 @@ export default function VanillaDataPage() {
                     </p>
                 </div>
 
-                <div className="vd-tabs-wrap">
+                <div
+                    className="vd-tabs-wrap"
+                    ref={tabsRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                >
                     <div className="vd-tabs">
                         {CONTENT_TYPES.map(t => (
                             <button

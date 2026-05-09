@@ -5,13 +5,35 @@
 /* ── Tabs ─────────────────────────────────────────────────────────────────── */
 .vd-tabs-wrap {
   overflow-x: auto;
-  scrollbar-width: none;
   margin-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hover) transparent;
+}
+
+.vd-tabs-wrap:active {
+  cursor: grabbing;
 }
 
 .vd-tabs-wrap::-webkit-scrollbar {
-  display: none;
+  height: 3px;
+}
+
+.vd-tabs-wrap::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0 4px;
+}
+
+.vd-tabs-wrap::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.vd-tabs-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .vd-tabs {
@@ -101,25 +123,6 @@
   color: var(--bg-primary);
   background: var(--accent);
   border-color: var(--accent);
-}
-
-.vd-toolbar-hint {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.vd-hint-count {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.vd-hint-action {
-  color: var(--text-secondary);
-}
-
-.vd-error {
-  margin-bottom: 12px;
 }
 
 /* ── Empty / no data ──────────────────────────────────────────────────────── */
