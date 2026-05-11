@@ -9,6 +9,11 @@
     align-items: start;
 }
 
+.mod-page-main {
+    min-width: 0;
+    overflow: hidden;
+}
+
 /* ─── Media Block ─── */
 .mod-media-block {
     margin-bottom: 20px;
