@@ -168,6 +168,19 @@
     font-size: 12px;
 }
 
+/* WIP items — non-interactive, dimmed */
+.footer-wip {
+    color: var(--text-muted);
+    opacity: 0.55;
+    cursor: default;
+    pointer-events: none;
+}
+
+.footer-wip .footer-ext-icon {
+    opacity: 0.5;
+    filter: grayscale(0.6);
+}
+
 .footer-ext-icon {
     font-size: 13px;
     opacity: 0.8;

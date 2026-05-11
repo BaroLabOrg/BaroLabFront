@@ -61,27 +61,22 @@ BaroLab reserves the right to update these terms at any time.`,
 False DMCA claims may result in account termination.`,
     },
     'Contact Admin': {
-        title: 'Contact Admin',
-        content: `Need to reach the BaroLab administration?
+        title: 'Contact Admin [WIP]',
+        content: `This feature is currently under development.
 
-• For urgent issues: use the Official Email.
-• For ban appeals: include your username and reason.
-• For bug reports: describe the issue with steps to reproduce.
-• Response time: 1–3 business days.
+• Contact options will be available soon.
+• Check back later for updates.
 
-Please be respectful — our admins are volunteers.`,
+Thank you for your patience.`,
     },
     'Official Email': {
-        title: 'Official Email',
-        content: `Official contact email:
+        title: 'Official Email [WIP]',
+        content: `Official contact email is not yet available.
 
-admin@barolab.i-lab.ink
+• This feature is currently under development.
+• Check back later for updates.
 
-Use this address for:
-• DMCA takedown requests
-• Account issues
-• Partnership inquiries
-• Security vulnerability reports`,
+Thank you for your patience.`,
     },
     'Support': {
         title: 'Support the Station [WIP]',
@@ -180,14 +175,9 @@ export default function Footer({ totalMods }) {
 
                 <div className="footer-col">
                     <h4 className="footer-col-title">External Comms</h4>
-                    <a
-                        className="footer-link footer-link-ext"
-                        href="https://discord.gg/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <span className="footer-ext-icon">💬</span> Discord
-                    </a>
+                    <span className="footer-link footer-link-ext footer-wip">
+                        <span className="footer-ext-icon">💬</span> Discord [WIP]
+                    </span>
                     <a
                         className="footer-link footer-link-ext"
                         href="https://github.com/Joperusik/BaroLab"
@@ -196,12 +186,12 @@ export default function Footer({ totalMods }) {
                     >
                         <span className="footer-ext-icon">🐙</span> GitHub
                     </a>
-                    <button className="footer-link footer-link-ext" onClick={() => openBox('Contact Admin')}>
-                        › Contact Admin
-                    </button>
-                    <button className="footer-link footer-link-ext" onClick={() => openBox('Official Email')}>
-                        <span className="footer-ext-icon">✉</span> Official Email
-                    </button>
+                    <span className="footer-link footer-link-ext footer-wip">
+                        › Contact Admin [WIP]
+                    </span>
+                    <span className="footer-link footer-link-ext footer-wip">
+                        <span className="footer-ext-icon">✉</span> Official Email [WIP]
+                    </span>
                 </div>
             </div>
 
