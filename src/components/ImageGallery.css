@@ -6,6 +6,8 @@
 
 .image-gallery-preview {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 400px;
   border-radius: var(--radius-md);
   overflow: hidden;
