@@ -16,9 +16,9 @@ export async function getTagById(tagId) {
     return request(`/api/tags/${tagId}`);
 }
 
-export async function createTag(name) {
+export async function createTag(name, category = 'INFO') {
     return request('/api/tags', {
         method: 'POST',
-        body: { name },
+        body: { name, category },
     });
 }
