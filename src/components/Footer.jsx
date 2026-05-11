@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuest } from '../context/QuestContext';
+import BaroLabIcon from './BaroLabIcon';
 import './Footer.css';
 import footerQuestStyles from './quest/FooterQuest.module.css';
 
@@ -233,7 +234,7 @@ export default function Footer({ totalMods }) {
 
             <div className="footer-bottom">
                 <div className="footer-bottom-inner container">
-                    <span className="footer-logo">◉ BAROLAB</span>
+                    <span className="footer-logo"><BaroLabIcon className="footer-logo-icon" width={14} height={19} /> BAROLAB</span>
                     <div className="footer-ticker-wrap">
                         <span className="footer-ticker">
                             BUILD: v1.0.4 &nbsp;·&nbsp; ACTIVE CREW: 142 &nbsp;·&nbsp; JOVIAN RADS: NOMINAL &nbsp;·&nbsp;

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import QuestInventory from './quest/QuestInventory';
+import BaroLabIcon from './BaroLabIcon';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -20,7 +21,7 @@ export default function Navbar() {
 
             <div className="navbar-inner container">
                 <NavLink to="/" className="navbar-logo">
-                    <span className="logo-icon">◉</span>
+                    <BaroLabIcon className="logo-icon-svg" width={20} height={27} />
                     <span className="logo-text">BaroLab</span>
                 </NavLink>
 

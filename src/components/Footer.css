@@ -259,6 +259,18 @@
     white-space: nowrap;
     flex-shrink: 0;
     text-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-logo-icon {
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.footer-logo-icon svg {
+    display: block;
 }
 
 .footer-ticker-wrap {

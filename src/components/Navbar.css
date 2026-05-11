@@ -54,15 +54,18 @@
   color: var(--accent);
 }
 
-.logo-icon {
-  font-size: 1.1rem;
-  opacity: 0.9;
+.logo-icon-svg {
   display: inline-block;
+  flex-shrink: 0;
   filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.5));
   transition: filter var(--transition-base);
 }
 
-.navbar-logo:hover .logo-icon {
+.logo-icon-svg svg {
+  display: block;
+}
+
+.navbar-logo:hover .logo-icon-svg {
   filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.8));
 }
 
