@@ -180,7 +180,7 @@ export default function Footer({ totalMods }) {
                     </span>
                     <a
                         className="footer-link footer-link-ext"
-                        href="https://github.com/Joperusik/BaroLab"
+                        href="https://github.com/BaroLabOrg"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
