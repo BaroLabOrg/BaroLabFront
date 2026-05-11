@@ -1,10 +1,23 @@
 import './TagChips.css';
 
+const CATEGORY_VARIANTS = {
+    SECURITY: 'security',
+    LIFE: 'life',
+    ENGINEERING: 'engineering',
+    META: 'meta',
+    INFO: 'info',
+};
+
 export default function TagChips({ tags = [], onRemove, showRemoveButton = false }) {
     const resolveVariant = (rawTag) => {
+        // If backend category is present, use it directly
+        if (rawTag?.category && CATEGORY_VARIANTS[rawTag.category]) {
+            return CATEGORY_VARIANTS[rawTag.category];
+        }
+
+        // Fallback: try to infer from legacy fields
         const source = String(
             rawTag?.variant
-            || rawTag?.category
             || rawTag?.type
             || rawTag?.status
             || rawTag?.severity
@@ -35,6 +48,7 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
                     key: `${tag}-${index}`,
                     label: tag,
                     variant: 'default',
+                    isVanilla: false,
                 };
             }
 
@@ -46,6 +60,7 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
                 id: tag?.id,
                 label,
                 variant: resolveVariant(tag),
+                isVanilla: tag?.isVanilla || tag?.is_vanilla || false,
             };
         })
         .filter(Boolean);
@@ -57,7 +72,12 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
     return (
         <div className="tag-chips">
             {normalizedTags.map((tag) => (
-                <span key={tag.key} className="tag-chip" data-variant={tag.variant}>
+                <span
+                    key={tag.key}
+                    className={`tag-chip ${tag.isVanilla ? 'tag-chip--vanilla' : ''}`}
+                    data-variant={tag.variant}
+                >
+                    {tag.isVanilla && <span className="tag-chip-vanilla-mark">Ⓥ </span>}
                     {tag.label}
                     {showRemoveButton && onRemove && (
                         <button
@@ -77,4 +97,3 @@ export default function TagChips({ tags = [], onRemove, showRemoveButton = false
         </div>
     );
 }
-

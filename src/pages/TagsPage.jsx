@@ -10,6 +10,14 @@ const SORT_BY_VALUES = ['name', 'createdAt', 'created_at'];
 const DIRECTION_VALUES = ['asc', 'desc'];
 const PAGE_SIZE_VALUES = [10, 20, 50, 100];
 
+const TAG_CATEGORIES = [
+    { value: 'SECURITY', label: '🔴 Security / Combat', color: '#e74c3c' },
+    { value: 'LIFE', label: '🟢 Life / Medical', color: '#2ecc71' },
+    { value: 'ENGINEERING', label: '🔵 Engineering / Tech', color: '#3498db' },
+    { value: 'META', label: '🟠 Meta / System', color: '#e67e22' },
+    { value: 'INFO', label: '⚪ Info / Specs', color: '#95a5a6' },
+];
+
 function normalizeSortBy(value) {
     return SORT_BY_VALUES.includes(value) ? value : 'name';
 }
@@ -43,6 +51,16 @@ function formatTagDate(tag) {
     });
 }
 
+function getCategoryLabel(categoryValue) {
+    const cat = TAG_CATEGORIES.find(c => c.value === categoryValue);
+    return cat ? cat.label : categoryValue;
+}
+
+function getCategoryColor(categoryValue) {
+    const cat = TAG_CATEGORIES.find(c => c.value === categoryValue);
+    return cat ? cat.color : '#95a5a6';
+}
+
 export default function TagsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const sortBy = normalizeSortBy(searchParams.get('sortBy'));
@@ -59,6 +77,7 @@ export default function TagsPage() {
     const [loadingError, setLoadingError] = useState('');
 
     const [newTagName, setNewTagName] = useState('');
+    const [newTagCategory, setNewTagCategory] = useState('INFO');
     const [submitting, setSubmitting] = useState(false);
     const [fieldError, setFieldError] = useState('');
     const [formError, setFormError] = useState('');
@@ -146,8 +165,9 @@ export default function TagsPage() {
 
         setSubmitting(true);
         try {
-            await createTag(trimmedName);
+            await createTag(trimmedName, newTagCategory);
             setNewTagName('');
+            setNewTagCategory('INFO');
             if (page === 0) {
                 await loadTags(sortBy, direction, 0, size);
             } else {
@@ -222,6 +242,18 @@ export default function TagsPage() {
                                 onChange={(event) => setNewTagName(event.target.value)}
                                 disabled={submitting}
                             />
+                            <select
+                                value={newTagCategory}
+                                onChange={(event) => setNewTagCategory(event.target.value)}
+                                disabled={submitting}
+                                className="tags-category-select"
+                            >
+                                {TAG_CATEGORIES.map((cat) => (
+                                    <option key={cat.value} value={cat.value}>
+                                        {cat.label}
+                                    </option>
+                                ))}
+                            </select>
                             <button className="btn btn-primary" type="submit" disabled={submitting}>
                                 {submitting ? 'Creating...' : 'Create'}
                             </button>
@@ -246,11 +278,26 @@ export default function TagsPage() {
                     <section className="tags-grid">
                         {tags.map((tag) => {
                             const usageCount = tag.usageCount ?? tag.usage_count;
+                            const category = tag.category ?? tag.category;
+                            const isVanilla = tag.isVanilla ?? tag.is_vanilla ?? false;
 
                             return (
                                 <article key={tag.id || tag.slug} className="tag-item-card glass-card">
-                                    <h3>{tag.name}</h3>
+                                    <div className="tag-item-header">
+                                        <h3>{tag.name}</h3>
+                                        {category && (
+                                            <span
+                                                className="tag-category-badge"
+                                                style={{ color: getCategoryColor(category) }}
+                                            >
+                                                {getCategoryLabel(category)}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="tag-slug">slug: {tag.slug}</p>
+                                    {isVanilla && (
+                                        <p className="tag-vanilla-badge">Ⓥ Vanilla</p>
+                                    )}
                                     {usageCount !== null && usageCount !== undefined && (
                                         <p className="tag-usage">Usage count: {usageCount}</p>
                                     )}
@@ -275,5 +322,3 @@ export default function TagsPage() {
         </div>
     );
 }
-
-

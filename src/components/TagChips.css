@@ -57,7 +57,70 @@
   color: var(--accent-red);
 }
 
-/* Variants */
+/* ── Category Colors (hardcoded by category from backend) ── */
+
+/* SECURITY — 🔴 Red (weapon, combat, creature, defense) */
+.tag-chip[data-variant="security"] {
+  background: rgba(231, 76, 60, 0.12);
+  color: #e74c3c;
+  border-color: rgba(231, 76, 60, 0.35);
+}
+.tag-chip[data-variant="security"]:hover {
+  background: rgba(231, 76, 60, 0.2);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* LIFE — 🟢 Green (medical, oxygen, crew, support, food) */
+.tag-chip[data-variant="life"] {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+  border-color: rgba(46, 204, 113, 0.35);
+}
+.tag-chip[data-variant="life"]:hover {
+  background: rgba(46, 204, 113, 0.2);
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
+}
+
+/* ENGINEERING — 🔵 Blue (wire, item, tool, machine, reactor) */
+.tag-chip[data-variant="engineering"] {
+  background: rgba(52, 152, 219, 0.12);
+  color: #3498db;
+  border-color: rgba(52, 152, 219, 0.35);
+}
+.tag-chip[data-variant="engineering"]:hover {
+  background: rgba(52, 152, 219, 0.2);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+/* META — 🟠 Orange (vanilla, overhaul, lua, hardcore, modded) */
+.tag-chip[data-variant="meta"] {
+  background: rgba(230, 126, 34, 0.12);
+  color: #e67e22;
+  border-color: rgba(230, 126, 34, 0.35);
+}
+.tag-chip[data-variant="meta"]:hover {
+  background: rgba(230, 126, 34, 0.2);
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.2);
+}
+
+/* INFO — ⚪ Gray (tier, hull, spec, default, misc) */
+.tag-chip[data-variant="info"] {
+  background: rgba(149, 165, 166, 0.12);
+  color: #95a5a6;
+  border-color: rgba(149, 165, 166, 0.35);
+}
+.tag-chip[data-variant="info"]:hover {
+  background: rgba(149, 165, 166, 0.2);
+  box-shadow: 0 2px 8px rgba(149, 165, 166, 0.2);
+}
+
+/* Vanilla badge */
+.tag-chip--vanilla .tag-chip-vanilla-mark {
+  opacity: 0.7;
+  font-size: 9px;
+}
+
+/* Legacy variants (kept for backward compatibility) */
 .tag-chip--danger {
   background: var(--tag-danger-bg);
   color: var(--tag-danger-color);
