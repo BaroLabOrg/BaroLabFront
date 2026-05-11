@@ -78,6 +78,17 @@ Thank you for your patience.`,
 
 Thank you for your patience.`,
     },
+    'Discord': {
+        title: 'Discord Contacts',
+        content: `BaroLab Discord contacts:
+
+• Personal contact: joperusik (one of the developers)
+
+• BaroLab Server [WIP]
+  Official server coming soon.
+
+Feel free to reach out for questions, bug reports, or just to chat about Barotrauma modding.`,
+    },
     'Support': {
         title: 'Support the Station [WIP]',
         content: `Support options are coming soon.
@@ -175,15 +186,9 @@ export default function Footer({ totalMods }) {
 
                 <div className="footer-col">
                     <h4 className="footer-col-title">External Comms</h4>
-                    <a
-                        className="footer-link footer-link-ext"
-                        href="https://discord.com/users/joperusik"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Contact: joperusik"
-                    >
-                        <span className="footer-ext-icon">💬</span> Discord: joperusik
-                    </a>
+                    <button className="footer-link footer-link-ext" onClick={() => openBox('Discord')}>
+                        <span className="footer-ext-icon">💬</span> Discord
+                    </button>
                     <a
                         className="footer-link footer-link-ext"
                         href="https://github.com/BaroLabOrg"
