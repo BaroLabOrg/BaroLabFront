@@ -175,9 +175,15 @@ export default function Footer({ totalMods }) {
 
                 <div className="footer-col">
                     <h4 className="footer-col-title">External Comms</h4>
-                    <span className="footer-link footer-link-ext footer-wip">
-                        <span className="footer-ext-icon">💬</span> Discord [WIP]
-                    </span>
+                    <a
+                        className="footer-link footer-link-ext"
+                        href="https://discord.com/users/joperusik"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Contact: joperusik"
+                    >
+                        <span className="footer-ext-icon">💬</span> Discord: joperusik
+                    </a>
                     <a
                         className="footer-link footer-link-ext"
                         href="https://github.com/BaroLabOrg"
