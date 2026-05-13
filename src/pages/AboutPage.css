@@ -1,0 +1,143 @@
+.about-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.about-main {
+    flex: 1;
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+}
+
+.about-terminal {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.about-terminal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border);
+}
+
+.about-terminal-prompt {
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.about-terminal-dots {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+}
+
+.about-terminal-body {
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.about-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.about-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+}
+
+.about-subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+}
+
+.about-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary, var(--text));
+    line-height: 1.7;
+    margin: 0;
+    opacity: 0.85;
+}
+
+.about-text--disclaimer {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+}
+
+.about-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.about-list li {
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.8;
+    line-height: 1.6;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.about-list li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+.about-list-label {
+    color: var(--text);
+    font-weight: 600;
+    opacity: 1;
+}
+
+.about-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.about-link {
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.about-link:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .about-terminal-body {
+        padding: 1.25rem 1rem;
+    }
+}

@@ -61,20 +61,20 @@ BaroLab reserves the right to update these terms at any time.`,
 False DMCA claims may result in account termination.`,
     },
     'Contact Admin': {
-        title: 'Contact Admin [WIP]',
-        content: `This feature is currently under development.
+        title: 'Contact Admin',
+        content: `Contact options are coming soon.
 
-• Contact options will be available soon.
-• Check back later for updates.
+• Direct contact will be available in a future update.
+• For urgent matters, reach out via Discord: joperusik
 
 Thank you for your patience.`,
     },
     'Official Email': {
-        title: 'Official Email [WIP]',
-        content: `Official contact email is not yet available.
+        title: 'Official Email',
+        content: `Official contact email is coming soon.
 
-• This feature is currently under development.
-• Check back later for updates.
+• This feature is currently in development.
+• For now, reach out via Discord: joperusik
 
 Thank you for your patience.`,
     },
@@ -167,7 +167,7 @@ export default function Footer({ totalMods }) {
                         › Content Protocols
                     </button>
                     <button className="footer-link footer-support" onClick={() => openBox('Support')}>
-                        › Support the Station [WIP]
+                        › Support the Station
                     </button>
                 </div>
 
@@ -197,22 +197,22 @@ export default function Footer({ totalMods }) {
                     >
                         <span className="footer-ext-icon">🐙</span> GitHub
                     </a>
-                    <span className="footer-link footer-link-ext footer-wip">
-                        › Contact Admin [WIP]
-                    </span>
-                    <span className="footer-link footer-link-ext footer-wip">
-                        <span className="footer-ext-icon">✉</span> Official Email [WIP]
-                    </span>
+                    <button className="footer-link footer-link-ext footer-wip" onClick={() => openBox('Contact Admin')}>
+                        › Contact Admin
+                    </button>
+                    <button className="footer-link footer-link-ext footer-wip" onClick={() => openBox('Official Email')}>
+                        <span className="footer-ext-icon">✉</span> Official Email
+                    </button>
                 </div>
             </div>
 
             <div className="footer-manifest container">
                 <div className="footer-manifest-left">
                     <span className="footer-manifest-title">Station Manifest</span>
-                    <span className="footer-manifest-line">back: @crew_member_1 [WIP]</span>
-                    <span className="footer-manifest-line">back: @crew_member_2 [WIP]</span>
-                    <span className="footer-manifest-line">front: @crew_member_3 [WIP]</span>
-                    <span className="footer-manifest-line">front: @crew_member_4 [WIP]</span>
+                    <span className="footer-manifest-line">back: [crew]</span>
+                    <span className="footer-manifest-line">back: [crew]</span>
+                    <span className="footer-manifest-line">front: [crew]</span>
+                    <span className="footer-manifest-line">front: [crew]</span>
                 </div>
                 <div className="footer-manifest-right">
                     <span

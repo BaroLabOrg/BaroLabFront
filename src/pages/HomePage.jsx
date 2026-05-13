@@ -91,6 +91,11 @@ export default function HomePage() {
 
     return (
         <div className="home-page">
+            {/* SEO: visually hidden heading for crawlers */}
+            <h1 className="visually-hidden">
+                BaroLab — Barotrauma Mods, Submarines and Guides. Discover Barotrauma mods, custom submarines, community guides, tags, load order information, vanilla game data and encyclopedia entries. Built for Barotrauma players, modders, submarine creators and server owners.
+            </h1>
+
             {/* Hero */}
             <div className="home-hero-wrap">
                 <HeroCarousel />

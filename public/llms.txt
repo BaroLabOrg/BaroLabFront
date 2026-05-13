@@ -1,0 +1,43 @@
+# BaroLab
+
+BaroLab is an independent Barotrauma community platform for discovering mods, submarines, guides, tags, load order information, vanilla game data and encyclopedia entries.
+
+BaroLab is built for Barotrauma players, modders, submarine creators and server owners.
+
+BaroLab is not affiliated with FakeFish, Undertow Games, Daedalic Entertainment, Steam or Valve.
+
+## Main sections
+
+- Home: https://barolab.i-lab.ink/
+- Mods: https://barolab.i-lab.ink/mods
+- Submarines: https://barolab.i-lab.ink/submarines
+- Guides: https://barolab.i-lab.ink/guides
+- Tags: https://barolab.i-lab.ink/tags
+- Load Order: https://barolab.i-lab.ink/load-order
+- Vanilla Data: https://barolab.i-lab.ink/vanilla
+- Encyclopedia: https://barolab.i-lab.ink/encyclopedia
+- About: https://barolab.i-lab.ink/about
+
+## Content types
+
+Mod pages contain Barotrauma mod names, authors, descriptions, tags, ratings, downloads and update dates.
+
+Submarine pages contain Barotrauma submarine names, classes, tiers, descriptions and technical characteristics.
+
+Guide pages contain Barotrauma community guides and reference materials.
+
+Encyclopedia pages contain Barotrauma game data entries for creatures, items and mechanics.
+
+Tags pages contain categorization tags used across Barotrauma mods and submarines.
+
+Load Order pages contain tools for managing Barotrauma mod load order and resolving conflicts.
+
+Vanilla Data pages contain reference data from the base Barotrauma game.
+
+## Crawling notes
+
+Public pages may be crawled. Login is only required for user actions such as posting, commenting, saving, editing or account settings.
+
+## Note on domain
+
+<!-- If BaroLab moves to a new domain, update all URLs in this file accordingly. -->
