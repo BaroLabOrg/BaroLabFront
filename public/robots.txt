@@ -17,4 +17,4 @@ User-agent: ClaudeBot
 Allow: /
 
 # Note: update Sitemap URL if the domain changes
-Sitemap: https://barolab.i-lab.ink/sitemap.xml
+Sitemap: https://barolab.org/sitemap.xml
