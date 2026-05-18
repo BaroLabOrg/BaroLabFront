@@ -757,7 +757,7 @@ export default function SubmarinesListPage() {
     });
 
     return (
-        <div className="page">
+        <div className="page page--submarines">
             <div className="container submarines-page">
                 <section className="submarines-header-box glass-card shine">
                     <h1 className="submarines-title">Submarines</h1>

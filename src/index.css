@@ -329,8 +329,75 @@ select option {
 /* ── Page layout ── */
 .page {
   flex: 1;
+  position: relative;
   padding: calc(var(--nav-height) + 32px) 0 48px;
-  background: var(--bg-primary);
+}
+
+/* ── Section color themes (matches homepage category cards) ── */
+.page--mods::before,
+.page--submarines::before,
+.page--guides::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page--mods::before {
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(249, 115, 22, 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(249, 115, 22, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 40%, rgba(249, 115, 22, 0.03) 0%, transparent 60%);
+}
+
+.page--submarines::before {
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(59, 130, 246, 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 60%);
+}
+
+.page--guides::before {
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(34, 197, 94, 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 40%, rgba(34, 197, 94, 0.03) 0%, transparent 60%);
+}
+
+.page--mods > .container,
+.page--submarines > .container,
+.page--guides > .container,
+.page--guides > main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Accent left border on section pages */
+.page--mods::after,
+.page--submarines::after,
+.page--guides::after {
+  content: '';
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  width: 3px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 0 3px 3px 0;
+}
+
+.page--mods::after {
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.6), transparent);
+}
+
+.page--submarines::after {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.6), transparent);
+}
+
+.page--guides::after {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.6), transparent);
 }
 
 .page-title {

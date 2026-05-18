@@ -87,8 +87,8 @@ export default function GuidesListPage() {
 
     if (loading) {
         return (
-            <div className="page fade-in">
-                <main className="container guides-page">
+        <div className="page page--guides fade-in">
+            <main className="container guides-page">
                     <div className="loading-state">
                         <div className="loading-spinner" />
                     </div>
@@ -99,7 +99,7 @@ export default function GuidesListPage() {
 
     if (error) {
         return (
-            <div className="page fade-in">
+            <div className="page page--guides fade-in">
                 <main className="container guides-page">
                     <div className="error-message">Error: {error}</div>
                 </main>
@@ -108,7 +108,7 @@ export default function GuidesListPage() {
     }
 
     return (
-        <div className="page fade-in">
+        <div className="page page--guides fade-in">
             <main className="container guides-page">
                 <div className="guides-header-box glass-card shine">
                     <h1 className="guides-title">📚 Guides Library</h1>

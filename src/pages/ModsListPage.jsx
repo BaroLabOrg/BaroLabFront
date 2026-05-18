@@ -294,7 +294,7 @@ export default function ModsListPage() {
     });
 
     return (
-        <div className="page">
+        <div className="page page--mods">
             <div className="container">
                 <div className="mods-header-box glass-card shine">
                     <h1 className="mods-title">🔧 Mods Library</h1>
