@@ -8,15 +8,15 @@ BaroLab is not affiliated with FakeFish, Undertow Games, Daedalic Entertainment,
 
 ## Main sections
 
-- Home: https://barolab.i-lab.ink/
-- Mods: https://barolab.i-lab.ink/mods
-- Submarines: https://barolab.i-lab.ink/submarines
-- Guides: https://barolab.i-lab.ink/guides
-- Tags: https://barolab.i-lab.ink/tags
-- Load Order: https://barolab.i-lab.ink/load-order
-- Vanilla Data: https://barolab.i-lab.ink/vanilla
-- Encyclopedia: https://barolab.i-lab.ink/encyclopedia
-- About: https://barolab.i-lab.ink/about
+- Home: https://barolab.org/
+- Mods: https://barolab.org/mods
+- Submarines: https://barolab.org/submarines
+- Guides: https://barolab.org/guides
+- Tags: https://barolab.org/tags
+- Load Order: https://barolab.org/load-order
+- Vanilla Data: https://barolab.org/vanilla
+- Encyclopedia: https://barolab.org/encyclopedia
+- About: https://barolab.org/about
 
 ## Content types
 

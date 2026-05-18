@@ -2,52 +2,52 @@
 <!-- Note: update all loc URLs if the domain changes -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://barolab.i-lab.ink/</loc>
+    <loc>https://barolab.org/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/about</loc>
+    <loc>https://barolab.org/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/mods</loc>
+    <loc>https://barolab.org/mods</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/submarines</loc>
+    <loc>https://barolab.org/submarines</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/guides</loc>
+    <loc>https://barolab.org/guides</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/tags</loc>
+    <loc>https://barolab.org/tags</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/load-order</loc>
+    <loc>https://barolab.org/load-order</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/vanilla</loc>
+    <loc>https://barolab.org/vanilla</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/encyclopedia</loc>
+    <loc>https://barolab.org/encyclopedia</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://barolab.i-lab.ink/llms.txt</loc>
+    <loc>https://barolab.org/llms.txt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
