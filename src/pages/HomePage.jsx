@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import { searchMods, getMods } from '../api/mods';
 import { searchSubmarines, getSubmarines } from '../api/submarines';
 import { getAllGuides } from '../api/modGuides';
@@ -57,6 +58,11 @@ const DEPTH_READINGS = [
 ];
 
 export default function HomePage() {
+    useDocumentMeta({
+        title: 'BaroLab — Barotrauma Mods, Submarines, Guides and Game Data',
+        description: 'Explore Barotrauma mods, submarines, guides, tags, load order information, vanilla game data and encyclopedia entries on BaroLab.',
+    });
+
     const [stats, setStats] = useState({ mods: null, submarines: null, guides: null });
     const [trendingMods, setTrendingMods] = useState([]);
     const [topSubs, setTopSubs] = useState([]);

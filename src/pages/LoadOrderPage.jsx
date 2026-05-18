@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { convertLoadOrder } from '../api/loadOrder';
 import { LOAD_ORDER_SAMPLE_REQUEST } from './loadOrderSample';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './LoadOrderPage.css';
 
 const INITIAL_REQUEST_TEXT = `{
@@ -29,6 +30,11 @@ function getErrorTitle(status, code) {
 }
 
 export default function LoadOrderPage() {
+    useDocumentMeta({
+        title: 'Load Order — BaroLab',
+        description: 'Manage Barotrauma mod load order and resolve conflicts with the BaroLab load order tool.',
+    });
+
     const [requestText, setRequestText] = useState(INITIAL_REQUEST_TEXT);
     const [xmlResult, setXmlResult] = useState('');
     const [requestError, setRequestError] = useState('');

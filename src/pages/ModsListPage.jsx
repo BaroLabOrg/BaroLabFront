@@ -7,6 +7,7 @@ import * as tagsApi from '../api/tags';
 import ModCard from '../components/ModCard';
 import Pagination from '../components/Pagination';
 import TagChips from '../components/TagChips';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ModsListPage.css';
 
 const PAGE_SIZE = 12;
@@ -41,6 +42,11 @@ function getTagFilterValue(tag) {
 }
 
 export default function ModsListPage() {
+    useDocumentMeta({
+        title: 'Mods — BaroLab',
+        description: 'Browse and discover Barotrauma mods. Find custom weapons, overhauls, creatures and more on BaroLab.',
+    });
+
     const [searchParams, setSearchParams] = useSearchParams();
     const { isAuthenticated } = useAuth();
     const query = normalizeQuery(searchParams.get('q'));

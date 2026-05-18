@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import SubmarineCard from '../components/SubmarineCard';
 import TagChips from '../components/TagChips';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './SubmarinesListPage.css';
 
 const DEFAULT_PAGE_SIZE = 12;
@@ -212,6 +213,11 @@ function formatDate(value) {
 }
 
 export default function SubmarinesListPage() {
+    useDocumentMeta({
+        title: 'Submarines — BaroLab',
+        description: 'Explore custom Barotrauma submarines. Find vessels by class, tier, crew size and technical specs on BaroLab.',
+    });
+
     const [searchParams, setSearchParams] = useSearchParams();
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();

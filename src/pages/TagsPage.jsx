@@ -4,6 +4,7 @@ import { mapPaginationError } from '../api/api';
 import { createTag, getTags } from '../api/tags';
 import { mapCreateTagError } from '../api/tagErrorMapper';
 import Pagination from '../components/Pagination';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './TagsPage.css';
 
 const SORT_BY_VALUES = ['name', 'createdAt', 'created_at'];
@@ -62,6 +63,11 @@ function getCategoryColor(categoryValue) {
 }
 
 export default function TagsPage() {
+    useDocumentMeta({
+        title: 'Tags — BaroLab',
+        description: 'Browse categorization tags for Barotrauma mods and submarines on BaroLab.',
+    });
+
     const [searchParams, setSearchParams] = useSearchParams();
     const sortBy = normalizeSortBy(searchParams.get('sortBy'));
     const direction = normalizeDirection(searchParams.get('direction'));

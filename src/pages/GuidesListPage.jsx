@@ -5,10 +5,16 @@ import * as guideApi from '../api/modGuides';
 import * as modsApi from '../api/mods';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './GuidesListPage.css';
 import '../components/ModCard.css';
 
 export default function GuidesListPage() {
+    useDocumentMeta({
+        title: 'Guides — BaroLab',
+        description: 'Read Barotrauma community guides on engineering, wiring, medical procedures, modding and more on BaroLab.',
+    });
+
     const PAGE_SIZE = 12;
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();

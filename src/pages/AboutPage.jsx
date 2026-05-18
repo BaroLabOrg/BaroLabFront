@@ -1,7 +1,13 @@
 import Footer from '../components/Footer';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './AboutPage.css';
 
 export default function AboutPage() {
+    useDocumentMeta({
+        title: 'About — BaroLab',
+        description: 'Learn about BaroLab, an independent community platform for Barotrauma players, modders and submarine creators.',
+    });
+
     return (
         <div className="about-page">
             <main className="about-main container">

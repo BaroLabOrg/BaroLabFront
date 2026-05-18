@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CONTENT_TYPES, ITEM_CATEGORIES, listVanillaContent, getVanillaContentByIdentifier } from '../api/vanillaData.js';
 import { API_BASE } from '../api/api.js';
 import Pagination from '../components/Pagination';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './VanillaDataPage.css';
 
 function iconUrl(key) {
@@ -288,6 +289,11 @@ function ContentTab({ typePath }) {
 }
 
 export default function VanillaDataPage() {
+    useDocumentMeta({
+        title: 'Vanilla Data — BaroLab',
+        description: 'Browse reference data from the base Barotrauma game including items, creatures and game mechanics on BaroLab.',
+    });
+
     const [searchParams, setSearchParams] = useSearchParams();
     const activeKey = searchParams.get('type') || CONTENT_TYPES[0].key;
     const activeType = CONTENT_TYPES.find(t => t.key === activeKey) || CONTENT_TYPES[0];

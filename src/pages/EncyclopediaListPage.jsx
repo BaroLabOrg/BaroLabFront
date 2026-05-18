@@ -4,6 +4,7 @@ import { mapPaginationError } from '../api/api';
 import { ENCYCLOPEDIA_ENTITY_TYPES, getEncyclopediaList, getEncyclopediaNavigation } from '../api/encyclopedia';
 import Pagination from '../components/Pagination';
 import { useAuth } from '../context/AuthContext';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './EncyclopediaListPage.css';
 
 const PAGE_SIZE = 12;
@@ -1546,6 +1547,11 @@ function buildDemoItems({ entityType, primaryCategory, secondaryCategory }) {
 }
 
 export default function EncyclopediaListPage() {
+    useDocumentMeta({
+        title: 'Encyclopedia — BaroLab',
+        description: 'Explore the Barotrauma encyclopedia with entries for creatures, items, afflictions and game mechanics on BaroLab.',
+    });
+
     const [searchParams, setSearchParams] = useSearchParams();
     const { isAdmin } = useAuth();
 
