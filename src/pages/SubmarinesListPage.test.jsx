@@ -289,6 +289,39 @@ describe('SubmarinesListPage', () => {
         expect(getLocation()).toContain('q=orca');
     });
 
+    it('keeps advanced filters when jumping to the last page number', async () => {
+        const user = userEvent.setup();
+        submarinesApi.searchSubmarines.mockResolvedValue(paged([buildSubmarine(3, 'Last Page Target')], {
+            total: 240,
+            page: 4,
+            total_pages: 12,
+            has_next: true,
+            has_previous: true,
+        }));
+
+        renderSubmarinesPage('/submarines?q=orca&submarineClass=ATTACK&priceMin=1000&tags=military&page=4&size=20');
+
+        await user.click(await screen.findByRole('button', { name: 'Page 12' }));
+
+        await waitFor(() => {
+            expect(submarinesApi.searchSubmarines).toHaveBeenLastCalledWith(expect.objectContaining({
+                q: 'orca',
+                submarineClass: 'ATTACK',
+                priceMin: 1000,
+                tags: ['military'],
+                page: 11,
+                size: 20,
+            }));
+        });
+
+        expect(getLocation()).toContain('q=orca');
+        expect(getLocation()).toContain('submarineClass=ATTACK');
+        expect(getLocation()).toContain('priceMin=1000');
+        expect(getLocation()).toContain('tags=military');
+        expect(getLocation()).toContain('page=11');
+        expect(getLocation()).toContain('size=20');
+    });
+
     it('changes sorting and size', async () => {
         const user = userEvent.setup();
         renderSubmarinesPage();

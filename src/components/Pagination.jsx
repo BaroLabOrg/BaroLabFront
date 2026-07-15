@@ -1,26 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useQuest } from '../context/QuestContext';
+import { useOptionalQuest } from '../context/QuestContext';
 import QuestOnboarding from './quest/QuestOnboarding';
 import glitchStyles from './quest/GlitchPagination.module.css';
 import './Pagination.css';
 
-const MAX_VISIBLE_PAGES = 5;
+const ELLIPSIS = 'ellipsis';
+const PAGE_WINDOW_SIZE = 7;
+const PAGE_WINDOW_RADIUS = Math.floor(PAGE_WINDOW_SIZE / 2);
+const MAX_PAGES_WITHOUT_ELLIPSIS = PAGE_WINDOW_SIZE + 2;
 
 function getPageItems(currentPage, totalPages) {
-    if (totalPages <= MAX_VISIBLE_PAGES) {
+    if (totalPages <= MAX_PAGES_WITHOUT_ELLIPSIS) {
         return Array.from({ length: totalPages }, (_, index) => index);
     }
 
-    const half = Math.floor(MAX_VISIBLE_PAGES / 2);
-    let start = Math.max(0, currentPage - half);
-    let end = Math.min(totalPages - 1, start + MAX_VISIBLE_PAGES - 1);
+    const lastPage = totalPages - 1;
+    const windowStart = currentPage - PAGE_WINDOW_RADIUS;
+    const windowEnd = currentPage + PAGE_WINDOW_RADIUS;
 
-    if (end - start + 1 < MAX_VISIBLE_PAGES) {
-        start = Math.max(0, end - MAX_VISIBLE_PAGES + 1);
+    if (windowStart <= 1) {
+        return [
+            ...Array.from({ length: PAGE_WINDOW_SIZE }, (_, index) => index),
+            ELLIPSIS,
+            lastPage,
+        ];
     }
 
-    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+    if (windowEnd >= lastPage - 1) {
+        return [
+            0,
+            ELLIPSIS,
+            ...Array.from(
+                { length: PAGE_WINDOW_SIZE },
+                (_, index) => lastPage - PAGE_WINDOW_SIZE + 1 + index,
+            ),
+        ];
+    }
+
+    return [
+        0,
+        ELLIPSIS,
+        ...Array.from(
+            { length: PAGE_WINDOW_SIZE },
+            (_, index) => windowStart + index,
+        ),
+        ELLIPSIS,
+        lastPage,
+    ];
+}
+
+function normalizeTotalPages(value) {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : 0;
+}
+
+function clampPage(value, totalPages) {
+    const parsed = Number(value);
+    const normalized = Number.isInteger(parsed) ? parsed : 0;
+    return Math.min(Math.max(normalized, 0), Math.max(totalPages - 1, 0));
 }
 
 export default function Pagination({
@@ -32,38 +70,58 @@ export default function Pagination({
     onPageChange,
 }) {
     const location = useLocation();
-    const { stage, setStage, openInspect } = useQuest();
+    const quest = useOptionalQuest();
     const [onboardingOpen, setOnboardingOpen] = useState(false);
+    const normalizedTotalPages = normalizeTotalPages(totalPages);
+    const currentPage = clampPage(page, normalizedTotalPages);
+    const canChangePage = typeof onPageChange === 'function';
 
-    if (totalPages <= 1) return null;
+    useEffect(() => {
+        if (
+            !disabled
+            && canChangePage
+            && normalizedTotalPages > 0
+            && Number(page) !== currentPage
+        ) {
+            onPageChange(currentPage);
+        }
+    }, [canChangePage, currentPage, disabled, normalizedTotalPages, onPageChange, page]);
 
-    const pageItems = getPageItems(page, totalPages);
-    const canGoPrevious = !disabled && hasPrevious;
-    const canGoNext = !disabled && hasNext;
+    if (normalizedTotalPages <= 1) return null;
 
-    // Quest Stage 1: on /mods, page 0, stage 0 — glitch the disabled Back button
+    const pageItems = getPageItems(currentPage, normalizedTotalPages);
+    const canGoPrevious = !disabled && canChangePage && (hasPrevious || currentPage > 0);
+    const canGoNext = !disabled
+        && canChangePage
+        && (hasNext || currentPage + 1 < normalizedTotalPages);
+
+    // Quest Stage 1: on /mods, page 0, stage 0 — glitch the disabled Back button.
     const isModsPage = location.pathname === '/mods';
-    const showQuestGlitch = isModsPage && stage === 0 && !canGoPrevious;
+    const showQuestGlitch = isModsPage && quest?.stage === 0 && currentPage === 0 && !canGoPrevious;
 
-    const handleBackClick = (e) => {
+    const changePage = (targetPage) => {
+        if (disabled || !canChangePage) return;
+        const nextPage = clampPage(targetPage, normalizedTotalPages);
+        if (nextPage !== currentPage) {
+            onPageChange(nextPage);
+        }
+    };
+
+    const handleBackClick = (event) => {
         if (showQuestGlitch) {
-            e.preventDefault();
+            event.preventDefault();
             setOnboardingOpen(true);
             return;
         }
         if (canGoPrevious) {
-            onPageChange(page - 1);
+            changePage(currentPage - 1);
         }
     };
 
     const handleOnboardingConfirm = () => {
         setOnboardingOpen(false);
-        setStage(1);
-        openInspect(1);
-    };
-
-    const handleOnboardingCancel = () => {
-        setOnboardingOpen(false);
+        quest?.setStage(1);
+        quest?.openInspect(1);
     };
 
     return (
@@ -80,16 +138,28 @@ export default function Pagination({
                 </button>
 
                 <div className="pagination-pages">
-                    {pageItems.map((pageIndex) => (
-                        <button
-                            key={pageIndex}
-                            type="button"
-                            className={`pagination-page ${pageIndex === page ? 'active' : ''}`}
-                            disabled={disabled || pageIndex === page}
-                            onClick={() => onPageChange(pageIndex)}
-                        >
-                            {pageIndex + 1}
-                        </button>
+                    {pageItems.map((pageItem, index) => (
+                        pageItem === ELLIPSIS ? (
+                            <span
+                                key={`${ELLIPSIS}-${index}`}
+                                className="pagination-ellipsis"
+                                aria-hidden="true"
+                            >
+                                &hellip;
+                            </span>
+                        ) : (
+                            <button
+                                key={pageItem}
+                                type="button"
+                                className={`pagination-page ${pageItem === currentPage ? 'active' : ''}`}
+                                disabled={disabled || !canChangePage || pageItem === currentPage}
+                                onClick={() => changePage(pageItem)}
+                                aria-label={`Page ${pageItem + 1}`}
+                                aria-current={pageItem === currentPage ? 'page' : undefined}
+                            >
+                                {pageItem + 1}
+                            </button>
+                        )
                     ))}
                 </div>
 
@@ -97,7 +167,8 @@ export default function Pagination({
                     type="button"
                     className="pagination-nav"
                     disabled={!canGoNext}
-                    onClick={() => onPageChange(page + 1)}
+                    onClick={() => changePage(currentPage + 1)}
+                    aria-label="Next"
                 >
                     Next
                 </button>
@@ -106,7 +177,7 @@ export default function Pagination({
             <QuestOnboarding
                 open={onboardingOpen}
                 onConfirm={handleOnboardingConfirm}
-                onCancel={handleOnboardingCancel}
+                onCancel={() => setOnboardingOpen(false)}
             />
         </>
     );

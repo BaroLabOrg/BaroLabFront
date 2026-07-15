@@ -17,6 +17,7 @@ import {
     updateEncyclopediaRelations,
 } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
+import Pagination from '../components/Pagination';
 import './EncyclopediaEditorPage.css';
 
 function buildEmptyInfoboxField(sortOrder = 0) {
@@ -523,14 +524,6 @@ export default function EncyclopediaEditorPage() {
                                             })}
                                         </div>
                                         <div className="available-entities-pagination">
-                                            <button
-                                                className="btn btn-ghost btn-sm"
-                                                type="button"
-                                                disabled={availableEntitiesPage <= 0 || availableEntitiesLoading}
-                                                onClick={() => setAvailableEntitiesPage((current) => Math.max(0, current - 1))}
-                                            >
-                                                Previous
-                                            </button>
                                             <span className="encyclopedia-editor-muted">
                                                 Page {availableEntitiesTotalPages > 0 ? availableEntitiesPage + 1 : 0}
                                                 {' of '}
@@ -538,18 +531,14 @@ export default function EncyclopediaEditorPage() {
                                                 {' · Total: '}
                                                 {availableEntitiesTotal}
                                             </span>
-                                            <button
-                                                className="btn btn-ghost btn-sm"
-                                                type="button"
-                                                disabled={
-                                                    availableEntitiesLoading
-                                                    || availableEntitiesTotalPages === 0
-                                                    || availableEntitiesPage + 1 >= availableEntitiesTotalPages
-                                                }
-                                                onClick={() => setAvailableEntitiesPage((current) => current + 1)}
-                                            >
-                                                Next
-                                            </button>
+                                            <Pagination
+                                                page={availableEntitiesPage}
+                                                totalPages={availableEntitiesTotalPages}
+                                                hasNext={availableEntitiesPage + 1 < availableEntitiesTotalPages}
+                                                hasPrevious={availableEntitiesPage > 0}
+                                                disabled={availableEntitiesLoading}
+                                                onPageChange={setAvailableEntitiesPage}
+                                            />
                                         </div>
                                     </>
                                 )}

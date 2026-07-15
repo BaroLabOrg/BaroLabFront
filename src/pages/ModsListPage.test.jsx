@@ -352,4 +352,35 @@ describe('ModsListPage search flow', () => {
             });
         });
     });
+
+    it('keeps search filters when jumping to the last page number', async () => {
+        const user = userEvent.setup();
+        modsApi.searchMods.mockResolvedValue(paged([buildMod(701, 'Many Pages Mod')], {
+            total: 144,
+            page: 5,
+            total_pages: 12,
+            has_next: true,
+            has_previous: true,
+        }));
+
+        renderModsPage('/mods?q=sonar&tags=medical,hardcore&page=5');
+
+        await user.click(await screen.findByRole('button', { name: 'Page 12' }));
+
+        await waitFor(() => {
+            expect(modsApi.searchMods).toHaveBeenLastCalledWith({
+                q: 'sonar',
+                tags: ['medical', 'hardcore'],
+                page: 11,
+                size: 12,
+                sortBy: 'createdAt',
+                direction: 'desc',
+            });
+        });
+
+        const params = getLocationParams();
+        expect(params.get('q')).toBe('sonar');
+        expect(params.get('tags')).toBe('medical,hardcore');
+        expect(params.get('page')).toBe('11');
+    });
 });

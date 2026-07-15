@@ -67,3 +67,7 @@ export function useQuest() {
     if (!ctx) throw new Error('useQuest must be used inside QuestProvider');
     return ctx;
 }
+
+export function useOptionalQuest() {
+    return useContext(QuestContext);
+}

@@ -220,4 +220,40 @@ describe('EncyclopediaEditorPage', () => {
         await user.click(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' }));
         expect(await screen.findByText('Batch failed')).toBeInTheDocument();
     });
+
+    it('uses the shared pagination for available entities', async () => {
+        const user = userEvent.setup();
+        encyclopediaApi.getAvailableEncyclopediaEntities.mockResolvedValue({
+            items: [{
+                id: 'entity-100',
+                title: 'Paged Entity',
+                slug: 'paged-entity',
+                entityType: 'ITEM',
+                shortDescription: 'Pagination test entity',
+            }],
+            total: 120,
+            page: 0,
+            size: 10,
+            total_pages: 12,
+            has_next: true,
+            has_previous: false,
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/admin/encyclopedia/new']}>
+                <Routes>
+                    <Route path="/admin/encyclopedia/new" element={<EncyclopediaEditorPage />} />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await user.click(await screen.findByRole('button', { name: 'Page 12' }));
+
+        await waitFor(() => {
+            expect(encyclopediaApi.getAvailableEncyclopediaEntities).toHaveBeenLastCalledWith(expect.objectContaining({
+                page: 11,
+                size: 10,
+            }));
+        });
+    });
 });

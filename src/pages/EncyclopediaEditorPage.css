@@ -402,6 +402,10 @@
   gap: 8px;
 }
 
+.available-entities-pagination > .pagination {
+  padding: 0;
+}
+
 .encyclopedia-imported-table-wrap {
   overflow-x: auto;
 }
