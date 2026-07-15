@@ -7,6 +7,7 @@ import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
 import SteamSyncTab from './SteamSyncTab';
+import SteamAvailabilityTab from './SteamAvailabilityTab';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
@@ -61,6 +62,14 @@ export default function AdminPage() {
                             🚢 Steam Sync
                         </button>
                     )}
+                    {isAdmin && (
+                        <button
+                            className={`admin-tab ${activeTab === 'steam-availability' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('steam-availability')}
+                        >
+                            Steam Availability
+                        </button>
+                    )}
                 </div>
 
                 <div className="admin-content fade-in">
@@ -70,6 +79,7 @@ export default function AdminPage() {
                     {activeTab === 'guides' && <GuidesTab />}
                     {activeTab === 'submarines' && <SubmarinesTab />}
                     {activeTab === 'steam-sync' && isAdmin && <SteamSyncTab />}
+                    {activeTab === 'steam-availability' && isAdmin && <SteamAvailabilityTab />}
                 </div>
             </div>
         </div>
