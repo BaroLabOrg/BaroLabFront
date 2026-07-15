@@ -390,6 +390,18 @@
   background: var(--danger-bg);
 }
 
+.steam-sync-status.status-completed,
+.steam-sync-status.status-stopped {
+  color: var(--accent-green);
+  background: var(--success-bg);
+}
+
+.steam-sync-status.status-completed_with_errors,
+.steam-sync-status.status-failed {
+  color: var(--accent-red);
+  background: var(--danger-bg);
+}
+
 .steam-sync-cursor {
   color: var(--text-secondary);
   font-family: var(--font-mono);
@@ -458,6 +470,70 @@
 
 .steam-sync-terminal p:last-child {
   margin-bottom: 0;
+}
+
+.steam-availability-progress {
+  padding: 12px;
+}
+
+.steam-availability-progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.steam-availability-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+}
+
+.steam-availability-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-green);
+  transition: width 180ms ease;
+}
+
+.steam-availability-stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.steam-availability-history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.steam-availability-table-wrap {
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.steam-availability-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.steam-availability-table th,
+.steam-availability-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.steam-availability-table th {
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
 }
 
 @media (max-width: 900px) {
