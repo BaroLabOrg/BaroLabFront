@@ -4,6 +4,7 @@ import * as api from '../api/api';
 import * as guideApi from '../api/modGuides';
 import * as submarineApi from '../api/submarines';
 import StatusBadge from '../components/StatusBadge';
+import SteamAvailabilityBadge from '../components/SteamAvailabilityBadge';
 import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
 import SteamSyncTab from './SteamSyncTab';
@@ -13,6 +14,7 @@ import './AdminPage.css';
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
 const USER_STATUS_OPTIONS = ['ALL', 'ACTIVE', 'BLOCKED'];
 const CONTENT_STATUS_OPTIONS = ['ALL', 'ACTIVE', 'BLOCKED'];
+const STEAM_STATUS_OPTIONS = ['ALL', 'AVAILABLE', 'UNAVAILABLE', 'UNKNOWN', 'NOT_TRACKED'];
 
 export default function AdminPage() {
     const { isAdmin, isSuperAdmin } = useAuth();
@@ -286,11 +288,13 @@ function ModsTab() {
     // search inputs (draft — не отправляются пока не нажата кнопка)
     const [searchDraft, setSearchDraft] = useState('');
     const [statusDraft, setStatusDraft] = useState('ALL');
+    const [steamStatusDraft, setSteamStatusDraft] = useState('ALL');
     const [authorDraft, setAuthorDraft] = useState('');
 
     // applied params — по ним делается реальный запрос
     const [appliedSearch, setAppliedSearch] = useState('');
     const [appliedStatus, setAppliedStatus] = useState('ALL');
+    const [appliedSteamStatus, setAppliedSteamStatus] = useState('ALL');
     const [appliedAuthor, setAppliedAuthor] = useState('');
 
     const [selectedId, setSelectedId] = useState(null);
@@ -305,7 +309,7 @@ function ModsTab() {
 
     useEffect(() => {
         loadMods(page);
-    }, [page, appliedSearch, appliedStatus, appliedAuthor]);
+    }, [page, appliedSearch, appliedStatus, appliedSteamStatus, appliedAuthor]);
 
     const loadMods = async (targetPage) => {
         setLoading(true);
@@ -314,6 +318,7 @@ function ModsTab() {
             const data = await api.getMods({
                 q: appliedSearch || undefined,
                 status: appliedStatus === 'ALL' ? undefined : appliedStatus,
+                steamStatus: appliedSteamStatus === 'ALL' ? undefined : appliedSteamStatus,
                 author: appliedAuthor || undefined,
                 page: targetPage,
                 size: PAGE_SIZE,
@@ -335,6 +340,7 @@ function ModsTab() {
     const handleSearch = () => {
         setAppliedSearch(searchDraft);
         setAppliedStatus(statusDraft);
+        setAppliedSteamStatus(steamStatusDraft);
         setAppliedAuthor(authorDraft);
         setPage(0);
     };
@@ -346,9 +352,11 @@ function ModsTab() {
     const handleClearSearch = () => {
         setSearchDraft('');
         setStatusDraft('ALL');
+        setSteamStatusDraft('ALL');
         setAuthorDraft('');
         setAppliedSearch('');
         setAppliedStatus('ALL');
+        setAppliedSteamStatus('ALL');
         setAppliedAuthor('');
         setPage(0);
     };
@@ -466,7 +474,7 @@ function ModsTab() {
                         <button className="btn btn-primary btn-sm" onClick={handleSearch} disabled={loading}>
                             Search
                         </button>
-                        {(appliedSearch || appliedStatus !== 'ALL' || appliedAuthor) && (
+                        {(appliedSearch || appliedStatus !== 'ALL' || appliedSteamStatus !== 'ALL' || appliedAuthor) && (
                             <button className="btn btn-outline btn-sm" onClick={handleClearSearch}>
                                 Clear
                             </button>
@@ -486,6 +494,18 @@ function ModsTab() {
                     <select className="admin-filter-select" value={statusDraft} onChange={(e) => setStatusDraft(e.target.value)}>
                         {CONTENT_STATUS_OPTIONS.map((status) => (
                             <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                    <select
+                        className="admin-filter-select"
+                        aria-label="Steam availability status"
+                        value={steamStatusDraft}
+                        onChange={(e) => setSteamStatusDraft(e.target.value)}
+                    >
+                        {STEAM_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                                {status === 'ALL' ? 'All Steam statuses' : `Steam: ${status.replace('_', ' ')}`}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -514,6 +534,12 @@ function ModsTab() {
                                     </div>
                                     <div className="admin-item-badges">
                                         <StatusBadge status={mod.status} />
+                                        <SteamAvailabilityBadge
+                                            managed={mod.steam_managed ?? mod.steamManaged}
+                                            status={mod.steam_availability_status ?? mod.steamAvailabilityStatus}
+                                            lastCheckedAt={mod.steam_last_checked_at ?? mod.steamLastCheckedAt}
+                                            failureCount={mod.steam_failure_count ?? mod.steamFailureCount}
+                                        />
                                         <span className="post-rating-badge">{mod.rating}</span>
                                     </div>
                                 </div>
@@ -805,18 +831,20 @@ function SubmarinesTab() {
     // draft — не отправляются пока не нажата кнопка
     const [searchDraft, setSearchDraft] = useState('');
     const [statusDraft, setStatusDraft] = useState('ALL');
+    const [steamStatusDraft, setSteamStatusDraft] = useState('ALL');
     const [classDraft, setClassDraft] = useState('ALL');
     const [authorDraft, setAuthorDraft] = useState('');
 
     // applied — по ним делается реальный запрос
     const [appliedSearch, setAppliedSearch] = useState('');
     const [appliedStatus, setAppliedStatus] = useState('ALL');
+    const [appliedSteamStatus, setAppliedSteamStatus] = useState('ALL');
     const [appliedClass, setAppliedClass] = useState('ALL');
     const [appliedAuthor, setAppliedAuthor] = useState('');
 
     useEffect(() => {
         loadSubmarines(page);
-    }, [page, appliedSearch, appliedStatus, appliedClass, appliedAuthor]);
+    }, [page, appliedSearch, appliedStatus, appliedSteamStatus, appliedClass, appliedAuthor]);
 
     const loadSubmarines = async (targetPage) => {
         setLoading(true);
@@ -825,6 +853,7 @@ function SubmarinesTab() {
             const data = await submarineApi.getSubmarines({
                 q: appliedSearch || undefined,
                 status: appliedStatus === 'ALL' ? undefined : appliedStatus,
+                steamStatus: appliedSteamStatus === 'ALL' ? undefined : appliedSteamStatus,
                 submarineClass: appliedClass === 'ALL' ? undefined : appliedClass,
                 author: appliedAuthor || undefined,
                 page: targetPage,
@@ -847,6 +876,7 @@ function SubmarinesTab() {
     const handleSearch = () => {
         setAppliedSearch(searchDraft);
         setAppliedStatus(statusDraft);
+        setAppliedSteamStatus(steamStatusDraft);
         setAppliedClass(classDraft);
         setAppliedAuthor(authorDraft);
         setPage(0);
@@ -859,10 +889,12 @@ function SubmarinesTab() {
     const handleClearSearch = () => {
         setSearchDraft('');
         setStatusDraft('ALL');
+        setSteamStatusDraft('ALL');
         setClassDraft('ALL');
         setAuthorDraft('');
         setAppliedSearch('');
         setAppliedStatus('ALL');
+        setAppliedSteamStatus('ALL');
         setAppliedClass('ALL');
         setAppliedAuthor('');
         setPage(0);
@@ -911,7 +943,7 @@ function SubmarinesTab() {
                         <button className="btn btn-primary btn-sm" onClick={handleSearch} disabled={loading}>
                             Search
                         </button>
-                        {(appliedSearch || appliedStatus !== 'ALL' || appliedClass !== 'ALL' || appliedAuthor) && (
+                        {(appliedSearch || appliedStatus !== 'ALL' || appliedSteamStatus !== 'ALL' || appliedClass !== 'ALL' || appliedAuthor) && (
                             <button className="btn btn-outline btn-sm" onClick={handleClearSearch}>
                                 Clear
                             </button>
@@ -937,6 +969,18 @@ function SubmarinesTab() {
                     <select className="admin-filter-select" value={statusDraft} onChange={(e) => setStatusDraft(e.target.value)}>
                         {CONTENT_STATUS_OPTIONS.map((status) => (
                             <option key={status} value={status}>{status === 'ALL' ? 'All statuses' : status}</option>
+                        ))}
+                    </select>
+                    <select
+                        className="admin-filter-select"
+                        aria-label="Steam availability status"
+                        value={steamStatusDraft}
+                        onChange={(e) => setSteamStatusDraft(e.target.value)}
+                    >
+                        {STEAM_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                                {status === 'ALL' ? 'All Steam statuses' : `Steam: ${status.replace('_', ' ')}`}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -981,6 +1025,12 @@ function SubmarinesTab() {
                                     </div>
                                     <div className="admin-item-badges">
                                         <StatusBadge status={status} />
+                                        <SteamAvailabilityBadge
+                                            managed={submarine.steamManaged ?? submarine.steam_managed}
+                                            status={submarine.steamAvailabilityStatus ?? submarine.steam_availability_status}
+                                            lastCheckedAt={submarine.steamLastCheckedAt ?? submarine.steam_last_checked_at}
+                                            failureCount={submarine.steamFailureCount ?? submarine.steam_failure_count}
+                                        />
                                     </div>
                                 </div>
                                 <div className="admin-item-actions">

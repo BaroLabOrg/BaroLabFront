@@ -103,6 +103,14 @@ export function normalizeSubmarine(submarine) {
     );
     const createdAt = firstDefined(submarine.created_at, submarine.createdAt);
     const updatedAt = firstDefined(submarine.updated_at, submarine.updatedAt);
+    const steamManaged = firstDefined(submarine.steam_managed, submarine.steamManaged, false);
+    const steamAvailabilityStatus = firstDefined(
+        submarine.steam_availability_status,
+        submarine.steamAvailabilityStatus,
+        'UNKNOWN',
+    );
+    const steamLastCheckedAt = firstDefined(submarine.steam_last_checked_at, submarine.steamLastCheckedAt);
+    const steamFailureCount = firstDefined(submarine.steam_failure_count, submarine.steamFailureCount, 0);
     const submarineClass = firstDefined(submarine.submarine_class, submarine.submarineClass);
     const mainImage = firstDefined(submarine.main_image, submarine.mainImage);
     const additionalImages = normalizeStringArray(
@@ -154,6 +162,14 @@ export function normalizeSubmarine(submarine) {
         createdAt,
         updated_at: updatedAt,
         updatedAt,
+        steam_managed: steamManaged,
+        steamManaged,
+        steam_availability_status: steamAvailabilityStatus,
+        steamAvailabilityStatus,
+        steam_last_checked_at: steamLastCheckedAt,
+        steamLastCheckedAt,
+        steam_failure_count: steamFailureCount,
+        steamFailureCount,
         submarine_class: submarineClass,
         submarineClass,
         tier: firstDefined(submarine.tier),
@@ -217,6 +233,7 @@ function cleanUndefined(payload) {
 export async function getSubmarines({
     q,
     status,
+    steamStatus,
     author,
     submarineClass,
     page = 0,
@@ -225,7 +242,7 @@ export async function getSubmarines({
     direction = 'desc',
 } = {}) {
     const response = await request('/api/submarines', {
-        query: { q, status, author, submarineClass, page, size, sortBy, direction },
+        query: { q, status, steamStatus, author, submarineClass, page, size, sortBy, direction },
     });
     return normalizeSubmarinePage(response);
 }

@@ -1,0 +1,33 @@
+.steam-availability-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 2px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: rgba(100, 116, 139, 0.12);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.steam-availability-badge[data-status="AVAILABLE"] {
+  border-color: rgba(34, 197, 94, 0.48);
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.steam-availability-badge[data-status="UNAVAILABLE"] {
+  border-color: rgba(239, 68, 68, 0.52);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.13);
+}
+
+.steam-availability-badge[data-status="UNKNOWN"] {
+  border-color: rgba(245, 158, 11, 0.48);
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.12);
+}
