@@ -225,6 +225,7 @@ export async function blockComment(modId, commentId) {
 export async function getMods({
     q,
     status,
+    steamStatus,
     author,
     page = 0,
     size = 20,
@@ -232,7 +233,7 @@ export async function getMods({
     direction = 'desc',
 } = {}) {
     const response = await request('/mods', {
-        query: { q, status, author, page, size, sortBy, direction },
+        query: { q, status, steamStatus, author, page, size, sortBy, direction },
     });
     return normalizePagedResponse(response);
 }
