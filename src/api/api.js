@@ -1,4 +1,6 @@
-export const API_BASE = import.meta.env.VITE_API_BASE_URL;
+// Falls back to the known-good backend until VITE_API_BASE_URL is set in the
+// server's deployment env — remove the fallback once that's confirmed live.
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://barolab-back.i-lab.ink/';
 
 export class ApiRequestError extends Error {
     constructor({ message, status, code }) {
