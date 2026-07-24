@@ -1,4 +1,4 @@
-export const API_BASE = "https://barolab-back.i-lab.ink/";
+export const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export class ApiRequestError extends Error {
     constructor({ message, status, code }) {
@@ -18,7 +18,10 @@ function buildUrl(path, query) {
         throw new Error('VITE_API_BASE_URL is not configured');
     }
 
-    if (!query) return `${API_BASE}${path}`;
+    const base = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+    const url = `${base}${path}`;
+
+    if (!query) return url;
 
     const searchParams = new URLSearchParams();
     Object.entries(query).forEach(([key, value]) => {
@@ -27,7 +30,7 @@ function buildUrl(path, query) {
     });
 
     const queryString = searchParams.toString();
-    return queryString ? `${API_BASE}${path}?${queryString}` : `${API_BASE}${path}`;
+    return queryString ? `${url}?${queryString}` : url;
 }
 
 async function readJsonSafely(response) {
