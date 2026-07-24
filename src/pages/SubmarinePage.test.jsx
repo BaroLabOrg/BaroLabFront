@@ -86,10 +86,10 @@ describe('SubmarinePage', () => {
         expect(screen.getByText('COILGUN')).toBeInTheDocument();
         expect(screen.getByText('RAILGUN')).toBeInTheDocument();
         expect(screen.getByText('Military')).toBeInTheDocument();
-         expect(await screen.findByRole('img', { name: 'Orca - изображение 1' })).toBeInTheDocument();
-         expect(await screen.findByRole('button', { name: 'Показать изображение 2' })).toBeInTheDocument();
+         expect(await screen.findByRole('img', { name: 'Orca - image 1' })).toBeInTheDocument();
+         expect(await screen.findByRole('button', { name: 'Show image 2' })).toBeInTheDocument();
          expect(screen.getByRole('button', { name: '⬇ Download' })).toBeInTheDocument();
-         expect(screen.queryByRole('button', { name: '+ Добавить тег' })).not.toBeInTheDocument();
+         expect(screen.queryByRole('button', { name: '+ Add tag' })).not.toBeInTheDocument();
     });
 
      it('shows gallery placeholder when images are missing', async () => {
@@ -104,8 +104,8 @@ describe('SubmarinePage', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
-        expect(screen.getByText('Изображения отсутствуют.')).toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: /Показать изображение/i })).not.toBeInTheDocument();
+        expect(screen.getByText('No images available.')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /Show image/i })).not.toBeInTheDocument();
     });
 
      it('shows tag editor for admins and supports add/remove', async () => {
@@ -144,11 +144,11 @@ describe('SubmarinePage', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
-        expect(screen.getByRole('button', { name: '+ Добавить тег' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: '+ Add tag' })).toBeInTheDocument();
 
-        await user.click(screen.getByRole('button', { name: '+ Добавить тег' }));
-        await user.selectOptions(screen.getByLabelText('Выберите тег'), 'tag-2');
-        await user.click(screen.getByRole('button', { name: 'Добавить' }));
+        await user.click(screen.getByRole('button', { name: '+ Add tag' }));
+        await user.selectOptions(screen.getByLabelText('Select tag'), 'tag-2');
+        await user.click(screen.getByRole('button', { name: 'Add' }));
 
         await waitFor(() => {
             expect(submarinesApi.addSubmarineTag).toHaveBeenCalledWith('42', 'tag-2');
@@ -157,7 +157,7 @@ describe('SubmarinePage', () => {
             expect(screen.getByText('Fast')).toBeInTheDocument();
         });
 
-        const removeButtons = screen.getAllByTitle('Удалить тег');
+        const removeButtons = screen.getAllByTitle('Remove tag');
         await user.click(removeButtons[0]);
 
         await waitFor(() => {
@@ -171,7 +171,7 @@ describe('SubmarinePage', () => {
         render(<SubmarinePage />);
 
          expect(await screen.findByText('Not found')).toBeInTheDocument();
-         expect(screen.getByRole('link', { name: '← Назад к каталогу' })).toBeInTheDocument();
+         expect(screen.getByRole('link', { name: '← Back to catalog' })).toBeInTheDocument();
      });
 
     it('calls submarine subscribe action when download button is clicked', async () => {
