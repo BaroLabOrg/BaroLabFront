@@ -20,6 +20,7 @@ function buildDetail(overrides = {}) {
         slug: 'husk-infection',
         title: 'Husk Infection',
         entityType: 'AFFLICTION',
+        entitySource: 'VANILLA',
         primaryCategory: 'Afflictions',
         secondaryCategory: 'Infections',
         summary: 'Parasitic infection.',
@@ -79,7 +80,8 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.getByText('Mod #123456')).toBeInTheDocument();
         expect(screen.getByText('max_strength')).toBeInTheDocument();
         expect(screen.getByText('Parasitic')).toBeInTheDocument();
-        expect(screen.queryByRole('link', { name: '✏️ Редактировать' })).not.toBeInTheDocument();
+        expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'Source: Vanilla')).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: '✏️ Edit' })).not.toBeInTheDocument();
     });
 
     it('shows edit button for admins', async () => {
@@ -92,7 +94,7 @@ describe('EncyclopediaDetailPage', () => {
             expect(screen.getByRole('heading', { name: 'Husk Infection' })).toBeInTheDocument();
         });
 
-        expect(screen.getByRole('link', { name: '✏️ Редактировать' })).toHaveAttribute(
+        expect(screen.getByRole('link', { name: '✏️ Edit' })).toHaveAttribute(
             'href',
             '/admin/encyclopedia/entity-1/edit',
         );
@@ -102,8 +104,8 @@ describe('EncyclopediaDetailPage', () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             publishedMarkdown: [
                 '## Links',
-                'Подробнее: [Bandage](/encyclopedia/bandage)',
-                'См. также: [[Husk Infection]]',
+                'See also: [Bandage](/encyclopedia/bandage)',
+                'Related: [[Husk Infection]]',
             ].join('\n'),
             renderedHtml: '',
         }));
@@ -124,31 +126,16 @@ describe('EncyclopediaDetailPage', () => {
         );
     });
 
-    it('uses demo fallback content when demo article is not available on backend', async () => {
-        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockRejectedValue(new Error('Not found'));
-
-        renderPage('/encyclopedia/charybdis');
-
-        await waitFor(() => {
-            expect(screen.getByRole('heading', { name: 'Charybdis' })).toBeInTheDocument();
-        });
-
-        expect(screen.getByText(/Демо-версия статьи/i)).toBeInTheDocument();
-        expect(screen.getByText('Очень высокая')).toBeInTheDocument();
-        expect(screen.getByText('Глубоководный хищник очень высокого уровня угрозы.')).toBeInTheDocument();
-        expect(screen.queryByText('Not found')).not.toBeInTheDocument();
-    });
-
     it('shows error state when API fails', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockRejectedValue(new Error('Not found'));
 
         renderPage('/encyclopedia/unknown-entry');
 
         expect(await screen.findByText('Not found')).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: '← Назад к энциклопедии' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: '← Back to encyclopedia' })).toBeInTheDocument();
     });
 
-    it('renders crafting section for items and uses encyclopedia links for ingredients', async () => {
+    it('renders the crafting section only when a recipe is present, regardless of entity type', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'ITEM',
             slug: 'bandage',
@@ -181,7 +168,7 @@ describe('EncyclopediaDetailPage', () => {
             expect(screen.getByRole('heading', { name: 'Bandage' })).toBeInTheDocument();
         });
 
-        expect(screen.getByRole('heading', { name: 'Крафт' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Crafting' })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: 'Organic Fiber' })).toHaveAttribute(
             'href',
             '/encyclopedia/organic-fiber',
@@ -224,7 +211,7 @@ describe('EncyclopediaDetailPage', () => {
         expect(ingredientText.closest('a')).toBeNull();
     });
 
-    it('renders empty crafting text for items without recipe', async () => {
+    it('omits the crafting section entirely when there is no recipe', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'ITEM',
             slug: 'wrench',
@@ -241,10 +228,10 @@ describe('EncyclopediaDetailPage', () => {
             expect(screen.getByRole('heading', { name: 'Wrench' })).toBeInTheDocument();
         });
 
-        expect(screen.getByText('Крафт отсутствует.')).toBeInTheDocument();
+        expect(screen.queryByRole('heading', { name: 'Crafting' })).not.toBeInTheDocument();
     });
 
-    it('renders armament section for submarines', async () => {
+    it('renders the armament section when armament data is present', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'SUBMARINE',
             slug: 'orca',
@@ -263,9 +250,9 @@ describe('EncyclopediaDetailPage', () => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
 
-        expect(screen.getByRole('heading', { name: 'Вооружение' })).toBeInTheDocument();
-        expect(screen.getByText(/Малые слоты турелей:/)).toBeInTheDocument();
-        expect(screen.getByText(/Большие слоты турелей:/)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Armament' })).toBeInTheDocument();
+        expect(screen.getByText(/Small turret slots:/)).toBeInTheDocument();
+        expect(screen.getByText(/Large turret slots:/)).toBeInTheDocument();
         expect(screen.getByText('Coilgun')).toBeInTheDocument();
         expect(screen.getByText('Railgun')).toBeInTheDocument();
     });
