@@ -121,7 +121,7 @@ describe('EncyclopediaEditorPage', () => {
 
         await user.type(screen.getByLabelText('Summary'), ' test summary ');
         await user.type(screen.getByLabelText('Draft markdown'), '# Initial');
-        await user.click(screen.getByRole('button', { name: 'Создать' }));
+        await user.click(screen.getByRole('button', { name: 'Create' }));
 
         await waitFor(() => {
             expect(encyclopediaApi.createEncyclopediaArticle).toHaveBeenCalledWith({
@@ -149,8 +149,8 @@ describe('EncyclopediaEditorPage', () => {
             expect(screen.getByRole('heading', { name: 'Husk Infection' })).toBeInTheDocument();
         });
 
-        await user.clear(screen.getByLabelText('Черновик markdown'));
-        await user.type(screen.getByLabelText('Черновик markdown'), '## Updated draft');
+        await user.clear(screen.getByLabelText('Draft markdown'));
+        await user.type(screen.getByLabelText('Draft markdown'), '## Updated draft');
         await user.click(screen.getByRole('button', { name: 'Save draft' }));
 
         await waitFor(() => {
@@ -170,18 +170,18 @@ describe('EncyclopediaEditorPage', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Auto-create and publish articles' })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' }));
+        await user.click(screen.getByRole('button', { name: 'Auto-create and publish articles' }));
 
         await waitFor(() => {
             expect(encyclopediaApi.autoGenerateAndPublishEncyclopediaArticles).toHaveBeenCalledTimes(1);
         });
 
-        expect(screen.getByText(/Проверено:/)).toBeInTheDocument();
-        expect(screen.getByText(/Создано:/)).toBeInTheDocument();
-        expect(screen.getByText(/Пропущено \(manual\):/)).toBeInTheDocument();
+        expect(screen.getByText(/Checked:/)).toBeInTheDocument();
+        expect(screen.getByText(/Created:/)).toBeInTheDocument();
+        expect(screen.getByText(/Skipped \(manual\):/)).toBeInTheDocument();
     });
 
     it('hides batch auto-generate button for non-admin users', async () => {
@@ -196,9 +196,9 @@ describe('EncyclopediaEditorPage', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Создать' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
         });
-        expect(screen.queryByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeNull();
+        expect(screen.queryByRole('button', { name: 'Auto-create and publish articles' })).toBeNull();
     });
 
     it('shows batch auto-generate error when endpoint fails', async () => {
@@ -214,10 +214,10 @@ describe('EncyclopediaEditorPage', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Auto-create and publish articles' })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: 'Авто-создать и опубликовать статьи' }));
+        await user.click(screen.getByRole('button', { name: 'Auto-create and publish articles' }));
         expect(await screen.findByText('Batch failed')).toBeInTheDocument();
     });
 

@@ -121,9 +121,9 @@ describe('ModsListPage search flow', () => {
             expect(screen.getByText('Base Mod')).toBeInTheDocument();
         });
 
-        await user.clear(screen.getByLabelText('Поиск по названию мода'));
-        await user.type(screen.getByLabelText('Поиск по названию мода'), 'submarine');
-        await user.click(screen.getByRole('button', { name: 'Найти' }));
+        await user.clear(screen.getByLabelText('Search by mod name'));
+        await user.type(screen.getByLabelText('Search by mod name'), 'submarine');
+        await user.click(screen.getByRole('button', { name: 'Search' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({
@@ -150,8 +150,8 @@ describe('ModsListPage search flow', () => {
             expect(screen.getByText('Base Mod')).toBeInTheDocument();
         });
 
-        await user.selectOptions(screen.getByLabelText('Фильтр по тегам'), 'realism');
-        await user.click(screen.getByRole('button', { name: 'Добавить тег' }));
+        await user.selectOptions(screen.getByLabelText('Filter by tags'), 'realism');
+        await user.click(screen.getByRole('button', { name: 'Add tag' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({
@@ -179,11 +179,11 @@ describe('ModsListPage search flow', () => {
             expect(screen.getByText('Base Mod')).toBeInTheDocument();
         });
 
-        await user.selectOptions(screen.getByLabelText('Фильтр по тегам'), 'realism');
-        await user.click(screen.getByRole('button', { name: 'Добавить тег' }));
+        await user.selectOptions(screen.getByLabelText('Filter by tags'), 'realism');
+        await user.click(screen.getByRole('button', { name: 'Add tag' }));
 
-        await user.selectOptions(screen.getByLabelText('Фильтр по тегам'), 'hardcore');
-        await user.click(screen.getByRole('button', { name: 'Добавить тег' }));
+        await user.selectOptions(screen.getByLabelText('Filter by tags'), 'hardcore');
+        await user.click(screen.getByRole('button', { name: 'Add tag' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({
@@ -211,12 +211,12 @@ describe('ModsListPage search flow', () => {
             expect(screen.getByText('Base Mod')).toBeInTheDocument();
         });
 
-        await user.clear(screen.getByLabelText('Поиск по названию мода'));
-        await user.type(screen.getByLabelText('Поиск по названию мода'), 'submarine');
-        await user.click(screen.getByRole('button', { name: 'Найти' }));
+        await user.clear(screen.getByLabelText('Search by mod name'));
+        await user.type(screen.getByLabelText('Search by mod name'), 'submarine');
+        await user.click(screen.getByRole('button', { name: 'Search' }));
 
-        await user.selectOptions(screen.getByLabelText('Фильтр по тегам'), 'realism');
-        await user.click(screen.getByRole('button', { name: 'Добавить тег' }));
+        await user.selectOptions(screen.getByLabelText('Filter by tags'), 'realism');
+        await user.click(screen.getByRole('button', { name: 'Add tag' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({
@@ -253,7 +253,7 @@ describe('ModsListPage search flow', () => {
             });
         });
 
-        await user.click(screen.getByRole('button', { name: 'Сбросить' }));
+        await user.click(screen.getByRole('button', { name: 'Reset' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({
@@ -317,7 +317,7 @@ describe('ModsListPage search flow', () => {
             expect(screen.getByText('Filtered Page 1')).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: 'Вперед' }));
+        await user.click(screen.getByRole('button', { name: 'Next' }));
 
         await waitFor(() => {
             expect(modsApi.searchMods).toHaveBeenLastCalledWith({

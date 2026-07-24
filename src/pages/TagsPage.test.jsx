@@ -58,11 +58,11 @@ describe('TagsPage', () => {
 
         renderTagsPage();
 
-        await user.type(screen.getByLabelText('Создать новый тег'), '  Medical  ');
-        await user.click(screen.getByRole('button', { name: 'Создать' }));
+        await user.type(screen.getByLabelText('Create new tag'), '  Medical  ');
+        await user.click(screen.getByRole('button', { name: 'Create' }));
 
         await waitFor(() => {
-            expect(tagsApi.createTag).toHaveBeenCalledWith('Medical');
+            expect(tagsApi.createTag).toHaveBeenCalledWith('Medical', 'INFO');
         });
         await waitFor(() => {
             expect(screen.getByText('Medical')).toBeInTheDocument();
@@ -76,10 +76,10 @@ describe('TagsPage', () => {
 
         renderTagsPage();
 
-        await user.type(screen.getByLabelText('Создать новый тег'), 'Medical');
-        await user.click(screen.getByRole('button', { name: 'Создать' }));
+        await user.type(screen.getByLabelText('Create new tag'), 'Medical');
+        await user.click(screen.getByRole('button', { name: 'Create' }));
 
-        expect(await screen.findByText('Тег уже существует')).toBeInTheDocument();
+        expect(await screen.findByText('Tag already exists')).toBeInTheDocument();
     });
 
     it('blocks submit for empty value', async () => {
@@ -89,11 +89,11 @@ describe('TagsPage', () => {
 
         renderTagsPage();
 
-        await user.type(screen.getByLabelText('Создать новый тег'), '   ');
-        await user.click(screen.getByRole('button', { name: 'Создать' }));
+        await user.type(screen.getByLabelText('Create new tag'), '   ');
+        await user.click(screen.getByRole('button', { name: 'Create' }));
 
         expect(tagsApi.createTag).not.toHaveBeenCalled();
-        expect(screen.getByText('Введите название тега')).toBeInTheDocument();
+        expect(screen.getByText('Enter tag name')).toBeInTheDocument();
     });
 
     it('loads list using sorting query params', async () => {
@@ -111,7 +111,7 @@ describe('TagsPage', () => {
             });
         });
 
-        await user.selectOptions(screen.getByLabelText('Сортировка'), 'name');
+        await user.selectOptions(screen.getByLabelText('Sorting'), 'name');
 
         await waitFor(() => {
             expect(tagsApi.getTags).toHaveBeenCalledWith({

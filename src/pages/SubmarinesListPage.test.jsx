@@ -92,16 +92,16 @@ function getLocation() {
 }
 
 function fillCreateSubmarineForm(form) {
-    fireEvent.change(within(form).getByLabelText('Название'), { target: { value: 'Kastrull' } });
-    fireEvent.change(within(form).getByLabelText('Описание'), { target: { value: 'Attack submarine' } });
+    fireEvent.change(within(form).getByLabelText('Title'), { target: { value: 'Kastrull' } });
+    fireEvent.change(within(form).getByLabelText('Description'), { target: { value: 'Attack submarine' } });
     fireEvent.change(within(form).getByLabelText('Tier'), { target: { value: '2' } });
-    fireEvent.change(within(form).getByLabelText('Цена'), { target: { value: '2100' } });
-    fireEvent.change(within(form).getByLabelText('Мин. экипаж'), { target: { value: '2' } });
-    fireEvent.change(within(form).getByLabelText('Макс. экипаж'), { target: { value: '5' } });
-    fireEvent.change(within(form).getByLabelText('Грузоподъёмность'), { target: { value: '18' } });
-    fireEvent.change(within(form).getByLabelText('Макс. скорость (гориз.), км/ч'), { target: { value: '29.5' } });
-    fireEvent.change(within(form).getByLabelText('Слотов турелей'), { target: { value: '3' } });
-    fireEvent.change(within(form).getByLabelText('Крупных слотов турелей'), { target: { value: '1' } });
+    fireEvent.change(within(form).getByLabelText('Price'), { target: { value: '2100' } });
+    fireEvent.change(within(form).getByLabelText('Min crew'), { target: { value: '2' } });
+    fireEvent.change(within(form).getByLabelText('Max crew'), { target: { value: '5' } });
+    fireEvent.change(within(form).getByLabelText('Cargo capacity'), { target: { value: '18' } });
+    fireEvent.change(within(form).getByLabelText('Max speed (horizontal), km/h'), { target: { value: '29.5' } });
+    fireEvent.change(within(form).getByLabelText('Turret slots'), { target: { value: '3' } });
+    fireEvent.change(within(form).getByLabelText('Large turret slots'), { target: { value: '1' } });
 }
 
 const TAGS = [
@@ -178,8 +178,8 @@ describe('SubmarinesListPage', () => {
             }));
         });
         expect(screen.getByDisplayValue('orca')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Скрыть расширенный поиск' })).toBeInTheDocument();
-        expect(screen.getByLabelText('Класс подлодки')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Hide advanced search' })).toBeInTheDocument();
+        expect(screen.getByLabelText('Submarine class')).toBeInTheDocument();
     });
 
     it('searches by q and syncs URL', async () => {
@@ -191,9 +191,9 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
 
         await waitFor(() => expect(screen.getByText('Typhon')).toBeInTheDocument());
-        await user.clear(screen.getByLabelText('Поиск по названию'));
-        await user.type(screen.getByLabelText('Поиск по названию'), 'orca');
-        await user.click(screen.getByRole('button', { name: 'Найти' }));
+        await user.clear(screen.getByLabelText('Search by title'));
+        await user.type(screen.getByLabelText('Search by title'), 'orca');
+        await user.click(screen.getByRole('button', { name: 'Search' }));
 
         await waitFor(() => {
             expect(submarinesApi.searchSubmarines).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -209,16 +209,16 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
 
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-        expect(screen.getByRole('button', { name: 'Расширенный поиск' })).toBeInTheDocument();
-        expect(screen.queryByLabelText('Класс подлодки')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Advanced search' })).toBeInTheDocument();
+        expect(screen.queryByLabelText('Submarine class')).not.toBeInTheDocument();
 
-        await user.click(screen.getByRole('button', { name: 'Расширенный поиск' }));
-        expect(screen.getByRole('button', { name: 'Скрыть расширенный поиск' })).toBeInTheDocument();
-        expect(screen.getByLabelText('Класс подлодки')).toBeInTheDocument();
+        await user.click(screen.getByRole('button', { name: 'Advanced search' }));
+        expect(screen.getByRole('button', { name: 'Hide advanced search' })).toBeInTheDocument();
+        expect(screen.getByLabelText('Submarine class')).toBeInTheDocument();
 
-        await user.click(screen.getByRole('button', { name: 'Скрыть расширенный поиск' }));
-        expect(screen.getByRole('button', { name: 'Расширенный поиск' })).toBeInTheDocument();
-        expect(screen.queryByLabelText('Класс подлодки')).not.toBeInTheDocument();
+        await user.click(screen.getByRole('button', { name: 'Hide advanced search' }));
+        expect(screen.getByRole('button', { name: 'Advanced search' })).toBeInTheDocument();
+        expect(screen.queryByLabelText('Submarine class')).not.toBeInTheDocument();
     });
 
     it('changes filters and applies multiple params', async () => {
@@ -230,13 +230,13 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
 
         await waitFor(() => expect(screen.getByText('Typhon')).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Расширенный поиск' }));
+        await user.click(screen.getByRole('button', { name: 'Advanced search' }));
 
-        await user.selectOptions(screen.getByLabelText('Класс подлодки'), 'ATTACK');
-        await user.type(screen.getByLabelText('Мин. цена'), '1000');
-        await user.type(screen.getByLabelText('Макс. цена'), '3000');
-        await user.selectOptions(screen.getByLabelText('Фильтр по тегам'), 'military');
-        await user.click(screen.getByRole('button', { name: 'Добавить тег' }));
+        await user.selectOptions(screen.getByLabelText('Submarine class'), 'ATTACK');
+        await user.type(screen.getByLabelText('Min price'), '1000');
+        await user.type(screen.getByLabelText('Max price'), '3000');
+        await user.selectOptions(screen.getByLabelText('Filter by tags'), 'military');
+        await user.click(screen.getByRole('button', { name: 'Add tag' }));
 
         await waitFor(() => {
             expect(submarinesApi.searchSubmarines).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -276,7 +276,7 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage('/submarines?q=orca&submarineClass=ATTACK');
 
         await waitFor(() => expect(screen.getByText('Page 1')).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Вперед' }));
+        await user.click(screen.getByRole('button', { name: 'Next' }));
 
         await waitFor(() => {
             expect(submarinesApi.searchSubmarines).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -327,10 +327,10 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
 
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-        await user.click(screen.getByRole('button', { name: 'Расширенный поиск' }));
-        await user.selectOptions(screen.getByLabelText('Сортировка подлодок'), 'price');
-        await user.selectOptions(screen.getByLabelText('Направление сортировки'), 'asc');
-        await user.selectOptions(screen.getByLabelText('Размер страницы'), '20');
+        await user.click(screen.getByRole('button', { name: 'Advanced search' }));
+        await user.selectOptions(screen.getByLabelText('Submarine sorting'), 'price');
+        await user.selectOptions(screen.getByLabelText('Sort direction'), 'asc');
+        await user.selectOptions(screen.getByLabelText('Page size'), '20');
 
         await waitFor(() => {
             expect(submarinesApi.searchSubmarines).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -345,13 +345,13 @@ describe('SubmarinesListPage', () => {
     it('shows create form only for authenticated users', async () => {
         const firstRender = renderSubmarinesPage();
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-        expect(screen.queryByRole('button', { name: 'Добавить подлодку' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Add submarine' })).not.toBeInTheDocument();
         firstRender.unmount();
 
         authState = { isAuthenticated: true };
         renderSubmarinesPage();
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-        expect(screen.getByRole('button', { name: 'Добавить подлодку' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Add submarine' })).toBeInTheDocument();
     });
 
     it('creates submarine successfully', async () => {
@@ -361,8 +361,8 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
 
-        await user.click(screen.getByRole('button', { name: 'Добавить подлодку' }));
-        const form = screen.getByRole('form', { name: 'Форма создания подлодки' });
+        await user.click(screen.getByRole('button', { name: 'Add submarine' }));
+        const form = screen.getByRole('form', { name: 'Submarine creation form' });
         fillCreateSubmarineForm(form);
         fireEvent.submit(form);
 
@@ -396,8 +396,8 @@ describe('SubmarinesListPage', () => {
         renderSubmarinesPage();
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
 
-        await user.click(screen.getByRole('button', { name: 'Добавить подлодку' }));
-        const form = screen.getByRole('form', { name: 'Форма создания подлодки' });
+        await user.click(screen.getByRole('button', { name: 'Add submarine' }));
+        const form = screen.getByRole('form', { name: 'Submarine creation form' });
         fillCreateSubmarineForm(form);
         fireEvent.submit(form);
 
