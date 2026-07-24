@@ -11,8 +11,16 @@ export const ENCYCLOPEDIA_ENTITY_TYPES = [
     'BIOME',
     'TALENT',
     'JOB',
+    'MISSION',
+    'TALENT_TREE',
+    'UPGRADE_MODULE',
+    'CORPSE',
+    'DISEMBARK_PERK',
+    'RANDOM_EVENT',
     'OTHER',
 ];
+
+export const ENCYCLOPEDIA_ENTITY_SOURCES = ['VANILLA', 'MOD'];
 
 export const ENCYCLOPEDIA_RELATION_TYPES = [
     'RELATED',
@@ -527,6 +535,7 @@ function normalizeListItem(item) {
     const slug = firstDefined(item.slug);
     const title = firstDefined(item.title);
     const entityType = firstDefined(item.entityType, item.entity_type);
+    const entitySource = firstDefined(item.entitySource, item.entity_source);
     const primaryCategory = resolvePrimaryCategory(item);
     const secondaryCategory = resolveSecondaryCategory(item);
     const shortDescription = firstDefined(item.shortDescription, item.short_description);
@@ -542,6 +551,8 @@ function normalizeListItem(item) {
         title,
         entityType,
         entity_type: entityType,
+        entitySource,
+        entity_source: entitySource,
         primaryCategory,
         primary_category: primaryCategory,
         secondaryCategory,
@@ -598,6 +609,7 @@ function normalizeDetail(detail) {
     const slug = firstDefined(detail.slug);
     const title = firstDefined(detail.title);
     const entityType = firstDefined(detail.entityType, detail.entity_type);
+    const entitySource = firstDefined(detail.entitySource, detail.entity_source);
     const subtype = firstDefined(detail.subtype);
     const primaryCategory = resolvePrimaryCategory(detail);
     const secondaryCategory = resolveSecondaryCategory(detail);
@@ -633,6 +645,8 @@ function normalizeDetail(detail) {
         title,
         entityType,
         entity_type: entityType,
+        entitySource,
+        entity_source: entitySource,
         subtype,
         primaryCategory,
         primary_category: primaryCategory,
@@ -841,6 +855,36 @@ export async function getEncyclopediaList({
             entityType,
             primaryCategory,
             secondaryCategory,
+            page,
+            size,
+            sortBy,
+            direction,
+        },
+    });
+
+    return normalizeEncyclopediaPage(response);
+}
+
+/**
+ * Text queries are ranked via Typesense on the backend; filter-only browsing (no q)
+ * falls back to a plain DB query there, so callers don't need to care which path ran.
+ */
+export async function searchEncyclopedia({
+    q = '',
+    entityType,
+    entitySource,
+    primaryCategory,
+    page = 0,
+    size = 12,
+    sortBy = 'publishedAt',
+    direction = 'desc',
+} = {}) {
+    const response = await request('/search/encyclopedia', {
+        query: {
+            q: String(q || '').trim(),
+            entityType,
+            entitySource,
+            primaryCategory,
             page,
             size,
             sortBy,
