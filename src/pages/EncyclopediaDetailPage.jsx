@@ -1,315 +1,10 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
 import './EncyclopediaDetailPage.css';
-
-const DEMO_PUBLISHED_AT = '2026-03-01T00:00:00.000Z';
-
-function buildDemoDetail({
-    slug,
-    title,
-    entityType,
-    primaryCategory,
-    secondaryCategory = '',
-    summary,
-    articleMarkdown,
-    infobox = [],
-    relatedEntities = [],
-    backlinks = [],
-    relatedMods = [],
-    importedProperties = [],
-    crafting = null,
-    armament = null,
-    subtype = null,
-}) {
-    return {
-        id: `demo-${slug}`,
-        slug,
-        title,
-        entityType,
-        subtype,
-        primaryCategory,
-        secondaryCategory,
-        shortDescription: summary,
-        sourceGameVersion: 'Barotrauma (Demo data)',
-        publishedMarkdown: articleMarkdown,
-        renderedHtml: '',
-        summary,
-        publishedAt: DEMO_PUBLISHED_AT,
-        primaryImage: null,
-        infobox,
-        relatedEntities,
-        backlinks,
-        relatedMods,
-        importedProperties,
-        crafting,
-        armament,
-        isDemo: true,
-    };
-}
-
-const DEMO_DETAIL_BY_SLUG = {
-    charybdis: buildDemoDetail({
-        slug: 'charybdis',
-        title: 'Charybdis',
-        entityType: 'CREATURE',
-        primaryCategory: 'Monsters',
-        secondaryCategory: 'Abyss',
-        summary: 'A deep-sea predator with a very high threat level.',
-        articleMarkdown: `
-## Overview
-Charybdis appears in deep biomes and is dangerous for unprepared crews.
-
-## Tactics
-- Keep distance and use heavy weapons.
-- Monitor hull and power system condition.
-- Prepare medics for mass crew injuries.
-
-See also: [[Endworm]].
-        `,
-        infobox: [
-            { fieldKey: 'threat', fieldLabel: 'Threat', fieldValue: 'Very high', sortOrder: 0 },
-            { fieldKey: 'biome', fieldLabel: 'Biome', fieldValue: 'Abyss', sortOrder: 1 },
-            { fieldKey: 'counter', fieldLabel: 'Countermeasure', fieldValue: 'Heavy turrets / crew coordination', sortOrder: 2 },
-        ],
-        relatedEntities: [
-            { id: 'demo-endworm', slug: 'endworm', title: 'Endworm', relationType: 'RELATED', origin: 'DEMO' },
-        ],
-        importedProperties: [
-            { propertyKey: 'threat_level', propertyValue: '5', valueType: 'INTEGER', origin: 'DEMO' },
-            { propertyKey: 'encounter_zone', propertyValue: 'Abyss', valueType: 'STRING', origin: 'DEMO' },
-        ],
-    }),
-    endworm: buildDemoDetail({
-        slug: 'endworm',
-        title: 'Endworm',
-        entityType: 'CREATURE',
-        primaryCategory: 'Monsters',
-        secondaryCategory: 'Abyss',
-        summary: 'A large abyssal creature with high durability.',
-        articleMarkdown: `
-## Overview
-Endworm is a threat in late campaign stages and requires strong weaponry.
-        `,
-        infobox: [
-            { fieldKey: 'threat', fieldLabel: 'Threat', fieldValue: 'High', sortOrder: 0 },
-            { fieldKey: 'biome', fieldLabel: 'Biome', fieldValue: 'Abyss', sortOrder: 1 },
-        ],
-        importedProperties: [
-            { propertyKey: 'threat_level', propertyValue: '4', valueType: 'INTEGER', origin: 'DEMO' },
-        ],
-    }),
-    'husk-infection': buildDemoDetail({
-        slug: 'husk-infection',
-        title: 'Husk Infection',
-        entityType: 'AFFLICTION',
-        primaryCategory: 'Infections',
-        secondaryCategory: 'Husk',
-        summary: 'A parasitic infection that requires rapid diagnosis and treatment.',
-        articleMarkdown: `
-## Symptoms
-In early stages symptoms may be mild, but the condition progresses.
-
-## Treatment
-Medical drugs and patient isolation are used when needed.
-
-Base medicine: [Bandage](/encyclopedia/bandage)
-        `,
-        infobox: [
-            { fieldKey: 'type', fieldLabel: 'Type', fieldValue: 'Infection', sortOrder: 0 },
-            { fieldKey: 'progression', fieldLabel: 'Progression', fieldValue: 'Gradual', sortOrder: 1 },
-            { fieldKey: 'treatment', fieldLabel: 'Treatment', fieldValue: 'Medication / observation', sortOrder: 2 },
-        ],
-        relatedEntities: [
-            { id: 'demo-item-bandage', slug: 'bandage', title: 'Bandage', relationType: 'COUNTERS', origin: 'DEMO' },
-        ],
-        importedProperties: [
-            { propertyKey: 'category', propertyValue: 'Parasitic', valueType: 'STRING', origin: 'DEMO' },
-        ],
-    }),
-    bandage: buildDemoDetail({
-        slug: 'bandage',
-        title: 'Bandage',
-        entityType: 'ITEM',
-        primaryCategory: 'Medical',
-        secondaryCategory: 'Treatment',
-        summary: 'A basic medical consumable for stabilization.',
-        articleMarkdown: `
-## Purpose
-Used as first aid for trauma and bleeding.
-        `,
-        infobox: [
-            { fieldKey: 'slot', fieldLabel: 'Category', fieldValue: 'Medical item', sortOrder: 0 },
-            { fieldKey: 'usage', fieldLabel: 'Usage', fieldValue: 'First aid', sortOrder: 1 },
-        ],
-        crafting: {
-            hasRecipe: true,
-            recipes: [
-                {
-                    recipeType: 'FABRICATE',
-                    fabricationTime: '6',
-                    outputCount: '1',
-                    requiredStations: ['fabricator'],
-                    requiredSkills: [{ identifier: 'medical', level: '15' }],
-                    ingredients: [
-                        {
-                            itemIdentifier: 'organicfiber',
-                            amount: '1',
-                            title: 'Organic Fiber',
-                            slug: 'organic-fiber',
-                            isLinkable: true,
-                        },
-                    ],
-                },
-            ],
-        },
-    }),
-    'blood-pack': buildDemoDetail({
-        slug: 'blood-pack',
-        title: 'Blood Pack',
-        entityType: 'ITEM',
-        primaryCategory: 'Medical',
-        secondaryCategory: 'Treatment',
-        summary: 'A medicine for restoring patient blood volume.',
-        articleMarkdown: `
-## Purpose
-Used to stabilize severe injuries with blood loss.
-        `,
-        infobox: [
-            { fieldKey: 'slot', fieldLabel: 'Category', fieldValue: 'Medical item', sortOrder: 0 },
-            { fieldKey: 'usage', fieldLabel: 'Usage', fieldValue: 'Transfusion', sortOrder: 1 },
-        ],
-    }),
-    'alien-ruins': buildDemoDetail({
-        slug: 'alien-ruins',
-        title: 'Alien Ruins',
-        entityType: 'LOCATION',
-        primaryCategory: 'Ruins',
-        secondaryCategory: 'Alien',
-        summary: 'A dangerous location with artifacts and high crew risk.',
-        articleMarkdown: `
-## Features
-Ruins contain valuable loot but require a prepared team and resources.
-        `,
-        infobox: [
-            { fieldKey: 'location_type', fieldLabel: 'Location type', fieldValue: 'Ruins', sortOrder: 0 },
-            { fieldKey: 'risk', fieldLabel: 'Risk', fieldValue: 'High', sortOrder: 1 },
-        ],
-    }),
-    orca: buildDemoDetail({
-        slug: 'orca',
-        title: 'Orca',
-        entityType: 'SUBMARINE',
-        primaryCategory: 'Transport',
-        secondaryCategory: '',
-        summary: 'A versatile submarine for cargo and combat tasks.',
-        articleMarkdown: `
-## Overview
-Orca fits a balanced playstyle and medium-difficulty missions.
-        `,
-        infobox: [
-            { fieldKey: 'class', fieldLabel: 'Class', fieldValue: 'Transport', sortOrder: 0 },
-            { fieldKey: 'crew', fieldLabel: 'Crew', fieldValue: '3-5', sortOrder: 1 },
-            { fieldKey: 'strength', fieldLabel: 'Strength', fieldValue: 'Versatility', sortOrder: 2 },
-        ],
-        armament: {
-            turretSlotCount: 2,
-            largeTurretSlotCount: 1,
-            defaultTurretWeapons: ['coilgun', 'doublecoilgun'],
-            defaultLargeTurretWeapons: ['railgun'],
-        },
-    }),
-    captain: buildDemoDetail({
-        slug: 'captain',
-        title: 'Captain',
-        entityType: 'JOB',
-        primaryCategory: 'Crew Roles',
-        secondaryCategory: '',
-        summary: 'A command role responsible for route, priorities, and coordination.',
-        articleMarkdown: `
-## Responsibilities
-- Selecting missions and controlling navigation.
-- Assigning tasks to the crew through the command system.
-- Assessing risks in conflict situations.
-        `,
-        infobox: [
-            { fieldKey: 'role', fieldLabel: 'Role', fieldValue: 'Command', sortOrder: 0 },
-            { fieldKey: 'focus', fieldLabel: 'Focus', fieldValue: 'Navigation and coordination', sortOrder: 1 },
-        ],
-    }),
-    'medical-doctor': buildDemoDetail({
-        slug: 'medical-doctor',
-        title: 'Medical Doctor',
-        entityType: 'JOB',
-        primaryCategory: 'Crew Roles',
-        secondaryCategory: '',
-        summary: 'A key role for treating afflictions and maintaining crew survivability.',
-        articleMarkdown: `
-## Responsibilities
-The doctor manages medical supplies and crew condition in combat and emergency scenarios.
-        `,
-        infobox: [
-            { fieldKey: 'role', fieldLabel: 'Role', fieldValue: 'Medicine', sortOrder: 0 },
-            { fieldKey: 'focus', fieldLabel: 'Focus', fieldValue: 'Treatment / diagnostics', sortOrder: 1 },
-        ],
-    }),
-    'inspiring-presence': buildDemoDetail({
-        slug: 'inspiring-presence',
-        title: 'Inspiring Presence',
-        entityType: 'TALENT',
-        primaryCategory: 'Captain Tree',
-        secondaryCategory: '',
-        summary: 'A talent that boosts team effectiveness in critical situations.',
-        articleMarkdown: `
-## Effect
-Increases resilience and usefulness of nearby crew members.
-        `,
-        infobox: [
-            { fieldKey: 'tree', fieldLabel: 'Tree', fieldValue: 'Captain', sortOrder: 0 },
-            { fieldKey: 'impact', fieldLabel: 'Impact', fieldValue: 'Team support', sortOrder: 1 },
-        ],
-    }),
-    'reactor-management': buildDemoDetail({
-        slug: 'reactor-management',
-        title: 'Reactor Management',
-        entityType: 'OTHER',
-        primaryCategory: 'Mechanics',
-        secondaryCategory: '',
-        summary: 'Basic mechanics for controlling power generation and consumption on a submarine.',
-        articleMarkdown: `
-## Basics
-Stable power supply is critical for all systems: navigation, weapons, and life support.
-        `,
-        infobox: [
-            { fieldKey: 'topic', fieldLabel: 'Topic', fieldValue: 'Power system', sortOrder: 0 },
-            { fieldKey: 'importance', fieldLabel: 'Importance', fieldValue: 'Critical', sortOrder: 1 },
-        ],
-    }),
-};
-
-function buildGenericDemoDetail(slug) {
-    return buildDemoDetail({
-        slug,
-        title: `Demo Article: ${slug}`,
-        entityType: 'OTHER',
-        primaryCategory: 'Demo',
-        summary: 'Demo encyclopedia page for validating layout and data structure.',
-        articleMarkdown: 'Content will be replaced with real data after vanilla import and article publication.',
-        infobox: [
-            { fieldKey: 'source', fieldLabel: 'Source', fieldValue: 'Demo fallback', sortOrder: 0 },
-        ],
-    });
-}
-
-function getDemoDetail(slug) {
-    if (!slug) return null;
-    if (DEMO_DETAIL_BY_SLUG[slug]) return DEMO_DETAIL_BY_SLUG[slug];
-    if (slug.startsWith('demo-')) return buildGenericDemoDetail(slug);
-    return null;
-}
 
 function ensureDetailCollections(detail) {
     if (!detail || typeof detail !== 'object') return detail;
@@ -435,27 +130,15 @@ export default function EncyclopediaDetailPage() {
         const loadDetail = async () => {
             setLoading(true);
             setError('');
-            const demoFallback = getDemoDetail(slug);
             try {
                 const response = await getEncyclopediaDetail(slug);
                 if (!cancelled) {
-                    if (response) {
-                        setDetail(ensureDetailCollections(response));
-                    } else if (demoFallback) {
-                        setDetail(ensureDetailCollections(demoFallback));
-                    } else {
-                        setDetail(null);
-                    }
+                    setDetail(response ? ensureDetailCollections(response) : null);
                 }
             } catch (err) {
                 if (!cancelled) {
-                    if (demoFallback) {
-                        setDetail(ensureDetailCollections(demoFallback));
-                        setError('');
-                    } else {
-                        setDetail(null);
-                        setError(err?.message || 'Failed to load encyclopedia article');
-                    }
+                    setDetail(null);
+                    setError(err?.message || 'Failed to load encyclopedia article');
                 }
             } finally {
                 if (!cancelled) {
@@ -544,8 +227,8 @@ export default function EncyclopediaDetailPage() {
     const craftingRecipes = detail.crafting?.recipes?.length
         ? detail.crafting.recipes
         : (detail.crafting?.recipe ? [detail.crafting.recipe] : []);
-    const hasCraftRecipe = detail.entityType === 'ITEM'
-        && Boolean(detail.crafting?.hasRecipe ?? detail.crafting?.has_recipe ?? craftingRecipes.length > 0);
+    const hasCraftRecipe = Boolean(detail.crafting?.hasRecipe ?? detail.crafting?.has_recipe ?? craftingRecipes.length > 0);
+    const hasArmament = Boolean(detail.armament);
 
     return (
         <div className="page encyclopedia-detail-page">
@@ -555,13 +238,9 @@ export default function EncyclopediaDetailPage() {
                 <section className="encyclopedia-detail-hero glass-card">
                     <div className="encyclopedia-detail-hero-main">
                         <h1>{detail.title}</h1>
-                        {detail.isDemo && (
-                            <p className="encyclopedia-detail-demo-hint">
-                                Demo article: content and infobox are used for structure preview.
-                            </p>
-                        )}
                         <p className="encyclopedia-detail-subtitle">
                             {detail.entityType || 'OTHER'}
+                            {detail.entitySource ? ` · ${detail.entitySource === 'MOD' ? 'Mod' : 'Vanilla'}` : ''}
                             {detail.primaryCategory ? ` · ${detail.primaryCategory}` : ''}
                             {detail.secondaryCategory ? ` / ${detail.secondaryCategory}` : ''}
                         </p>
@@ -569,7 +248,7 @@ export default function EncyclopediaDetailPage() {
                             {detail.summary || detail.shortDescription || 'Description is not available yet.'}
                         </p>
                     </div>
-                    {isAdmin && !detail.isDemo && (
+                    {isAdmin && (
                         <div className="encyclopedia-detail-hero-actions">
                             <Link to={`/admin/encyclopedia/${detail.id}/edit`} className="btn btn-primary">
                                 ✏️ Edit
@@ -618,89 +297,85 @@ export default function EncyclopediaDetailPage() {
                             )}
                         </section>
 
-                        {detail.entityType === 'ITEM' && (
+                        {hasCraftRecipe && (
                             <section className="encyclopedia-detail-section glass-card">
                                 <SectionTitle>Crafting</SectionTitle>
-                                {!hasCraftRecipe ? (
-                                    <p className="encyclopedia-empty-text">Crafting data is missing.</p>
-                                ) : (
-                                    <div className="encyclopedia-crafting-stack">
-                                        {craftingRecipes.map((recipe, recipeIndex) => (
-                                            <article
-                                                className="encyclopedia-crafting-card"
-                                                key={`${recipe.recipeType || 'recipe'}-${recipeIndex}`}
-                                            >
-                                                <div className="encyclopedia-crafting-card-meta">
+                                <div className="encyclopedia-crafting-stack">
+                                    {craftingRecipes.map((recipe, recipeIndex) => (
+                                        <article
+                                            className="encyclopedia-crafting-card"
+                                            key={`${recipe.recipeType || 'recipe'}-${recipeIndex}`}
+                                        >
+                                            <div className="encyclopedia-crafting-card-meta">
+                                                <span>
+                                                    <strong>Type:</strong> {recipe.recipeType || 'FABRICATE'}
+                                                </span>
+                                                {recipe.fabricationTime && (
                                                     <span>
-                                                        <strong>Type:</strong> {recipe.recipeType || 'FABRICATE'}
+                                                        <strong>Time:</strong> {recipe.fabricationTime}
                                                     </span>
-                                                    {recipe.fabricationTime && (
-                                                        <span>
-                                                            <strong>Time:</strong> {recipe.fabricationTime}
-                                                        </span>
-                                                    )}
-                                                    {recipe.outputCount && (
-                                                        <span>
-                                                            <strong>Output:</strong> {recipe.outputCount}
-                                                        </span>
-                                                    )}
-                                                    {Array.isArray(recipe.requiredStations) && recipe.requiredStations.length > 0 && (
-                                                        <span>
-                                                            <strong>Station:</strong> {recipe.requiredStations.join(', ')}
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {Array.isArray(recipe.requiredSkills) && recipe.requiredSkills.length > 0 && (
-                                                    <p className="encyclopedia-crafting-subline">
-                                                        <strong>Required skills:</strong>{' '}
-                                                        {recipe.requiredSkills
-                                                            .map((skill) => `${humanizeIdentifier(skill.identifier)} ${skill.level || ''}`.trim())
-                                                            .join(', ')}
-                                                    </p>
                                                 )}
-
-                                                {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
-                                                    <ul className="encyclopedia-compact-list">
-                                                        {recipe.ingredients.map((ingredient, ingredientIndex) => (
-                                                            <li
-                                                                key={`${ingredient.itemIdentifier || ingredient.itemTag || 'ingredient'}-${ingredientIndex}`}
-                                                                className="encyclopedia-crafting-ingredient-item"
-                                                            >
-                                                                {ingredient.slug && ingredient.isLinkable ? (
-                                                                    <Link to={`/encyclopedia/${ingredient.slug}`}>
-                                                                        {ingredientLabel(ingredient)}
-                                                                    </Link>
-                                                                ) : (
-                                                                    <span className="encyclopedia-crafting-ingredient-text">
-                                                                        {ingredientLabel(ingredient)}
-                                                                    </span>
-                                                                )}
-                                                                {ingredient.amount && (
-                                                                    <span className="encyclopedia-crafting-chip">
-                                                                        x{ingredient.amount}
-                                                                    </span>
-                                                                )}
-                                                                {ingredient.minCondition && (
-                                                                    <small>min condition: {ingredient.minCondition}</small>
-                                                                )}
-                                                                {ingredient.useCondition && (
-                                                                    <small>use condition: {ingredient.useCondition}</small>
-                                                                )}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <p className="encyclopedia-empty-text">Ingredients are not specified.</p>
+                                                {recipe.outputCount && (
+                                                    <span>
+                                                        <strong>Output:</strong> {recipe.outputCount}
+                                                    </span>
                                                 )}
-                                            </article>
-                                        ))}
-                                    </div>
-                                )}
+                                                {Array.isArray(recipe.requiredStations) && recipe.requiredStations.length > 0 && (
+                                                    <span>
+                                                        <strong>Station:</strong> {recipe.requiredStations.join(', ')}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {Array.isArray(recipe.requiredSkills) && recipe.requiredSkills.length > 0 && (
+                                                <p className="encyclopedia-crafting-subline">
+                                                    <strong>Required skills:</strong>{' '}
+                                                    {recipe.requiredSkills
+                                                        .map((skill) => `${humanizeIdentifier(skill.identifier)} ${skill.level || ''}`.trim())
+                                                        .join(', ')}
+                                                </p>
+                                            )}
+
+                                            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+                                                <ul className="encyclopedia-compact-list">
+                                                    {recipe.ingredients.map((ingredient, ingredientIndex) => (
+                                                        <li
+                                                            key={`${ingredient.itemIdentifier || ingredient.itemTag || 'ingredient'}-${ingredientIndex}`}
+                                                            className="encyclopedia-crafting-ingredient-item"
+                                                        >
+                                                            {ingredient.slug && ingredient.isLinkable ? (
+                                                                <Link to={`/encyclopedia/${ingredient.slug}`}>
+                                                                    {ingredientLabel(ingredient)}
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="encyclopedia-crafting-ingredient-text">
+                                                                    {ingredientLabel(ingredient)}
+                                                                </span>
+                                                            )}
+                                                            {ingredient.amount && (
+                                                                <span className="encyclopedia-crafting-chip">
+                                                                    x{ingredient.amount}
+                                                                </span>
+                                                            )}
+                                                            {ingredient.minCondition && (
+                                                                <small>min condition: {ingredient.minCondition}</small>
+                                                            )}
+                                                            {ingredient.useCondition && (
+                                                                <small>use condition: {ingredient.useCondition}</small>
+                                                            )}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <p className="encyclopedia-empty-text">Ingredients are not specified.</p>
+                                            )}
+                                        </article>
+                                    ))}
+                                </div>
                             </section>
                         )}
 
-                        {detail.entityType === 'SUBMARINE' && (
+                        {hasArmament && (
                             <section className="encyclopedia-detail-section glass-card">
                                 <SectionTitle>Armament</SectionTitle>
                                 <div className="encyclopedia-armament-meta">
@@ -848,6 +523,7 @@ export default function EncyclopediaDetailPage() {
                             <div className="encyclopedia-meta-list">
                                 <p><strong>Slug:</strong> {detail.slug}</p>
                                 <p><strong>Type:</strong> {detail.entityType || 'OTHER'}</p>
+                                <p><strong>Source:</strong> {detail.entitySource === 'MOD' ? 'Mod' : 'Vanilla'}</p>
                                 <p><strong>Subtype:</strong> {detail.subtype || '—'}</p>
                                 <p><strong>Game version:</strong> {detail.sourceGameVersion || '—'}</p>
                                 <p><strong>Published:</strong> {formatDate(detail.publishedAt)}</p>
@@ -859,5 +535,3 @@ export default function EncyclopediaDetailPage() {
         </div>
     );
 }
-
-

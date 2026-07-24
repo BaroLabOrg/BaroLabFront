@@ -47,22 +47,6 @@
   font-size: 0.9rem;
 }
 
-.encyclopedia-detail-demo-hint {
-  margin-top: 8px;
-  display: inline-flex;
-  align-items: center;
-  min-height: 18px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--tag-warning-border);
-  background: var(--warning-bg);
-  color: var(--warning);
-  font-size: 11px;
-  font-family: var(--font-heading);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
 .encyclopedia-detail-summary {
   margin: 10px 0 0;
   color: var(--text-primary);
