@@ -61,6 +61,73 @@ describe('splitImportedProperties', () => {
     it('handles a missing/undefined property list', () => {
         expect(splitImportedProperties(undefined)).toEqual({ visible: [], hidden: [] });
     });
+
+    it('recursively prunes noise inside a visible JSON blob (real status_effects example)', () => {
+        const statusEffects = [{
+            action_type: 'Always',
+            afflictions: [],
+            ai_triggers: [],
+            condition_value: 0.01,
+            conditionals: [{
+                key: 'condition',
+                negated: false,
+                operator: 'gt',
+                raw_attrs: { condition: 'gt 0.1' },
+                raw_value: 'gt 0.1',
+                value: '0.1',
+            }],
+            conditionals_summary: ['condition=gt 0.1'],
+            delay: null,
+            disable_delta_time: false,
+            duration: null,
+            explosion_emp: null,
+            explosion_range: null,
+            gives_skills: [],
+            has_explosion: false,
+            has_fire: false,
+            has_remove_item: false,
+            raw_attrs: {},
+            reduce_afflictions: [],
+            required_afflictions: [],
+            required_items: [],
+            set_value: true,
+            spawns_characters: [],
+            spawns_items: [],
+            status_tags: [],
+            target: 'This',
+            triggers_talents: [],
+        }];
+
+        const { visible } = splitImportedProperties([
+            prop('status_effects', JSON.stringify(statusEffects), 'JSON'),
+        ]);
+
+        expect(visible).toHaveLength(1);
+        const cleaned = JSON.parse(visible[0].displayValue);
+        expect(cleaned).toEqual([{
+            action_type: 'Always',
+            condition_value: 0.01,
+            conditionals: [{
+                key: 'condition',
+                operator: 'gt',
+                raw_attrs: { condition: 'gt 0.1' },
+                raw_value: 'gt 0.1',
+                value: '0.1',
+            }],
+            conditionals_summary: ['condition=gt 0.1'],
+            set_value: true,
+            target: 'This',
+        }]);
+    });
+
+    it('hides a JSON property that becomes empty only after pruning noise', () => {
+        const { visible, hidden } = splitImportedProperties([
+            prop('container_settings', JSON.stringify({ auto_inject: false, capacity: null, tags: [] }), 'JSON'),
+        ]);
+
+        expect(visible).toEqual([]);
+        expect(hidden.map((p) => p.propertyKey)).toEqual(['container_settings']);
+    });
 });
 
 describe('groupProperties', () => {

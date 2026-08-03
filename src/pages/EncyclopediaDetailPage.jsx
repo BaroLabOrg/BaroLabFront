@@ -492,7 +492,7 @@ export default function EncyclopediaDetailPage() {
                                                                 <dd>
                                                                     {property.valueType === 'JSON' ? (
                                                                         <pre className="encyclopedia-properties-json">
-                                                                            {property.propertyValue}
+                                                                            {property.displayValue || property.propertyValue}
                                                                         </pre>
                                                                     ) : (
                                                                         property.propertyValue

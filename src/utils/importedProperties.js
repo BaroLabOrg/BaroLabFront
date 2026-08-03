@@ -29,6 +29,31 @@ function isEmptyJsonNode(node) {
     return false;
 }
 
+// Recursively strips noise *inside* a JSON value: nulls, empty
+// strings/arrays/objects, and `false` booleans (the same derived
+// presence-flag pattern as top-level is_*/has_* fields, e.g. a status effect's
+// "has_explosion": false, "spawns_items": [], "delay": null carry no more
+// information than their absence would). Cascades: an object/array element
+// that becomes empty after its own fields are pruned is dropped in turn.
+function pruneJsonNoise(node) {
+    if (Array.isArray(node)) {
+        return node
+            .map(pruneJsonNoise)
+            .filter((item) => item !== false && !isEmptyJsonNode(item));
+    }
+    if (node !== null && typeof node === 'object') {
+        const pruned = {};
+        for (const [key, value] of Object.entries(node)) {
+            if (value === false) continue;
+            const prunedValue = pruneJsonNoise(value);
+            if (isEmptyJsonNode(prunedValue)) continue;
+            pruned[key] = prunedValue;
+        }
+        return pruned;
+    }
+    return node;
+}
+
 function isBoringScalarDefault(valueType, value) {
     const normalized = String(value ?? '').trim().toLowerCase();
     if (valueType === 'BOOLEAN') return normalized === 'false';
@@ -72,11 +97,16 @@ export function splitImportedProperties(properties) {
 
         if (property.valueType === 'JSON') {
             const parsed = safeParseJson(property.propertyValue);
-            if (parsed !== undefined && isEmptyJsonNode(parsed)) {
+            if (parsed === undefined) {
+                visible.push(property);
+                continue;
+            }
+            const pruned = pruneJsonNoise(parsed);
+            if (isEmptyJsonNode(pruned)) {
                 hidden.push(property);
                 continue;
             }
-            visible.push(property);
+            visible.push({ ...property, displayValue: JSON.stringify(pruned, null, 2) });
             continue;
         }
 
