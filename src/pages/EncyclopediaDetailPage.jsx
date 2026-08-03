@@ -474,10 +474,10 @@ export default function EncyclopediaDetailPage() {
                                                     <p className="encyclopedia-properties-group-title">
                                                         {humanizeIdentifier(group.name)}
                                                     </p>
-                                                    <dl className="encyclopedia-infobox-list">
+                                                    <dl className="encyclopedia-properties-item-list">
                                                         {group.items.map((property) => (
                                                             <div
-                                                                className="encyclopedia-infobox-item"
+                                                                className="encyclopedia-properties-item"
                                                                 key={`${property.propertyKey}-${property.propertyValue}`}
                                                             >
                                                                 <dt>{humanizeIdentifier(property.propertyKey)}</dt>

@@ -313,6 +313,28 @@
   text-transform: uppercase;
 }
 
+.encyclopedia-properties-item-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.encyclopedia-properties-item dt {
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.encyclopedia-properties-item dd {
+  margin: 4px 0 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  word-break: break-word;
+}
+
 .encyclopedia-properties-json {
   margin: 0;
   white-space: pre-wrap;
