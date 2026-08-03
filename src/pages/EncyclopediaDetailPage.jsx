@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
+import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import './EncyclopediaDetailPage.css';
 
 function ensureDetailCollections(detail) {
@@ -123,6 +124,7 @@ export default function EncyclopediaDetailPage() {
     const [detail, setDetail] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [showRawProperties, setShowRawProperties] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -130,6 +132,7 @@ export default function EncyclopediaDetailPage() {
         const loadDetail = async () => {
             setLoading(true);
             setError('');
+            setShowRawProperties(false);
             try {
                 const response = await getEncyclopediaDetail(slug);
                 if (!cancelled) {
@@ -169,6 +172,12 @@ export default function EncyclopediaDetailPage() {
         () => normalizeArticleMarkdown(detail?.publishedMarkdown || ''),
         [detail?.publishedMarkdown],
     );
+
+    const { visible: visibleProperties, hidden: hiddenProperties } = useMemo(
+        () => splitImportedProperties(detail?.importedProperties),
+        [detail?.importedProperties],
+    );
+    const propertyGroups = useMemo(() => groupProperties(visibleProperties), [visibleProperties]);
 
     const markdownComponents = useMemo(() => ({
         a: ({ href, children, ...props }) => {
@@ -463,28 +472,75 @@ export default function EncyclopediaDetailPage() {
                             {detail.importedProperties.length === 0 ? (
                                 <p className="encyclopedia-empty-text">No imported properties.</p>
                             ) : (
-                                <div className="encyclopedia-properties-table-wrap">
-                                    <table className="encyclopedia-properties-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Key</th>
-                                                <th>Value</th>
-                                                <th>Type</th>
-                                                <th>Origin</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {detail.importedProperties.map((property) => (
-                                                <tr key={`${property.propertyKey}-${property.propertyValue}`}>
-                                                    <td>{property.propertyKey}</td>
-                                                    <td>{property.propertyValue}</td>
-                                                    <td>{property.valueType}</td>
-                                                    <td>{property.origin}</td>
-                                                </tr>
+                                <>
+                                    {propertyGroups.length === 0 ? (
+                                        <p className="encyclopedia-empty-text">No notable properties to show.</p>
+                                    ) : (
+                                        <div className="encyclopedia-properties-groups">
+                                            {propertyGroups.map((group) => (
+                                                <div className="encyclopedia-properties-group" key={group.name}>
+                                                    <p className="encyclopedia-properties-group-title">
+                                                        {humanizeIdentifier(group.name)}
+                                                    </p>
+                                                    <dl className="encyclopedia-infobox-list">
+                                                        {group.items.map((property) => (
+                                                            <div
+                                                                className="encyclopedia-infobox-item"
+                                                                key={`${property.propertyKey}-${property.propertyValue}`}
+                                                            >
+                                                                <dt>{humanizeIdentifier(property.propertyKey)}</dt>
+                                                                <dd>
+                                                                    {property.valueType === 'JSON' ? (
+                                                                        <pre className="encyclopedia-properties-json">
+                                                                            {property.propertyValue}
+                                                                        </pre>
+                                                                    ) : (
+                                                                        property.propertyValue
+                                                                    )}
+                                                                </dd>
+                                                            </div>
+                                                        ))}
+                                                    </dl>
+                                                </div>
                                             ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        </div>
+                                    )}
+
+                                    {hiddenProperties.length > 0 && (
+                                        <button
+                                            type="button"
+                                            className="encyclopedia-properties-toggle"
+                                            onClick={() => setShowRawProperties((prev) => !prev)}
+                                        >
+                                            {showRawProperties ? 'Hide' : 'Show'} raw imported data ({detail.importedProperties.length})
+                                        </button>
+                                    )}
+
+                                    {showRawProperties && (
+                                        <div className="encyclopedia-properties-table-wrap">
+                                            <table className="encyclopedia-properties-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Key</th>
+                                                        <th>Value</th>
+                                                        <th>Type</th>
+                                                        <th>Origin</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {detail.importedProperties.map((property) => (
+                                                        <tr key={`${property.propertyKey}-${property.propertyValue}`}>
+                                                            <td>{property.propertyKey}</td>
+                                                            <td>{property.propertyValue}</td>
+                                                            <td>{property.valueType}</td>
+                                                            <td>{property.origin}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </section>
                     </main>
