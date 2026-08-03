@@ -14,7 +14,6 @@ BaroLab is not affiliated with FakeFish, Undertow Games, Daedalic Entertainment,
 - Guides: https://barolab.org/guides
 - Tags: https://barolab.org/tags
 - Load Order: https://barolab.org/load-order
-- Vanilla Data: https://barolab.org/vanilla
 - Encyclopedia: https://barolab.org/encyclopedia
 - About: https://barolab.org/about
 
