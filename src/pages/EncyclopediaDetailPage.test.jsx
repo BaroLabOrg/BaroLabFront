@@ -231,6 +231,47 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.queryByRole('heading', { name: 'Crafting' })).not.toBeInTheDocument();
     });
 
+    it('renders a random event as an action tree and drops its always-empty sections', async () => {
+        const actions = [{
+            tag: 'checkdataaction',
+            attrs: { identifier: 'youngcultists_completed' },
+            children: [{ tag: 'success', attrs: {}, children: [] }],
+        }];
+
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'RANDOM_EVENT',
+            slug: 'event-youngcultists',
+            title: 'youngcultists',
+            infobox: [],
+            primaryImage: null,
+            importedProperties: [
+                { propertyKey: 'event_type', propertyValue: 'ScriptedEvent', valueType: 'TEXT', origin: 'IMPORTED' },
+                {
+                    propertyKey: 'actions',
+                    propertyValue: JSON.stringify(actions),
+                    valueType: 'JSON',
+                    origin: 'IMPORTED',
+                },
+            ],
+        }));
+
+        renderPage('/encyclopedia/event-youngcultists');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'youngcultists' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByRole('heading', { name: 'Event script' })).toBeInTheDocument();
+        expect(screen.getByText('Checkdataaction')).toBeInTheDocument();
+        // the tree replaces the generic property row for `actions`
+        expect(screen.queryByText('Actions')).not.toBeInTheDocument();
+        // ... but the raw table is still reachable
+        expect(screen.getByRole('button', { name: /Show raw imported data/ })).toBeInTheDocument();
+
+        expect(screen.queryByText('Image not available')).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { name: 'Infobox' })).not.toBeInTheDocument();
+    });
+
     it('renders the armament section when armament data is present', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'SUBMARINE',

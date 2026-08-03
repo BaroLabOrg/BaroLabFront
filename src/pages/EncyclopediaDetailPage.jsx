@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
+import EventActionTree from '../components/EventActionTree';
 import { PropertyFieldList } from '../components/PropertyValue';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { humanizeIdentifier } from '../utils/text';
@@ -169,7 +170,26 @@ export default function EncyclopediaDetailPage() {
         () => splitImportedProperties(detail?.importedProperties),
         [detail?.importedProperties],
     );
-    const propertyGroups = useMemo(() => groupProperties(visibleProperties), [visibleProperties]);
+
+    const isRandomEvent = detail?.entityType === 'RANDOM_EVENT';
+
+    // A random event's whole content is its `actions` tree; it gets its own
+    // section below, so keep it out of the generic property list.
+    const eventActions = useMemo(() => {
+        if (!isRandomEvent) return null;
+        const property = visibleProperties.find((entry) => entry.propertyKey === 'actions');
+        const value = property?.displayData ?? null;
+        return Array.isArray(value) && value.length > 0 ? value : null;
+    }, [isRandomEvent, visibleProperties]);
+
+    const propertyGroups = useMemo(
+        () => groupProperties(
+            eventActions
+                ? visibleProperties.filter((entry) => entry.propertyKey !== 'actions')
+                : visibleProperties,
+        ),
+        [visibleProperties, eventActions],
+    );
 
     const markdownComponents = useMemo(() => ({
         a: ({ href, children, ...props }) => {
@@ -459,6 +479,13 @@ export default function EncyclopediaDetailPage() {
                             )}
                         </section>
 
+                        {eventActions && (
+                            <section className="encyclopedia-detail-section glass-card">
+                                <SectionTitle>Event script</SectionTitle>
+                                <EventActionTree nodes={eventActions} />
+                            </section>
+                        )}
+
                         <section className="encyclopedia-detail-section glass-card">
                             <SectionTitle>Imported properties</SectionTitle>
                             {detail.importedProperties.length === 0 ? (
@@ -487,7 +514,7 @@ export default function EncyclopediaDetailPage() {
                                         </div>
                                     )}
 
-                                    {hiddenProperties.length > 0 && (
+                                    {(hiddenProperties.length > 0 || Boolean(eventActions)) && (
                                         <button
                                             type="button"
                                             className="encyclopedia-properties-toggle"
@@ -527,18 +554,23 @@ export default function EncyclopediaDetailPage() {
                     </main>
 
                     <aside className="encyclopedia-detail-sidebar">
-                        <section className="encyclopedia-detail-section glass-card encyclopedia-image-card">
-                            {detail.primaryImage?.publicUrl ? (
-                                <img
-                                    className="encyclopedia-primary-image"
-                                    src={detail.primaryImage.publicUrl}
-                                    alt={detail.title}
-                                />
-                            ) : (
-                                <div className="encyclopedia-primary-image-placeholder">Image not available</div>
-                            )}
-                        </section>
+                        {/* Random events never ship an icon or infobox-worthy
+                            stats, so an empty placeholder there is just noise. */}
+                        {!isRandomEvent && (
+                            <section className="encyclopedia-detail-section glass-card encyclopedia-image-card">
+                                {detail.primaryImage?.publicUrl ? (
+                                    <img
+                                        className="encyclopedia-primary-image"
+                                        src={detail.primaryImage.publicUrl}
+                                        alt={detail.title}
+                                    />
+                                ) : (
+                                    <div className="encyclopedia-primary-image-placeholder">Image not available</div>
+                                )}
+                            </section>
+                        )}
 
+                        {!(isRandomEvent && detail.infobox.length === 0) && (
                         <section className="encyclopedia-detail-section glass-card">
                             <SectionTitle>Infobox</SectionTitle>
                             {detail.infobox.length === 0 ? (
@@ -554,6 +586,7 @@ export default function EncyclopediaDetailPage() {
                                 </dl>
                             )}
                         </section>
+                        )}
 
                         <section className="encyclopedia-detail-section glass-card">
                             <SectionTitle>Metadata</SectionTitle>
