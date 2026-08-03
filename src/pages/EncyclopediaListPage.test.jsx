@@ -34,7 +34,7 @@ vi.mock('../context/AuthContext', () => ({
 }));
 
 vi.mock('../context/QuestContext', () => ({
-    useQuest: () => ({ stage: 0, setStage: vi.fn(), openInspect: vi.fn() }),
+    useOptionalQuest: () => null,
 }));
 
 function paged(items, overrides = {}) {
