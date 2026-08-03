@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
-import JsonValue from '../components/JsonValue';
+import { PropertyFieldList } from '../components/PropertyValue';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { humanizeIdentifier } from '../utils/text';
 import './EncyclopediaDetailPage.css';
@@ -474,29 +474,14 @@ export default function EncyclopediaDetailPage() {
                                                     <p className="encyclopedia-properties-group-title">
                                                         {humanizeIdentifier(group.name)}
                                                     </p>
-                                                    <dl className="encyclopedia-properties-item-list">
-                                                        {group.items.map((property) => (
-                                                            <div
-                                                                className="encyclopedia-properties-item"
-                                                                key={`${property.propertyKey}-${property.propertyValue}`}
-                                                            >
-                                                                <dt>{humanizeIdentifier(property.propertyKey)}</dt>
-                                                                <dd>
-                                                                    {property.valueType === 'JSON' ? (
-                                                                        property.displayData !== undefined ? (
-                                                                            <JsonValue value={property.displayData} />
-                                                                        ) : (
-                                                                            <pre className="encyclopedia-properties-json">
-                                                                                {property.propertyValue}
-                                                                            </pre>
-                                                                        )
-                                                                    ) : (
-                                                                        property.propertyValue
-                                                                    )}
-                                                                </dd>
-                                                            </div>
-                                                        ))}
-                                                    </dl>
+                                                    <PropertyFieldList
+                                                        entries={group.items.map((property) => [
+                                                            property.propertyKey,
+                                                            property.valueType === 'JSON' && property.displayData !== undefined
+                                                                ? property.displayData
+                                                                : property.propertyValue,
+                                                        ])}
+                                                    />
                                                 </div>
                                             ))}
                                         </div>

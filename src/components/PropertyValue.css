@@ -1,0 +1,54 @@
+.property-field-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 8px;
+}
+
+/* Row wrapper disappears from layout so its dt/dd become direct grid items —
+   this is what keeps every row's label column the same width. */
+.property-field-row {
+  display: contents;
+}
+
+.property-field-label {
+  min-width: 0;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.property-field-value {
+  min-width: 0;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.property-value-path {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.property-nested-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The only cue that a value is nested — a hairline rule + indent — so
+   Status Effects-style nested objects stay legible without borrowed
+   card borders. */
+.property-nested-block {
+  min-width: 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-color);
+}
