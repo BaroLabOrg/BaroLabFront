@@ -297,49 +297,23 @@
   text-transform: uppercase;
 }
 
+/* Single column on purpose: a masonry-style grid here forced two
+   side-by-side groups of very different field counts to share one row
+   height, leaving the shorter group's box half-empty. Groups just stack. */
 .encyclopedia-properties-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 14px;
 }
 
 .encyclopedia-properties-group-title {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--text-muted);
   font-family: var(--font-heading);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.encyclopedia-properties-item-list {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.encyclopedia-properties-item dt {
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.encyclopedia-properties-item dd {
-  margin: 4px 0 0;
-  color: var(--text-primary);
-  font-size: 13px;
-  word-break: break-word;
-}
-
-.encyclopedia-properties-json {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 12px;
 }
 
 .encyclopedia-properties-toggle {
