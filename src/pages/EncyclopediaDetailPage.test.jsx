@@ -78,7 +78,7 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.getByText('Husk Egg')).toBeInTheDocument();
         expect(screen.getByText('Calyxanide')).toBeInTheDocument();
         expect(screen.getByText('Mod #123456')).toBeInTheDocument();
-        expect(screen.getByText('max_strength')).toBeInTheDocument();
+        expect(screen.getByText('Max Strength')).toBeInTheDocument();
         expect(screen.getByText('Parasitic')).toBeInTheDocument();
         expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'Source: Vanilla')).toBeInTheDocument();
         expect(screen.queryByRole('link', { name: '✏️ Edit' })).not.toBeInTheDocument();

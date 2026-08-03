@@ -297,8 +297,49 @@
   text-transform: uppercase;
 }
 
+.encyclopedia-properties-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.encyclopedia-properties-group-title {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.encyclopedia-properties-json {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+}
+
+.encyclopedia-properties-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--accent);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.encyclopedia-properties-toggle:hover {
+  border-color: var(--accent);
+}
+
 .encyclopedia-properties-table-wrap {
   overflow-x: auto;
+  margin-top: 12px;
 }
 
 .encyclopedia-properties-table {
