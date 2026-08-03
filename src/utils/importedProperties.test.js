@@ -103,17 +103,9 @@ describe('splitImportedProperties', () => {
         ]);
 
         expect(visible).toHaveLength(1);
-        const cleaned = JSON.parse(visible[0].displayValue);
-        expect(cleaned).toEqual([{
+        expect(visible[0].displayData).toEqual([{
             action_type: 'Always',
             condition_value: 0.01,
-            conditionals: [{
-                key: 'condition',
-                operator: 'gt',
-                raw_attrs: { condition: 'gt 0.1' },
-                raw_value: 'gt 0.1',
-                value: '0.1',
-            }],
             conditionals_summary: ['condition=gt 0.1'],
             set_value: true,
             target: 'This',
@@ -127,6 +119,51 @@ describe('splitImportedProperties', () => {
 
         expect(visible).toEqual([]);
         expect(hidden.map((p) => p.propertyKey)).toEqual(['container_settings']);
+    });
+
+    it('drops a detailed field in favor of its non-empty "_summary" sibling (real conditionals example)', () => {
+        const effect = {
+            action_type: 'OnContained',
+            conditionals: [
+                {
+                    key: 'voltage', operator: 'gt', value: '0.01', raw_value: 'gt 0.01',
+                    raw_attrs: {
+                        targetcontainer: 'true', targetgrandparent: 'true',
+                        targetitemcomponent: 'Powered', voltage: 'gt 0.01',
+                    },
+                },
+                {
+                    key: 'targetcontainer', value: 'true', raw_value: 'true',
+                    raw_attrs: {
+                        targetcontainer: 'true', targetgrandparent: 'true',
+                        targetitemcomponent: 'Powered', voltage: 'gt 0.01',
+                    },
+                },
+            ],
+            conditionals_summary: ['voltage=gt 0.01', 'targetcontainer=true', 'targetgrandparent=true', 'targetitemcomponent=Powered'],
+            target: 'Contained',
+        };
+
+        const { visible } = splitImportedProperties([
+            prop('status_effects', JSON.stringify([effect]), 'JSON'),
+        ]);
+
+        expect(visible[0].displayData).toEqual([{
+            action_type: 'OnContained',
+            conditionals_summary: ['voltage=gt 0.01', 'targetcontainer=true', 'targetgrandparent=true', 'targetitemcomponent=Powered'],
+            target: 'Contained',
+        }]);
+    });
+
+    it('keeps a "foo" field when there is no non-empty "foo_summary" sibling', () => {
+        const { visible } = splitImportedProperties([
+            prop('status_effects', JSON.stringify([{ action_type: 'OnUse', raw_attrs: { requireaimtouse: 'false' } }]), 'JSON'),
+        ]);
+
+        expect(visible[0].displayData).toEqual([{
+            action_type: 'OnUse',
+            raw_attrs: { requireaimtouse: 'false' },
+        }]);
     });
 });
 

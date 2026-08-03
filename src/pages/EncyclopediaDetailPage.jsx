@@ -4,7 +4,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
+import JsonValue from '../components/JsonValue';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
+import { humanizeIdentifier } from '../utils/text';
 import './EncyclopediaDetailPage.css';
 
 function ensureDetailCollections(detail) {
@@ -61,16 +63,6 @@ function formatDate(value) {
         month: 'short',
         year: 'numeric',
     });
-}
-
-function humanizeIdentifier(value) {
-    const normalized = String(value || '').trim();
-    if (!normalized) return '';
-    return normalized
-        .replace(/[_-]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function ingredientLabel(ingredient) {
@@ -491,9 +483,13 @@ export default function EncyclopediaDetailPage() {
                                                                 <dt>{humanizeIdentifier(property.propertyKey)}</dt>
                                                                 <dd>
                                                                     {property.valueType === 'JSON' ? (
-                                                                        <pre className="encyclopedia-properties-json">
-                                                                            {property.displayValue || property.propertyValue}
-                                                                        </pre>
+                                                                        property.displayData !== undefined ? (
+                                                                            <JsonValue value={property.displayData} />
+                                                                        ) : (
+                                                                            <pre className="encyclopedia-properties-json">
+                                                                                {property.propertyValue}
+                                                                            </pre>
+                                                                        )
                                                                     ) : (
                                                                         property.propertyValue
                                                                     )}

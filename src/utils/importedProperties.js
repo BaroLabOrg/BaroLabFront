@@ -49,6 +49,17 @@ function pruneJsonNoise(node) {
             if (isEmptyJsonNode(prunedValue)) continue;
             pruned[key] = prunedValue;
         }
+        // A "foo" field is dropped whenever a non-empty "foo_summary" sibling
+        // survived pruning: the resolver's *_summary fields already restate the
+        // same facts as their detailed counterpart in one concise line (e.g.
+        // conditionals_summary: ["voltage=gt 0.01", ...] vs the 4 separate
+        // conditionals entries — one per split XML attribute — each repeating
+        // an identical raw_attrs copy of all 4).
+        for (const key of Object.keys(pruned)) {
+            if (Object.prototype.hasOwnProperty.call(pruned, `${key}_summary`)) {
+                delete pruned[key];
+            }
+        }
         return pruned;
     }
     return node;
@@ -106,7 +117,7 @@ export function splitImportedProperties(properties) {
                 hidden.push(property);
                 continue;
             }
-            visible.push({ ...property, displayValue: JSON.stringify(pruned, null, 2) });
+            visible.push({ ...property, displayData: pruned });
             continue;
         }
 
