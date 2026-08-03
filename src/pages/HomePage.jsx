@@ -60,7 +60,7 @@ const DEPTH_READINGS = [
 export default function HomePage() {
     useDocumentMeta({
         title: 'BaroLab — Barotrauma Mods, Submarines, Guides and Game Data',
-        description: 'Explore Barotrauma mods, submarines, guides, tags, load order information, vanilla game data and encyclopedia entries on BaroLab.',
+        description: 'Explore Barotrauma mods, submarines, guides, tags, load order information and encyclopedia entries on BaroLab.',
     });
 
     const [stats, setStats] = useState({ mods: null, submarines: null, guides: null });
@@ -99,7 +99,7 @@ export default function HomePage() {
         <div className="home-page">
             {/* SEO: visually hidden heading for crawlers */}
             <h1 className="visually-hidden">
-                BaroLab — Barotrauma Mods, Submarines and Guides. Discover Barotrauma mods, custom submarines, community guides, tags, load order information, vanilla game data and encyclopedia entries. Built for Barotrauma players, modders, submarine creators and server owners.
+                BaroLab — Barotrauma Mods, Submarines and Guides. Discover Barotrauma mods, custom submarines, community guides, tags, load order information and encyclopedia entries. Built for Barotrauma players, modders, submarine creators and server owners.
             </h1>
 
             {/* Hero */}

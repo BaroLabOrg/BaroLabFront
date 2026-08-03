@@ -28,7 +28,7 @@ export default function AboutPage() {
                         <section className="about-section">
                             <h2 className="about-subtitle">What BaroLab contains</h2>
                             <p className="about-text">
-                                BaroLab helps users discover Barotrauma mods, custom submarines, community guides, tags, load order information, vanilla game data and encyclopedia entries.
+                                BaroLab helps users discover Barotrauma mods, custom submarines, community guides, tags, load order information and encyclopedia entries.
                             </p>
                             <ul className="about-list">
                                 <li><span className="about-list-label">Mods</span> — Barotrauma Workshop modifications with descriptions, tags, ratings and download info.</li>
@@ -36,8 +36,7 @@ export default function AboutPage() {
                                 <li><span className="about-list-label">Guides</span> — Community-written guides covering engineering, wiring, medical procedures and modding.</li>
                                 <li><span className="about-list-label">Tags</span> — Categorization system for mods and submarines.</li>
                                 <li><span className="about-list-label">Load Order</span> — Tools for managing Barotrauma mod load order and resolving conflicts.</li>
-                                <li><span className="about-list-label">Vanilla Data</span> — Reference data from the base Barotrauma game.</li>
-                                <li><span className="about-list-label">Encyclopedia</span> — Entries for Barotrauma creatures, items and game mechanics.</li>
+                                <li><span className="about-list-label">Encyclopedia</span> — Entries for Barotrauma creatures, items and game mechanics, covering both vanilla and mod content.</li>
                             </ul>
                         </section>
 
