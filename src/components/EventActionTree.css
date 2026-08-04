@@ -1,0 +1,89 @@
+.event-action-tree,
+.event-action-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Same hairline-and-indent cue the nested property blocks use, so nesting
+   reads the same way across the page. */
+.event-action-children {
+  margin-top: 6px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-color);
+}
+
+.event-action-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.event-action-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.event-action-tag {
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.event-action-toggle:hover .event-action-tag {
+  color: var(--accent);
+}
+
+.event-action-tag-leaf {
+  color: var(--text-secondary);
+}
+
+.event-action-count {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.event-action-attrs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-action-attr {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 1px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.event-action-attr-key {
+  color: var(--text-muted);
+}
+
+.event-action-attr-value {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
