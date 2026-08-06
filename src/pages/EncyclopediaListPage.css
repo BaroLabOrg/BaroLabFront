@@ -156,6 +156,7 @@
 }
 
 .encyclopedia-card {
+  width: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -164,6 +165,20 @@
   background: var(--bg-card);
   transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
   position: relative;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+}
+
+.encyclopedia-card-select { cursor: pointer; }
+
+.encyclopedia-card-action {
+  margin-top: auto;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .encyclopedia-card::before {

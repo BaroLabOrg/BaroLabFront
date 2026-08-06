@@ -3,6 +3,11 @@ const UUID_PATTERN = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB]
 const REFERENCE_PATTERNS = [
     {
         type: 'guide',
+        pattern: new RegExp(`^/guides/(${UUID_PATTERN})$`),
+        create: ([, guideId]) => ({ type: 'guide', guideId }),
+    },
+    {
+        type: 'guide',
         pattern: new RegExp(`^/mod/(\\d+)/guides/(${UUID_PATTERN})$`),
         create: ([, modId, guideId]) => ({ type: 'guide', modId, guideId }),
     },
@@ -58,8 +63,7 @@ export function buildInternalGuideLink(type, item) {
         return externalId ? `/submarines/${externalId}` : null;
     }
     if (type === 'guide') {
-        const modId = item?.modId ?? item?.mod_id;
-        return modId && item?.id ? `/mod/${modId}/guides/${item.id}` : null;
+        return item?.id ? `/guides/${item.id}` : null;
     }
     if (type === 'encyclopedia') {
         return item?.slug ? `/encyclopedia/${item.slug}` : null;

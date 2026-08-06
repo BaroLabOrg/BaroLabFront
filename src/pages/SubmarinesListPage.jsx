@@ -219,6 +219,7 @@ export default function SubmarinesListPage() {
     });
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const guideTargetMode = searchParams.get('guideTarget') === '1';
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
@@ -525,7 +526,9 @@ export default function SubmarinesListPage() {
         setSearchInput('');
         setTagToAdd('');
         setShowAdvancedSearch(false);
-        setSearchParams(new URLSearchParams());
+        const nextParams = new URLSearchParams();
+        if (guideTargetMode) nextParams.set('guideTarget', '1');
+        setSearchParams(nextParams);
     };
 
     const handlePageChange = (nextPage) => {
@@ -760,11 +763,19 @@ export default function SubmarinesListPage() {
         <div className="page page--submarines">
             <div className="container submarines-page">
                 <section className="submarines-header-box glass-card shine">
-                    <h1 className="submarines-title">Submarines</h1>
+                    <h1 className="submarines-title">{guideTargetMode ? 'Choose a submarine for your guide' : 'Submarines'}</h1>
                     <p className="submarines-subtitle">
-                        Community submarine catalog. Total: {totalSubmarines}
+                        {guideTargetMode
+                            ? `Use the catalog filters, then choose a submarine. Found: ${totalSubmarines}`
+                            : `Community submarine catalog. Total: ${totalSubmarines}`}
                     </p>
-                    {isAuthenticated ? (
+                    {guideTargetMode ? (
+                        <div className="submarines-actions">
+                            <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
+                                ← Change guide type
+                            </button>
+                        </div>
+                    ) : isAuthenticated ? (
                         <div className="submarines-actions">
                             <button
                                 className="btn btn-primary"
@@ -1154,7 +1165,7 @@ export default function SubmarinesListPage() {
                     )}
                 </section>
 
-                {isAuthenticated && showForm && (
+                {!guideTargetMode && isAuthenticated && showForm && (
                     <form
                         className="create-submarine-form glass-card fade-in"
                         onSubmit={handleCreateSubmarine}
@@ -1385,6 +1396,11 @@ export default function SubmarinesListPage() {
                             <SubmarineCard
                                 key={submarine.id || submarine.externalId || submarine.external_id}
                                 submarine={submarine}
+                                actionLabel={guideTargetMode ? 'Write guide →' : 'Read more →'}
+                                onSelect={guideTargetMode ? (selectedSubmarine) => {
+                                    const targetId = selectedSubmarine.externalId || selectedSubmarine.external_id;
+                                    navigate(`/guides/new/editor?targetType=SUBMARINE&targetId=${encodeURIComponent(targetId)}`);
+                                } : undefined}
                             />
                         ))}
                     </section>

@@ -2,7 +2,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as guideApi from '../api/modGuides';
-import * as modsApi from '../api/mods';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import useDocumentMeta from '../hooks/useDocumentMeta';
@@ -26,12 +25,6 @@ export default function GuidesListPage() {
     const [totalGuides, setTotalGuides] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-
-    // Modal state
-    const [showModal, setShowModal] = useState(false);
-    const [mods, setMods] = useState([]);
-    const [loadingMods, setLoadingMods] = useState(false);
-    const [modsError, setModsError] = useState('');
 
     useEffect(() => {
         loadGuides(page);
@@ -59,31 +52,7 @@ export default function GuidesListPage() {
         }
     };
 
-    const handleOpenModal = async () => {
-        setShowModal(true);
-        if (mods.length === 0) {
-            setLoadingMods(true);
-            setModsError('');
-            try {
-                const data = await modsApi.getMods({
-                    page: 0,
-                    size: 100,
-                    sortBy: 'title',
-                    direction: 'asc',
-                });
-                const activeMods = data.items.filter((m) => m.status === 'ACTIVE');
-                setMods(activeMods);
-            } catch (err) {
-                setModsError(mapPaginationError(err, 'Failed to load mods list'));
-            } finally {
-                setLoadingMods(false);
-            }
-        }
-    };
-
-    const handleModSelect = (modId) => {
-        navigate(`/mod/${modId}/guides/new`);
-    };
+    const handleOpenModal = () => navigate('/guides/new');
 
     if (loading) {
         return (
@@ -139,7 +108,7 @@ export default function GuidesListPage() {
                             <div key={guide.id} className="guide-card glass-card hover-glow">
                                 <div className="guide-card-content">
                                     <h2 className="guide-card-title">
-                                        <Link to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}`}>
+                                        <Link to={`/guides/${guide.id}`}>
                                             {guide.title}
                                         </Link>
                                     </h2>
@@ -156,13 +125,13 @@ export default function GuidesListPage() {
                                 </div>
                                 <div className="guide-card-footer">
                                     <Link
-                                        to={`/mod/${guide.modId || guide.mod_id}`}
+                                        to={guide.targetHref || guide.target_href || `/mod/${guide.modId || guide.mod_id}`}
                                         className="guide-card-mod-link"
                                     >
-                                        To mod 🎮
+                                        {guide.targetTitle || guide.target_title || 'View subject'}
                                     </Link>
                                     <Link
-                                        to={`/mod/${guide.modId || guide.mod_id}/guides/${guide.id}`}
+                                        to={`/guides/${guide.id}`}
                                         className="btn btn-outline btn-sm"
                                     >
                                         Read
@@ -182,68 +151,6 @@ export default function GuidesListPage() {
                     onPageChange={setPage}
                 />
 
-                {showModal && (
-                    <div className="modal-overlay" onClick={() => setShowModal(false)}>
-                        <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h3>Select a mod for the guide</h3>
-                                <button className="btn-close" onClick={() => setShowModal(false)}>✕</button>
-                            </div>
-                            <div className="modal-body">
-                                {loadingMods ? (
-                                    <div className="loading-state">
-                                        <div className="loading-spinner" />
-                                    </div>
-                                ) : modsError ? (
-                                    <div className="error-message">Error: {modsError}</div>
-                                ) : mods.length === 0 ? (
-                                    <div className="no-guides-message">No available mods. You can add a mod on the \"Mods\" page.</div>
-                                ) : (
-                                    <div className="mods-list">
-                                        {mods.map(mod => (
-                                            <div
-                                                key={mod.id}
-                                                className="mod-card glass-card hover-glow"
-                                                style={{ cursor: 'pointer', opacity: 1, animation: 'none' }}
-                                                onClick={() => handleModSelect(mod.external_id)}
-                                            >
-                                                <div className="mod-card-banner">
-                                                    <span className="mod-card-banner-placeholder">🔧</span>
-                                                </div>
-                                                <div className="mod-card-body">
-                                                    <h3 className="mod-card-title">{mod.title}</h3>
-                                                    <p className="mod-card-content">
-                                                        {mod.description?.length > 100
-                                                            ? mod.description.slice(0, 100) + '…'
-                                                            : mod.description}
-                                                    </p>
-                                                    <div className="mod-card-footer">
-                                                        <span className="mod-card-author">
-                                                            👤 {mod.author?.username || mod.author_username || 'Unknown'}
-                                                        </span>
-                                                        <span className="mod-card-date">
-                                                            {new Date(mod.createdAt || mod.created_at).toLocaleDateString('en-US', {
-                                                                day: 'numeric',
-                                                                month: 'short',
-                                                                year: 'numeric',
-                                                            })}
-                                                        </span>
-                                                    </div>
-                                                    <div className="mod-card-stats">
-                                                        <span className="mod-card-transitions" title="Visits">
-                                                            🔗 {mod.popularity ?? 0}
-                                                        </span>
-                                                        <span className="mod-card-read">Create guide →</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
             </main>
         </div>
     );

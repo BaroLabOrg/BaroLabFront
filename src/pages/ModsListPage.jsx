@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
@@ -48,7 +48,9 @@ export default function ModsListPage() {
     });
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const guideTargetMode = searchParams.get('guideTarget') === '1';
     const query = normalizeQuery(searchParams.get('q'));
     const selectedTags = parseTags(searchParams);
     const selectedTagsKey = selectedTags.join(',');
@@ -297,11 +299,19 @@ export default function ModsListPage() {
         <div className="page page--mods">
             <div className="container">
                 <div className="mods-header-box glass-card shine">
-                    <h1 className="mods-title">🔧 Mods Library</h1>
+                    <h1 className="mods-title">{guideTargetMode ? 'Choose a mod for your guide' : '🔧 Mods Library'}</h1>
                     <p className="mods-subtitle">
-                        Community Steam Workshop mods · total: {totalMods}
+                        {guideTargetMode
+                            ? `Use the familiar search and filters, then choose a mod. Found: ${totalMods}`
+                            : `Community Steam Workshop mods · total: ${totalMods}`}
                     </p>
-                    {isAuthenticated ? (
+                    {guideTargetMode ? (
+                        <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
+                            <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
+                                ← Change guide type
+                            </button>
+                        </div>
+                    ) : isAuthenticated ? (
                         <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
                             <button
                                 id="create-mod-toggle"
@@ -392,7 +402,7 @@ export default function ModsListPage() {
                     </div>
                 </section>
 
-                {isAuthenticated && showForm && (
+                {!guideTargetMode && isAuthenticated && showForm && (
                     <form className="create-mod-form glass-card fade-in" onSubmit={handleCreateMod}>
                         <h3 className="form-title">Add mod</h3>
                         <div className="form-group">
@@ -498,6 +508,11 @@ export default function ModsListPage() {
                                 key={mod.id || mod.external_id || mod.externalId}
                                 mod={mod}
                                 style={{ animationDelay: `${i * 0.05}s` }}
+                                actionLabel={guideTargetMode ? 'Write guide →' : 'Read more →'}
+                                onSelect={guideTargetMode ? (selectedMod) => {
+                                    const targetId = selectedMod.external_id || selectedMod.externalId;
+                                    navigate(`/guides/new/editor?targetType=MOD&targetId=${encodeURIComponent(targetId)}`);
+                                } : undefined}
                             />
                         ))}
                     </div>

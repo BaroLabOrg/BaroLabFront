@@ -26,6 +26,9 @@ const SubmarinePage = lazy(() => import('./pages/SubmarinePage'));
 const ModGuidePage = lazy(() => import('./pages/ModGuidePage'));
 const GuidesListPage = lazy(() => import('./pages/GuidesListPage'));
 const ModGuideEditor = lazy(() => import('./pages/ModGuideEditor'));
+const GuideCreatePage = lazy(() => import('./pages/GuideCreatePage'));
+const GuideEditorPage = lazy(() => import('./pages/GuideEditorPage'));
+const GuidePage = lazy(() => import('./pages/GuidePage'));
 const TagsPage = lazy(() => import('./pages/TagsPage'));
 const LoadOrderPage = lazy(() => import('./pages/LoadOrderPage'));
 const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
@@ -104,6 +107,7 @@ export default function App() {
                         path="/guides"
                         element={<GuidesListPage />}
                     />
+                    <Route path="/guides/:guideId" element={<GuidePage />} />
                     <Route
                         path="/tags"
                         element={<TagsPage />}
@@ -134,6 +138,30 @@ export default function App() {
                         element={
                             <ProtectedRoute adminOnly>
                                 <AdminPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/guides/new"
+                        element={
+                            <ProtectedRoute>
+                                <GuideCreatePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/guides/new/editor"
+                        element={
+                            <ProtectedRoute>
+                                <GuideEditorPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/guides/:guideId/edit"
+                        element={
+                            <ProtectedRoute>
+                                <GuideEditorPage />
                             </ProtectedRoute>
                         }
                     />

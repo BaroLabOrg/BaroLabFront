@@ -1,6 +1,6 @@
 import { getMod, searchMods } from './mods';
 import { getSubmarine, searchSubmarines } from './submarines';
-import { getAllGuides, getModGuideById } from './modGuides';
+import { getAllGuides, getGuideById, getModGuideById } from './modGuides';
 import { getEncyclopediaDetail, searchEncyclopedia } from './encyclopedia';
 
 const previewCache = new Map();
@@ -35,6 +35,16 @@ async function fetchPreview(reference) {
     }
 
     if (reference.type === 'guide') {
+        if (!reference.modId) {
+            const guide = await getGuideById(reference.guideId);
+            return {
+                kind: 'Guide',
+                title: guide.title,
+                imageUrl: firstDefined(guide.targetImageUrl, guide.target_image_url),
+                detail: `For ${firstDefined(guide.targetTitle, guide.target_title, 'BaroLab content')}`,
+                meta: guide.author?.username || guide.author?.login,
+            };
+        }
         const [guide, mod] = await Promise.all([
             getModGuideById(reference.modId, reference.guideId),
             getMod(reference.modId),

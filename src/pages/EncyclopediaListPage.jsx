@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import { ENCYCLOPEDIA_ENTITY_SOURCES, ENCYCLOPEDIA_ENTITY_TYPES, searchEncyclopedia } from '../api/encyclopedia';
 import Pagination from '../components/Pagination';
+import EncyclopediaCard from '../components/EncyclopediaCard';
 import { useAuth } from '../context/AuthContext';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import './EncyclopediaListPage.css';
@@ -66,7 +67,9 @@ export default function EncyclopediaListPage() {
     });
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const { isAdmin } = useAuth();
+    const guideTargetMode = searchParams.get('guideTarget') === '1';
 
     const q = normalizeQuery(searchParams.get('q'));
     const entityType = normalizeEntityType(searchParams.get('entityType'));
@@ -144,11 +147,21 @@ export default function EncyclopediaListPage() {
         <div className="page">
             <div className="container encyclopedia-list-page">
                 <header className="encyclopedia-header-box glass-card">
-                    <h1 className="encyclopedia-title">📖 Barotrauma Encyclopedia</h1>
+                    <h1 className="encyclopedia-title">
+                        {guideTargetMode ? 'Choose an encyclopedia subject for your guide' : '📖 Barotrauma Encyclopedia'}
+                    </h1>
                     <p className="encyclopedia-subtitle">
-                        Vanilla and mod content in one place — search by name, filter by type and source.
+                        {guideTargetMode
+                            ? 'Use the encyclopedia search and filters, then choose the subject.'
+                            : 'Vanilla and mod content in one place — search by name, filter by type and source.'}
                     </p>
-                    {isAdmin && (
+                    {guideTargetMode ? (
+                        <div className="encyclopedia-level-actions">
+                            <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
+                                ← Change guide type
+                            </button>
+                        </div>
+                    ) : isAdmin && (
                         <div className="encyclopedia-level-actions">
                             <Link to="/admin/encyclopedia/new" className="btn btn-primary">➕ Create page</Link>
                         </div>
@@ -260,31 +273,14 @@ export default function EncyclopediaListPage() {
                 ) : (
                     <section className="encyclopedia-grid">
                         {items.map((item) => (
-                            <article key={item.id || item.slug} className="encyclopedia-card glass-card">
-                                <Link to={`/encyclopedia/${item.slug}`} className="encyclopedia-card-image-link">
-                                    {item.primaryImageUrl ? (
-                                        <img src={item.primaryImageUrl} alt={item.title} className="encyclopedia-card-image" />
-                                    ) : (
-                                        <div className="encyclopedia-card-image-placeholder">📄</div>
-                                    )}
-                                </Link>
-                                <div className="encyclopedia-card-body">
-                                    <p className="encyclopedia-card-meta">
-                                        <span>{humanizeEnumLabel(item.entityType) || 'Other'}</span>
-                                        <span
-                                            className={`encyclopedia-source-badge encyclopedia-source-badge-${String(item.entitySource || '').toLowerCase()}`}
-                                        >
-                                            {ENTITY_SOURCE_LABELS[item.entitySource] || item.entitySource}
-                                        </span>
-                                    </p>
-                                    <h2 className="encyclopedia-card-title">
-                                        <Link to={`/encyclopedia/${item.slug}`}>{item.title}</Link>
-                                    </h2>
-                                    <p className="encyclopedia-card-description">
-                                        {item.summary || item.shortDescription || 'Description is not available yet.'}
-                                    </p>
-                                </div>
-                            </article>
+                            <EncyclopediaCard
+                                key={item.id || item.slug}
+                                item={item}
+                                actionLabel={guideTargetMode ? 'Write guide →' : 'Read article →'}
+                                onSelect={guideTargetMode ? (selectedItem) => {
+                                    navigate(`/guides/new/editor?targetType=ENCYCLOPEDIA&targetId=${encodeURIComponent(selectedItem.slug)}`);
+                                } : undefined}
+                            />
                         ))}
                     </section>
                 )}

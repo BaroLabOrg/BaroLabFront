@@ -4,6 +4,7 @@ import * as tagsApi from '../api/tags';
 import * as submarinesApi from '../api/submarines';
 import { useAuth } from '../context/AuthContext';
 import TagChips from '../components/TagChips';
+import RelatedGuidesSection from '../components/RelatedGuidesSection';
 import './SubmarinePage.css';
 
 const TAGS_PAGE_SIZE = 100;
@@ -250,6 +251,14 @@ export default function SubmarinePage() {
                             </p>
                         </div>
                         <div className="submarine-hero-actions">
+                            {isAuthenticated && (
+                                <Link
+                                    className="btn btn-outline"
+                                    to={`/guides/new/editor?targetType=SUBMARINE&targetId=${encodeURIComponent(externalId)}`}
+                                >
+                                    ✍️ Write guide
+                                </Link>
+                            )}
                             <button
                                 className="btn btn-primary submarine-download-btn"
                                 onClick={handleSubscribe}
@@ -418,6 +427,7 @@ export default function SubmarinePage() {
                         </section>
                     </aside>
                 </div>
+                <RelatedGuidesSection targetType="SUBMARINE" targetId={externalId} />
             </div>
         </div>
     );
