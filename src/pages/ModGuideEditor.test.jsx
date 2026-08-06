@@ -23,9 +23,14 @@ vi.mock('../api/internalReferences', () => ({
 describe('ModGuideEditor internal links', () => {
     beforeEach(() => {
         getMod.mockResolvedValue({ external_id: 42, title: 'Host mod' });
-        searchInternalReferences.mockResolvedValue([
-            { external_id: 99, title: 'Neurotrauma', main_image: 'https://cdn.test/neuro.jpg' },
-        ]);
+        searchInternalReferences.mockResolvedValue({
+            items: [
+                { external_id: 99, title: 'Neurotrauma', main_image: 'https://cdn.test/neuro.jpg' },
+            ],
+            total_pages: 1,
+            has_next: false,
+            has_previous: false,
+        });
         window.requestAnimationFrame = (callback) => window.setTimeout(callback, 0);
     });
 
@@ -45,7 +50,12 @@ describe('ModGuideEditor internal links', () => {
         textarea.setSelectionRange(4, 15);
 
         fireEvent.click(screen.getByRole('button', { name: /Add internal link/i }));
-        await waitFor(() => expect(searchInternalReferences).toHaveBeenCalledWith('mod', ''));
+        await waitFor(() => expect(searchInternalReferences).toHaveBeenCalledWith('mod', '', {
+            page: 0,
+            size: 12,
+            sortBy: 'popularity',
+            direction: 'desc',
+        }));
         fireEvent.click(await screen.findByRole('button', { name: /Neurotrauma Mod #99/i }));
 
         expect(textarea).toHaveValue('Use [Neurotrauma](/mod/99) for injuries');

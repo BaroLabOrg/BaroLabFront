@@ -8,12 +8,16 @@ import ModCard from '../components/ModCard';
 import Pagination from '../components/Pagination';
 import TagChips from '../components/TagChips';
 import useDocumentMeta from '../hooks/useDocumentMeta';
+import {
+    DEFAULT_MOD_SORT_BY,
+    DEFAULT_MOD_SORT_DIRECTION,
+    MOD_SORT_OPTIONS,
+    normalizeModSort,
+} from '../utils/modSearch';
 import './ModsListPage.css';
 
 const PAGE_SIZE = 12;
 const TAGS_PAGE_SIZE = 100;
-const MODS_SORT_BY = 'createdAt';
-const MODS_DIRECTION = 'desc';
 
 function normalizePage(value) {
     const parsed = Number(value);
@@ -55,6 +59,12 @@ export default function ModsListPage() {
     const selectedTags = parseTags(searchParams);
     const selectedTagsKey = selectedTags.join(',');
     const page = normalizePage(searchParams.get('page'));
+    const selectedSort = normalizeModSort(
+        searchParams.get('sortBy') || DEFAULT_MOD_SORT_BY,
+        searchParams.get('direction') || DEFAULT_MOD_SORT_DIRECTION,
+    );
+    const sortBy = selectedSort.sortBy;
+    const direction = selectedSort.direction;
 
     const [mods, setMods] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -87,6 +97,10 @@ export default function ModsListPage() {
         const nextTags = [...new Set((nextValues.tags ?? selectedTags)
             .map((tag) => String(tag || '').trim())
             .filter(Boolean))];
+        const nextSort = normalizeModSort(
+            nextValues.sortBy ?? sortBy,
+            nextValues.direction ?? direction,
+        );
 
         const nextParams = new URLSearchParams(searchParams);
 
@@ -108,10 +122,18 @@ export default function ModsListPage() {
             nextParams.delete('page');
         }
 
+        if (nextSort.sortBy === DEFAULT_MOD_SORT_BY && nextSort.direction === DEFAULT_MOD_SORT_DIRECTION) {
+            nextParams.delete('sortBy');
+            nextParams.delete('direction');
+        } else {
+            nextParams.set('sortBy', nextSort.sortBy);
+            nextParams.set('direction', nextSort.direction);
+        }
+
         setSearchParams(nextParams);
     };
 
-    const loadMods = async ({ currentQuery, currentTags, currentPage }) => {
+    const loadMods = async ({ currentQuery, currentTags, currentPage, currentSortBy, currentDirection }) => {
         setLoading(true);
         setError('');
         try {
@@ -120,8 +142,8 @@ export default function ModsListPage() {
                 tags: currentTags,
                 page: currentPage,
                 size: PAGE_SIZE,
-                sortBy: MODS_SORT_BY,
-                direction: MODS_DIRECTION,
+                sortBy: currentSortBy,
+                direction: currentDirection,
             });
             setMods(data.items);
             setTotalMods(data.total);
@@ -149,8 +171,10 @@ export default function ModsListPage() {
             currentQuery: query,
             currentTags: selectedTags,
             currentPage: page,
+            currentSortBy: sortBy,
+            currentDirection: direction,
         });
-    }, [query, selectedTagsKey, page]);
+    }, [query, selectedTagsKey, page, sortBy, direction]);
 
     useEffect(() => {
         let cancelled = false;
@@ -223,6 +247,18 @@ export default function ModsListPage() {
         });
     };
 
+    const handleSortChange = (event) => {
+        const nextSort = MOD_SORT_OPTIONS.find((option) => option.value === event.target.value)
+            || MOD_SORT_OPTIONS[0];
+        updateSearch({
+            q: query,
+            tags: selectedTags,
+            page: 0,
+            sortBy: nextSort.sortBy,
+            direction: nextSort.direction,
+        });
+    };
+
     const handleResetFilters = () => {
         setSearchInput('');
         setTagToAdd('');
@@ -231,6 +267,8 @@ export default function ModsListPage() {
         nextParams.delete('q');
         nextParams.delete('tags');
         nextParams.delete('page');
+        nextParams.delete('sortBy');
+        nextParams.delete('direction');
         setSearchParams(nextParams);
     };
 
@@ -257,6 +295,8 @@ export default function ModsListPage() {
                     currentQuery: query,
                     currentTags: selectedTags,
                     currentPage: 0,
+                    currentSortBy: sortBy,
+                    currentDirection: direction,
                 });
             } else {
                 updateSearch({
@@ -272,7 +312,11 @@ export default function ModsListPage() {
         }
     };
 
-    const hasActiveFilters = query.length > 0 || selectedTags.length > 0 || page > 0;
+    const hasActiveFilters = query.length > 0
+        || selectedTags.length > 0
+        || page > 0
+        || sortBy !== DEFAULT_MOD_SORT_BY
+        || direction !== DEFAULT_MOD_SORT_DIRECTION;
     const selectableTags = allTags.filter((tag) => {
         const value = getTagFilterValue(tag);
         return value && !selectedTags.includes(value);
@@ -356,6 +400,27 @@ export default function ModsListPage() {
                             </button>
                         </div>
                     </form>
+
+                    <div className="mods-sort-filter">
+                        <label className="mods-search-label" htmlFor="mods-sort-select">
+                            Sort mods
+                        </label>
+                        <select
+                            id="mods-sort-select"
+                            value={selectedSort.value}
+                            onChange={handleSortChange}
+                            disabled={loading || creating}
+                        >
+                            {MOD_SORT_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="mods-sort-hint">
+                            Search results keep name relevance first, then apply this order.
+                        </p>
+                    </div>
 
                     <div className="mods-tags-filter">
                         <label className="mods-search-label" htmlFor="mods-tag-select">

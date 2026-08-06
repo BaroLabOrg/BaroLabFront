@@ -88,25 +88,34 @@ export function loadInternalReferencePreview(reference) {
     return previewCache.get(key);
 }
 
-export async function searchInternalReferences(type, query) {
+export async function searchInternalReferences(type, query, {
+    page = 0,
+    size = 12,
+    sortBy,
+    direction,
+} = {}) {
     const q = String(query || '').trim();
     if (type === 'mod') {
-        const response = await searchMods({ q, page: 0, size: 12 });
-        return response.items;
+        return searchMods({ q, page, size, sortBy, direction });
     }
     if (type === 'submarine') {
-        const response = await searchSubmarines({ q, page: 0, size: 12 });
-        return response.items;
+        return searchSubmarines({ q, page, size });
     }
     if (type === 'guide') {
-        const response = await getAllGuides({ q, page: 0, size: 12 });
-        return response.items;
+        return getAllGuides({ q, page, size });
     }
     if (type === 'encyclopedia') {
-        const response = await searchEncyclopedia({ q, page: 0, size: 12 });
-        return response.items;
+        return searchEncyclopedia({ q, page, size });
     }
-    return [];
+    return {
+        items: [],
+        total: 0,
+        page: 0,
+        size,
+        total_pages: 0,
+        has_next: false,
+        has_previous: false,
+    };
 }
 
 export function clearInternalReferencePreviewCache() {

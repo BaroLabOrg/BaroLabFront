@@ -105,7 +105,7 @@ describe('ModsListPage search flow', () => {
             tags: [],
             page: 0,
             size: 12,
-            sortBy: 'createdAt',
+            sortBy: 'popularity',
             direction: 'desc',
         });
     });
@@ -114,11 +114,72 @@ describe('ModsListPage search flow', () => {
         const user = userEvent.setup();
         renderModsPage('/mods?guideTarget=1');
 
+        await waitFor(() => {
+            expect(modsApi.searchMods).toHaveBeenCalledWith({
+                q: '',
+                tags: [],
+                page: 0,
+                size: 12,
+                sortBy: 'popularity',
+                direction: 'desc',
+            });
+        });
+
         await user.click(await screen.findByRole('button', { name: 'Write guide about Base Mod' }));
 
         const params = getLocationParams();
         expect(params.get('targetType')).toBe('MOD');
         expect(params.get('targetId')).toBe('100');
+    });
+
+    it('changes sorting, resets the page and preserves guide selection mode', async () => {
+        const user = userEvent.setup();
+        renderModsPage('/mods?guideTarget=1&q=medical&page=3');
+
+        await screen.findByText('Base Mod');
+        await user.selectOptions(screen.getByLabelText('Sort mods'), 'createdAt:asc');
+
+        await waitFor(() => {
+            expect(modsApi.searchMods).toHaveBeenLastCalledWith({
+                q: 'medical',
+                tags: [],
+                page: 0,
+                size: 12,
+                sortBy: 'createdAt',
+                direction: 'asc',
+            });
+        });
+
+        const params = getLocationParams();
+        expect(params.get('guideTarget')).toBe('1');
+        expect(params.get('q')).toBe('medical');
+        expect(params.get('page')).toBeNull();
+        expect(params.get('sortBy')).toBe('createdAt');
+        expect(params.get('direction')).toBe('asc');
+    });
+
+    it('resets non-default sorting while preserving guide selection mode', async () => {
+        const user = userEvent.setup();
+        renderModsPage('/mods?guideTarget=1&sortBy=createdAt&direction=asc');
+
+        await screen.findByText('Base Mod');
+        await user.click(screen.getByRole('button', { name: 'Reset' }));
+
+        await waitFor(() => {
+            expect(modsApi.searchMods).toHaveBeenLastCalledWith({
+                q: '',
+                tags: [],
+                page: 0,
+                size: 12,
+                sortBy: 'popularity',
+                direction: 'desc',
+            });
+        });
+
+        const params = getLocationParams();
+        expect(params.get('guideTarget')).toBe('1');
+        expect(params.get('sortBy')).toBeNull();
+        expect(params.get('direction')).toBeNull();
     });
 
     it('searches by mod title', async () => {
@@ -143,7 +204,7 @@ describe('ModsListPage search flow', () => {
                 tags: [],
                 page: 0,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -171,7 +232,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism'],
                 page: 0,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -203,7 +264,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism', 'hardcore'],
                 page: 0,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -236,7 +297,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism'],
                 page: 0,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -260,7 +321,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism', 'hardcore'],
                 page: 1,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -273,7 +334,7 @@ describe('ModsListPage search flow', () => {
                 tags: [],
                 page: 0,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -295,7 +356,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism', 'hardcore'],
                 page: 1,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -337,7 +398,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['realism'],
                 page: 1,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -359,7 +420,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['medical', 'hardcore'],
                 page: 2,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
@@ -385,7 +446,7 @@ describe('ModsListPage search flow', () => {
                 tags: ['medical', 'hardcore'],
                 page: 11,
                 size: 12,
-                sortBy: 'createdAt',
+                sortBy: 'popularity',
                 direction: 'desc',
             });
         });
