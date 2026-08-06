@@ -1,4 +1,5 @@
 .submarine-card {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -12,6 +13,9 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
   position: relative;
   overflow: hidden;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
 }
 
 .submarine-card::before {

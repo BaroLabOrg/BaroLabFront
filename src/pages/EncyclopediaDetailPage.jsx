@@ -6,6 +6,7 @@ import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
 import EventActionTree from '../components/EventActionTree';
 import { PropertyFieldList } from '../components/PropertyValue';
+import RelatedGuidesSection from '../components/RelatedGuidesSection';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { humanizeIdentifier } from '../utils/text';
 import './EncyclopediaDetailPage.css';
@@ -112,7 +113,7 @@ function normalizeArticleMarkdown(markdown) {
 export default function EncyclopediaDetailPage() {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const { isAdmin } = useAuth();
+    const { isAdmin, isAuthenticated } = useAuth();
 
     const [detail, setDetail] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -269,11 +270,21 @@ export default function EncyclopediaDetailPage() {
                             {detail.summary || detail.shortDescription || 'Description is not available yet.'}
                         </p>
                     </div>
-                    {isAdmin && (
+                    {(isAdmin || isAuthenticated) && (
                         <div className="encyclopedia-detail-hero-actions">
-                            <Link to={`/admin/encyclopedia/${detail.id}/edit`} className="btn btn-primary">
-                                ✏️ Edit
-                            </Link>
+                            {isAuthenticated && (
+                                <Link
+                                    to={`/guides/new/editor?targetType=ENCYCLOPEDIA&targetId=${encodeURIComponent(slug)}`}
+                                    className="btn btn-outline"
+                                >
+                                    ✍️ Write guide
+                                </Link>
+                            )}
+                            {isAdmin && (
+                                <Link to={`/admin/encyclopedia/${detail.id}/edit`} className="btn btn-primary">
+                                    ✏️ Edit
+                                </Link>
+                            )}
                         </div>
                     )}
                 </section>
@@ -601,6 +612,7 @@ export default function EncyclopediaDetailPage() {
                         </section>
                     </aside>
                 </div>
+                <RelatedGuidesSection targetType="ENCYCLOPEDIA" targetId={slug} />
             </div>
         </div>
     );

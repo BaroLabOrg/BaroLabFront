@@ -1,7 +1,7 @@
 ﻿import { Link } from 'react-router-dom';
 import './ModCard.css';
 
-export default function ModCard({ mod }) {
+export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', style }) {
     const externalId = mod.external_id || mod.externalId;
     const mainImage = mod.main_image || mod.mainImage;
     const authorName = mod.author_username || mod.authorUsername || mod.author?.username || 'Unknown';
@@ -15,8 +15,8 @@ export default function ModCard({ mod }) {
         })
         : '';
 
-    return (
-        <Link to={`/mod/${externalId}`} className="mod-card glass-card">
+    const content = (
+        <>
             <div
                 className="mod-card-banner"
                 style={mainImage ? { backgroundImage: `url(${mainImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
@@ -40,10 +40,25 @@ export default function ModCard({ mod }) {
                     <span className="mod-card-transitions" title="Visits">
                         🔗 {mod.popularity ?? 0}
                     </span>
-                    <span className="mod-card-read">Read more →</span>
+                    <span className="mod-card-read">{actionLabel}</span>
                 </div>
             </div>
-        </Link>
+        </>
     );
+
+    if (onSelect) {
+        return (
+            <button
+                type="button"
+                className="mod-card glass-card"
+                style={style}
+                aria-label={`Write guide about ${mod.title}`}
+                onClick={() => onSelect(mod)}
+            >
+                {content}
+            </button>
+        );
+    }
+    return <Link to={`/mod/${externalId}`} className="mod-card glass-card" style={style}>{content}</Link>;
 }
 

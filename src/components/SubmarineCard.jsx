@@ -18,13 +18,13 @@ function formatCrew(submarine) {
     return `${submarine.recommendedCrewMin} - ${submarine.recommendedCrewMax}`;
 }
 
-export default function SubmarineCard({ submarine }) {
+export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read more →' }) {
     const externalId = submarine.externalId ?? submarine.external_id;
     const mainImage = submarine.main_image || submarine.mainImage;
     const previewAlt = submarine.title ? `${submarine.title} preview` : 'Submarine preview';
 
-    return (
-        <Link to={`/submarines/${externalId}`} className="submarine-card glass-card">
+    const content = (
+        <>
             {mainImage ? (
                 <div className="submarine-card-preview">
                     <img
@@ -68,8 +68,22 @@ export default function SubmarineCard({ submarine }) {
                 <TagChips tags={Array.isArray(submarine.tags) ? submarine.tags : []} />
             </div>
 
-            <div className="submarine-card-footer">Read more →</div>
-        </Link>
+            <div className="submarine-card-footer">{actionLabel}</div>
+        </>
     );
+
+    if (onSelect) {
+        return (
+            <button
+                type="button"
+                className="submarine-card glass-card"
+                aria-label={`Write guide about ${submarine.title}`}
+                onClick={() => onSelect(submarine)}
+            >
+                {content}
+            </button>
+        );
+    }
+    return <Link to={`/submarines/${externalId}`} className="submarine-card glass-card">{content}</Link>;
 }
 

@@ -57,11 +57,11 @@ export default function GuidesSection() {
     }, [externalId, page]);
 
     const handleCreateGuide = () => {
-        navigate(`/mod/${externalId}/guides/new`);
+        navigate(`/guides/new/editor?targetType=MOD&targetId=${encodeURIComponent(externalId)}`);
     };
 
     const handleEditGuide = (guideId) => {
-        navigate(`/mod/${externalId}/guides/${guideId}/edit`);
+        navigate(`/guides/${guideId}/edit`);
     };
 
     if (loading) {
@@ -109,7 +109,7 @@ export default function GuidesSection() {
 
                         return (
                             <li key={guide.id} className="guide-item">
-                                <Link to={`/mod/${externalId}/guides/${guide.id}`} className="guide-link">
+                                <Link to={`/guides/${guide.id}`} className="guide-link">
                                     <span className="guide-icon">📄</span>
                                     <div className="guide-info">
                                         <span className="guide-name">{guide.title}</span>

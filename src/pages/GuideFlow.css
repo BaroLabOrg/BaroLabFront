@@ -1,0 +1,56 @@
+.guide-flow-page {
+    padding-block: 32px 64px;
+}
+
+.guide-flow-header {
+    padding: 28px;
+    margin-bottom: 20px;
+}
+
+.guide-flow-header h1 { margin: 6px 0 8px; }
+.guide-flow-header p { margin: 0; color: var(--text-secondary); }
+
+.guide-flow-step {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.guide-target-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.guide-target-type-card {
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.guide-target-type-card:hover,
+.guide-target-type-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-accent-soft);
+    outline: none;
+}
+
+.guide-target-type-icon { font-size: 2.25rem; }
+.guide-target-type-card strong { font-family: var(--font-heading); font-size: 1.25rem; }
+.guide-target-type-card span:not(.guide-target-type-icon) { color: var(--text-secondary); line-height: 1.55; }
+.guide-target-type-card em { margin-top: auto; color: var(--accent); font-style: normal; font-weight: 700; }
+
+@media (max-width: 760px) {
+    .guide-target-type-grid { grid-template-columns: 1fr; }
+    .guide-target-type-card { min-height: 180px; }
+}

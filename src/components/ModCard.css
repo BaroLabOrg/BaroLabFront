@@ -1,4 +1,5 @@
 .mod-card {
+  width: 100%;
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -11,6 +12,10 @@
   border-radius: var(--radius-md);
   transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
   position: relative;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
 }
 
 .mod-card::before {

@@ -96,7 +96,8 @@ export default function Pagination({
         && (hasNext || currentPage + 1 < normalizedTotalPages);
 
     // Quest Stage 1: on /mods, page 0, stage 0 — glitch the disabled Back button.
-    const isModsPage = location.pathname === '/mods';
+    const isModsPage = location.pathname === '/mods'
+        && new URLSearchParams(location.search).get('guideTarget') !== '1';
     const showQuestGlitch = isModsPage && quest?.stage === 0 && currentPage === 0 && !canGoPrevious;
 
     const changePage = (targetPage) => {

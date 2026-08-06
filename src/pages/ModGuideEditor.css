@@ -5,6 +5,29 @@
     color: #e0e0e0;
 }
 
+.guide-editor-target {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guide-editor-target img {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.guide-editor-target span {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.guide-editor-target h2 { margin: 3px 0 0; }
+
 .editor-header {
     display: flex;
     justify-content: space-between;

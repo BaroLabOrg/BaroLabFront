@@ -204,6 +204,17 @@ describe('SubmarinesListPage', () => {
         expect(getLocation()).toContain('?q=orca');
     });
 
+    it('keeps guide selection mode when filters are reset', async () => {
+        const user = userEvent.setup();
+        renderSubmarinesPage('/submarines?guideTarget=1&q=orca');
+
+        await waitFor(() => expect(screen.getByText('Typhon')).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Reset' }));
+
+        await waitFor(() => expect(getLocation()).toBe('/submarines?guideTarget=1'));
+        expect(screen.getByText('Choose a submarine for your guide')).toBeInTheDocument();
+    });
+
     it('toggles advanced search filters', async () => {
         const user = userEvent.setup();
         renderSubmarinesPage();

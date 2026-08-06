@@ -64,6 +64,7 @@ function renderModsPage(initialPath = '/mods') {
                         </>
                     )}
                 />
+                <Route path="/guides/new/editor" element={<LocationProbe />} />
             </Routes>
         </MemoryRouter>,
     );
@@ -107,6 +108,17 @@ describe('ModsListPage search flow', () => {
             sortBy: 'createdAt',
             direction: 'desc',
         });
+    });
+
+    it('reuses the catalog to select a mod for a new guide', async () => {
+        const user = userEvent.setup();
+        renderModsPage('/mods?guideTarget=1');
+
+        await user.click(await screen.findByRole('button', { name: 'Write guide about Base Mod' }));
+
+        const params = getLocationParams();
+        expect(params.get('targetType')).toBe('MOD');
+        expect(params.get('targetId')).toBe('100');
     });
 
     it('searches by mod title', async () => {
