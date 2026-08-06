@@ -140,39 +140,44 @@ export default function InternalLinkPicker({ open, onClose, onSelect }) {
                     ))}
                 </div>
 
-                <input
-                    autoFocus
-                    type="search"
-                    className="internal-link-picker-search"
-                    value={query}
-                    onChange={(event) => {
-                        setQuery(event.target.value);
-                        setPage(0);
-                    }}
-                    placeholder={`Search ${INTERNAL_REFERENCE_TYPES.find((entry) => entry.id === type)?.label.toLowerCase()}…`}
-                    aria-label="Search BaroLab content"
-                />
-
-                {type === 'mod' && (
-                    <div className="internal-link-picker-sort">
-                        <label htmlFor="internal-link-picker-sort">Sort mods</label>
-                        <select
-                            id="internal-link-picker-sort"
-                            value={selectedSort.value}
-                            disabled={loading}
+                <div className={`internal-link-picker-controls${type === 'mod' ? ' has-sort' : ''}`}>
+                    <label className="internal-link-picker-field internal-link-picker-search-field">
+                        <span>Search {INTERNAL_REFERENCE_TYPES.find((entry) => entry.id === type)?.label.toLowerCase()}</span>
+                        <input
+                            autoFocus
+                            type="search"
+                            className="internal-link-picker-search"
+                            value={query}
                             onChange={(event) => {
-                                setSortValue(event.target.value);
+                                setQuery(event.target.value);
                                 setPage(0);
                             }}
-                        >
-                            {MOD_SORT_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+                            placeholder={`Enter ${type === 'mod' ? 'mod title' : 'search text'}…`}
+                            aria-label="Search BaroLab content"
+                        />
+                    </label>
+
+                    {type === 'mod' && (
+                        <label className="internal-link-picker-field" htmlFor="internal-link-picker-sort">
+                            <span>Sort mods</span>
+                            <select
+                                id="internal-link-picker-sort"
+                                value={selectedSort.value}
+                                disabled={loading}
+                                onChange={(event) => {
+                                    setSortValue(event.target.value);
+                                    setPage(0);
+                                }}
+                            >
+                                {MOD_SORT_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    )}
+                </div>
 
                 <div className="internal-link-picker-results">
                     {loading ? (
