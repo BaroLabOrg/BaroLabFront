@@ -1,85 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { useAuth } from '../context/AuthContext';
 import { getModGuideById } from '../api/modGuides';
 import { getMod } from '../api/mods';
+import GuideMarkdown from '../components/guides/GuideMarkdown';
 import './ModGuidePage.css';
-
-// --- Custom Markdown Components ---
-
-// Map blockquotes to our custom Quote component
-const CustomQuote = ({ children }) => {
-    // Basic extraction of author if text is in format: "Quote" - Author
-    let text = '';
-    let author = 'Unknown';
-
-    // Simplistic parsing for demo purposes
-    React.Children.forEach(children, child => {
-        if (child.props && child.props.children) {
-            const content = child.props.children;
-            if (typeof content === 'string') {
-                const parts = content.split(' — ');
-                if (parts.length > 1) {
-                    text = parts[0];
-                    author = parts[1];
-                } else {
-                    text = content;
-                }
-            } else if (Array.isArray(content)) {
-                const textPart = content.find(c => typeof c === 'string');
-                if (textPart) {
-                    const parts = textPart.split(' — ');
-                    if (parts.length > 1) {
-                        text = parts[0];
-                        author = parts[1];
-                    } else {
-                        text = content;
-                    }
-                }
-            }
-        }
-    });
-
-    // If parsing failed, just render children
-    if (!text && React.Children.count(children) > 0) {
-        return <blockquote className="guide-quote">{children}</blockquote>;
-    }
-
-    return (
-        <blockquote className="guide-quote">
-            <p className="quote-text">"{text}"</p>
-            {author && <footer className="quote-author">— {author}</footer>}
-        </blockquote>
-    );
-};
-
-// Custom Table to look like Infobox if it has a specific header
-const CustomTable = ({ children, ...props }) => {
-    // Check if the table header contains "Infobox"
-    let isInfobox = false;
-
-    try {
-        const thead = children.find(child => child.type === 'thead');
-        if (thead) {
-            const tr = thead.props.children;
-            const th = tr.props.children[0];
-            if (th && typeof th.props.children === 'string' && th.props.children.includes('INFOBOX:')) {
-                isInfobox = true;
-            }
-        }
-    } catch (e) {
-        // Ignore parsing errors
-    }
-
-    if (isInfobox) {
-        return <table className="guide-infobox" {...props}>{children}</table>;
-    }
-
-    return <table className="guide-table" {...props}>{children}</table>;
-};
-
 
 export default function ModGuidePage() {
     const { id, guideId } = useParams();
@@ -146,15 +71,7 @@ export default function ModGuidePage() {
 
             <div className="guide-content-wrapper">
                 <div className="guide-markdown-body">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            blockquote: CustomQuote,
-                            table: CustomTable
-                        }}
-                    >
-                        {guide.description}
-                    </ReactMarkdown>
+                    <GuideMarkdown>{guide.description}</GuideMarkdown>
                 </div>
             </div>
 

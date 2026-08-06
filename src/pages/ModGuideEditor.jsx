@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import guideInstructions from '../../GUIDE_INSTRUCTIONS.md?raw';
 import { getModGuideById, createModGuide, updateModGuide } from '../api/modGuides';
 import { getMod } from '../api/mods';
+import GuideMarkdown from '../components/guides/GuideMarkdown';
+import InternalLinkPicker from '../components/guides/InternalLinkPicker';
+import { escapeMarkdownLinkLabel } from '../utils/internalGuideLinks';
 import './ModGuideEditor.css';
 import './ModGuidePage.css'; // Reuse markdown styles for preview
 
@@ -21,6 +22,9 @@ export default function ModGuideEditor() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
+    const [showLinkPicker, setShowLinkPicker] = useState(false);
+    const textareaRef = useRef(null);
+    const selectionRef = useRef({ start: 0, end: 0, text: '' });
 
     useEffect(() => {
         async function fetchData() {
@@ -75,6 +79,29 @@ export default function ModGuideEditor() {
         }
     };
 
+    const handleOpenLinkPicker = () => {
+        const textarea = textareaRef.current;
+        const start = textarea?.selectionStart ?? description.length;
+        const end = textarea?.selectionEnd ?? start;
+        selectionRef.current = { start, end, text: description.slice(start, end) };
+        setShowLinkPicker(true);
+    };
+
+    const handleInsertLink = ({ href, title: referenceTitle }) => {
+        const { start, end, text } = selectionRef.current;
+        const label = escapeMarkdownLinkLabel(text)
+            || escapeMarkdownLinkLabel(referenceTitle)
+            || 'BaroLab reference';
+        const markdown = `[${label}](${href})`;
+        setDescription((current) => `${current.slice(0, start)}${markdown}${current.slice(end)}`);
+        setShowLinkPicker(false);
+        window.requestAnimationFrame(() => {
+            const cursor = start + markdown.length;
+            textareaRef.current?.focus();
+            textareaRef.current?.setSelectionRange(cursor, cursor);
+        });
+    };
+
     if (loading) return <div className="admin-editor-loading">Loading editor...</div>;
     if (!mod) return <div className="admin-editor-error">Mod not found.</div>;
 
@@ -88,9 +115,7 @@ export default function ModGuideEditor() {
                             <button onClick={() => setShowInstructions(false)}>Close</button>
                         </div>
                         <div className="instructions-modal-body guide-markdown-body">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {guideInstructions}
-                            </ReactMarkdown>
+                            <GuideMarkdown>{guideInstructions}</GuideMarkdown>
                         </div>
                     </div>
                 </div>
@@ -117,6 +142,9 @@ export default function ModGuideEditor() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                 />
+                <button type="button" className="btn-internal-link" onClick={handleOpenLinkPicker}>
+                    + Add internal link
+                </button>
             </div>
 
             <div className="editor-panes">
@@ -124,6 +152,7 @@ export default function ModGuideEditor() {
                 <div className="editor-pane source-pane">
                     <div className="pane-header">Markdown Source</div>
                     <textarea
+                        ref={textareaRef}
                         className="markdown-textarea"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -137,12 +166,15 @@ export default function ModGuideEditor() {
                     <div className="guide-markdown-body preview-content">
                         {/* We use the same classes as viewing so it looks identical */}
                         {title && <h1>{title}</h1>}
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {description}
-                        </ReactMarkdown>
+                        <GuideMarkdown>{description}</GuideMarkdown>
                     </div>
                 </div>
             </div>
+            <InternalLinkPicker
+                open={showLinkPicker}
+                onClose={() => setShowLinkPicker(false)}
+                onSelect={handleInsertLink}
+            />
         </div>
     );
 }

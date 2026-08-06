@@ -1,0 +1,105 @@
+.guide-internal-reference {
+    display: inline;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(249, 115, 22, 0.65);
+    cursor: pointer;
+}
+
+.guide-internal-reference:hover,
+.guide-internal-reference:focus-visible {
+    color: var(--accent-hover);
+    border-bottom-style: solid;
+    outline: none;
+}
+
+.guide-disabled-link {
+    color: inherit;
+}
+
+.guide-reference-tooltip {
+    position: fixed;
+    z-index: 1400;
+    display: flex;
+    min-height: 82px;
+    padding: 8px;
+    gap: 10px;
+    color: var(--text-primary);
+    background: rgba(10, 13, 22, 0.98);
+    border: 1px solid rgba(249, 115, 22, 0.45);
+    border-radius: var(--radius-md);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.guide-reference-image {
+    width: 72px;
+    min-width: 72px;
+    height: 72px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card-hover);
+    color: var(--accent);
+}
+
+.guide-reference-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    border: 0;
+    border-radius: inherit;
+    box-shadow: none;
+}
+
+.guide-reference-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+}
+
+.guide-reference-kind {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.guide-reference-copy strong {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guide-reference-copy small {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guide-reference-loading,
+.guide-reference-unavailable {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+}
+
+@media (hover: none) {
+    .guide-reference-tooltip {
+        display: none;
+    }
+}

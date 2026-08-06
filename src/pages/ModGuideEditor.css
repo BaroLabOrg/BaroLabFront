@@ -58,17 +58,39 @@
 }
 
 .editor-toolbar {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
 .guide-title-input {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     padding: 0.75rem;
     background-color: #1a1a1a;
     border: 1px solid #333;
     color: #fff;
     border-radius: 4px;
     font-size: 1.2rem;
+}
+
+.btn-internal-link {
+    padding: 0 1rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(249, 115, 22, 0.4);
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-internal-link:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent);
 }
 
 .editor-panes {
@@ -218,4 +240,35 @@
     padding: 1.5rem;
     overflow-y: auto;
     color: #e0e0e0;
+}
+
+@media (max-width: 900px) {
+    .editor-header,
+    .editor-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .editor-header-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .editor-header-right button {
+        margin-left: 0;
+    }
+
+    .btn-internal-link {
+        min-height: 42px;
+    }
+
+    .editor-panes {
+        height: auto;
+        flex-direction: column;
+    }
+
+    .editor-pane {
+        min-height: 420px;
+    }
 }
