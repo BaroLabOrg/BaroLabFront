@@ -22,7 +22,7 @@ export async function searchMods({
     tags = [],
     page = 0,
     size = 20,
-    sortBy = 'createdAt',
+    sortBy = 'popularity',
     direction = 'desc',
 } = {}) {
     const normalizedTags = Array.isArray(tags)
