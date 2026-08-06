@@ -418,7 +418,7 @@ export default function ModsListPage() {
                             ))}
                         </select>
                         <p className="mods-sort-hint">
-                            Search results keep name relevance first, then apply this order.
+                            Search matches mod titles only. This order is applied after name relevance.
                         </p>
                     </div>
 
