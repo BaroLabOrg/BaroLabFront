@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { searchMods, subscribeMod } from '../api/mods';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './HeroCarousel.css';
 
 function formatRelativeTime(dateStr) {
@@ -124,12 +125,13 @@ export default function HeroCarousel() {
         >
             {/* Background */}
             <Link to={`/mod/${externalId}`} className="hero-bg-link" aria-label={`Open ${mod.title}`}>
-                {mainImage && (
-                    <div
-                        className="hero-bg active"
-                        style={{ backgroundImage: `url(${mainImage})` }}
-                    />
-                )}
+                <ImageWithFallback
+                    className="hero-bg active"
+                    src={mainImage}
+                    alt={`${mod.title || 'Featured mod'} cover`}
+                    fallbackLabel="Cover image unavailable"
+                    referrerPolicy="no-referrer"
+                />
                 <div className="hero-overlay" />
             </Link>
 

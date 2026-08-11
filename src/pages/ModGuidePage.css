@@ -172,7 +172,8 @@
     border-color: var(--guide-accent);
 }
 
-.guide-markdown-body img {
+.guide-markdown-body img,
+.guide-markdown-body .guide-markdown-image.image-with-fallback {
     max-width: 100%;
     border-radius: var(--radius-md);
     margin: 1.25rem 0;

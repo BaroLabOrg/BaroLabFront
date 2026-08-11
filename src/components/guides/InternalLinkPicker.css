@@ -170,10 +170,15 @@
     border-radius: var(--radius-sm);
 }
 
-.internal-link-picker-result-image img {
+.internal-link-picker-result-image > img,
+.internal-link-picker-result-image > .image-with-fallback {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.internal-link-picker-result-image > .image-with-fallback {
+    border: 0;
 }
 
 .internal-link-picker-result > span:last-child {

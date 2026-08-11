@@ -44,7 +44,8 @@
     color: var(--accent);
 }
 
-.guide-reference-image img {
+.guide-reference-image > img,
+.guide-reference-image > .image-with-fallback {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -52,6 +53,17 @@
     border: 0;
     border-radius: inherit;
     box-shadow: none;
+}
+
+.guide-reference-image > .image-with-fallback {
+    border: 0;
+}
+
+.guide-markdown-image.image-with-fallback {
+    width: 100%;
+    min-height: 180px;
+    margin: 1.25rem 0;
+    border-radius: var(--radius-md);
 }
 
 .guide-reference-copy {

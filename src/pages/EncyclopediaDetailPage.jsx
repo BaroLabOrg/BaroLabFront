@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import EventActionTree from '../components/EventActionTree';
 import { PropertyFieldList } from '../components/PropertyValue';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { humanizeIdentifier } from '../utils/text';
 import './EncyclopediaDetailPage.css';
@@ -585,15 +586,13 @@ export default function EncyclopediaDetailPage() {
                             stats, so an empty placeholder there is just noise. */}
                         {!isRandomEvent && (
                             <section className="encyclopedia-detail-section glass-card encyclopedia-image-card">
-                                {detail.primaryImage?.publicUrl ? (
-                                    <img
-                                        className="encyclopedia-primary-image"
-                                        src={detail.primaryImage.publicUrl}
-                                        alt={detail.title}
-                                    />
-                                ) : (
-                                    <div className="encyclopedia-primary-image-placeholder">Image not available</div>
-                                )}
+                                <ImageWithFallback
+                                    className="encyclopedia-primary-image"
+                                    src={detail.primaryImage?.publicUrl}
+                                    alt={detail.title || 'Encyclopedia entry'}
+                                    fallbackLabel="Image unavailable"
+                                    referrerPolicy="no-referrer"
+                                />
                             </section>
                         )}
 

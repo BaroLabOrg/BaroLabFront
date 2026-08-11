@@ -38,6 +38,7 @@
 .home-mod-card-img {
     width: 100%;
     aspect-ratio: 16 / 9;
+    object-fit: cover;
     background: var(--bg-secondary);
     background-size: cover;
     background-position: center;
@@ -49,22 +50,12 @@
     transition: filter var(--transition-base);
 }
 
+.home-mod-card-img.image-with-fallback {
+    border: 0;
+}
+
 .home-mod-card:hover .home-mod-card-img {
     filter: brightness(1.08);
-}
-
-.home-mod-card-img-placeholder {
-    opacity: 0.3;
-}
-
-.home-mod-card-img-placeholder svg {
-    width: 34px;
-    height: 34px;
-    fill: none;
-    stroke: var(--text-secondary);
-    stroke-width: 1.4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
 }
 
 .home-mod-card-body {

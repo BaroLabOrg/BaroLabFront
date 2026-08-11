@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import ImageWithFallback from './ImageWithFallback';
 
 const SOURCE_LABELS = { VANILLA: 'Vanilla', MOD: 'Mod' };
 
@@ -15,15 +16,13 @@ export default function EncyclopediaCard({ item, onSelect, actionLabel = 'Read a
     const content = (
         <>
             <span className="encyclopedia-card-image-link">
-                {item.primaryImageUrl ? (
-                    <img src={item.primaryImageUrl} alt={item.title} className="encyclopedia-card-image" />
-                ) : (
-                    <span className="encyclopedia-card-image-placeholder" aria-hidden="true">
-                        <svg viewBox="0 0 32 32" focusable="false">
-                            <path d="M8 3h11l6 6v20H8zM19 3v7h6M12 15h9M12 20h9M12 25h6" />
-                        </svg>
-                    </span>
-                )}
+                <ImageWithFallback
+                    className="encyclopedia-card-image"
+                    src={item.primaryImageUrl}
+                    alt={item.title || 'Encyclopedia entry'}
+                    fallbackLabel="Image unavailable"
+                    referrerPolicy="no-referrer"
+                />
             </span>
             <span className="encyclopedia-card-body">
                 <span className="encyclopedia-card-meta">

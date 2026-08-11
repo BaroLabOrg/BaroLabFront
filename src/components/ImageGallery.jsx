@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ImageWithFallback from './ImageWithFallback';
 import './ImageGallery.css';
 
 function resolveImage(value) {
@@ -76,10 +77,12 @@ export default function ImageGallery({
             {activeImage ? (
                 <>
                     <div className="image-gallery-preview">
-                        <img
+                        <ImageWithFallback
+                            className="image-gallery-preview-image"
                             src={activeImage}
                             alt={resolveLabel(previewAlt, activeImageIndex, activeImage, `${title || 'Preview'}`)}
-                            loading="lazy"
+                            fallbackLabel="Image unavailable"
+                            referrerPolicy="no-referrer"
                         />
                     </div>
 
@@ -96,10 +99,16 @@ export default function ImageGallery({
                                     image,
                                     `Show image ${index + 1}`,
                                 )}
-                                style={{
-                                    backgroundImage: `url(${image})`,
-                                }}
-                            />
+                            >
+                                <ImageWithFallback
+                                    className="image-gallery-thumbnail-image"
+                                    src={image}
+                                    alt=""
+                                    fallbackLabel="Thumbnail unavailable"
+                                    showFallbackLabel={false}
+                                    referrerPolicy="no-referrer"
+                                />
+                            </button>
                         ))}
                     </div>
                 </>

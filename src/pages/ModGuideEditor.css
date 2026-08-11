@@ -26,13 +26,17 @@
     gap: 15px;
 }
 
-.guide-editor-target img {
+.guide-editor-target-image {
     width: 64px;
     height: 64px;
     flex: 0 0 auto;
     border-radius: 12px;
     object-fit: cover;
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.guide-editor-target-image.image-with-fallback {
+    border: 0;
 }
 
 .guide-editor-target span {
@@ -333,7 +337,7 @@
         flex: 1 1 auto;
     }
 
-    .guide-editor-target img {
+    .guide-editor-target-image {
         width: 52px;
         height: 52px;
     }

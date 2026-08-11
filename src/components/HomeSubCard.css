@@ -16,6 +16,7 @@
 .home-sub-card-img {
     width: 100%;
     aspect-ratio: 16 / 9;
+    object-fit: cover;
     background: var(--bg-secondary);
     background-size: cover;
     background-position: center;
@@ -25,9 +26,8 @@
     flex-shrink: 0;
 }
 
-.home-sub-card-img-placeholder {
-    font-size: 28px;
-    opacity: 0.4;
+.home-sub-card-img.image-with-fallback {
+    border: 0;
 }
 
 .home-sub-card-body {

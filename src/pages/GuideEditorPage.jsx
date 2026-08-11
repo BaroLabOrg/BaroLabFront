@@ -7,6 +7,7 @@ import { getSubmarine } from '../api/submarines';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import GuideMarkdown from '../components/guides/GuideMarkdown';
 import InternalLinkPicker from '../components/guides/InternalLinkPicker';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { escapeMarkdownLinkLabel } from '../utils/internalGuideLinks';
 import './ModGuideEditor.css';
 import './ModGuidePage.css';
@@ -159,7 +160,14 @@ export default function GuideEditorPage() {
             <div className="editor-header">
                 <div className="editor-header-left">
                     <div className="guide-editor-target">
-                        {target.imageUrl && <img src={target.imageUrl} alt="" referrerPolicy="no-referrer" />}
+                        <ImageWithFallback
+                            className="guide-editor-target-image"
+                            src={target.imageUrl}
+                            alt={`${target.title || 'Guide target'} preview`}
+                            fallbackLabel="Image unavailable"
+                            showFallbackLabel={false}
+                            referrerPolicy="no-referrer"
+                        />
                         <div>
                             <span>{isEditMode ? 'Editing guide for' : 'Creating guide for'} {target.type.toLowerCase()}</span>
                             <h2><Link to={target.href}>{target.title}</Link></h2>

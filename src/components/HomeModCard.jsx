@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './HomeModCard.css';
 
 function MetricIcon({ type }) {
@@ -32,16 +33,13 @@ export default function HomeModCard({ mod }) {
 
     return (
         <Link to={`/mod/${externalId}`} className="home-mod-card glass-card">
-            <div
+            <ImageWithFallback
                 className="home-mod-card-img"
-                style={mainImage ? { backgroundImage: `url(${mainImage})` } : {}}
-            >
-                {!mainImage && (
-                    <span className="home-mod-card-img-placeholder" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="m14.5 6.5 3-3 3 3-3 3m-2-1.5L6 17.5 3.5 15 13 5.5M5 20h14" /></svg>
-                    </span>
-                )}
-            </div>
+                src={mainImage}
+                alt={`${mod.title || 'Mod'} cover`}
+                fallbackLabel="Cover unavailable"
+                referrerPolicy="no-referrer"
+            />
             <div className="home-mod-card-body">
                 <h3 className="home-mod-card-title">{mod.title}</h3>
                 <p className="home-mod-card-author">

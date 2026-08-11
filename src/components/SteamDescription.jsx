@@ -1,5 +1,6 @@
 import { Fragment, useMemo } from 'react';
 import { nodeText, parseSteamBbcode, sanitizeSteamUrl } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './SteamDescription.css';
 
 function renderChildren(nodes, path) {
@@ -53,16 +54,16 @@ function renderNode(node, key) {
         }
         case 'img': {
             const src = sanitizeSteamUrl(node.attribute || nodeText(node.children));
-            return src ? (
-                <img
+            return (
+                <ImageWithFallback
                     className="steam-description-image"
                     key={key}
                     src={src}
-                    alt=""
-                    loading="lazy"
+                    alt="Steam Workshop image"
+                    fallbackLabel="Workshop image unavailable"
                     referrerPolicy="no-referrer"
                 />
-            ) : null;
+            );
         }
         case 'youtube':
         case 'previewyoutube': {

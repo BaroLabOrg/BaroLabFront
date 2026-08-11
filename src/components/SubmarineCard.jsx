@@ -1,6 +1,7 @@
 ﻿import { Link } from 'react-router-dom';
 import TagChips from './TagChips';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './SubmarineCard.css';
 
 function formatNumber(value, fractionDigits = 0) {
@@ -27,23 +28,15 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
 
     const content = (
         <>
-            {mainImage ? (
-                <div className="submarine-card-preview">
-                    <img
-                        className="submarine-card-preview-image"
-                        src={mainImage}
-                        alt={previewAlt}
-                        loading="lazy"
-                    />
-                </div>
-            ) : (
-                <div className="submarine-card-preview submarine-card-preview-empty" aria-hidden="true">
-                    <svg viewBox="0 0 42 26" focusable="false">
-                        <path d="M5 13c4-7 11-9 25-9 6 0 9 3 11 9-2 6-5 9-11 9-14 0-21-2-25-9Z" />
-                        <path d="M17 4V1h8v3M7 13H1M31 8l6-4M31 18l6 4" />
-                    </svg>
-                </div>
-            )}
+            <div className="submarine-card-preview">
+                <ImageWithFallback
+                    className="submarine-card-preview-image"
+                    src={mainImage}
+                    alt={previewAlt}
+                    fallbackLabel="Preview unavailable"
+                    referrerPolicy="no-referrer"
+                />
+            </div>
 
             <div className="submarine-card-head">
                 <div>
