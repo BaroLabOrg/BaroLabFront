@@ -25,12 +25,13 @@ export default function GuidePage() {
         return () => { cancelled = true; };
     }, [guideId]);
 
-    if (loading) return <div className="guide-loading">Loading guide...</div>;
+    if (loading) return <div className="guide-loading">Loading guide…</div>;
     if (!guide) return <div className="guide-error">{error || 'Guide not found.'}</div>;
 
     const targetTitle = value(guide, 'targetTitle', 'target_title') || 'BaroLab content';
     const targetHref = value(guide, 'targetHref', 'target_href') || '/guides';
     const targetType = value(guide, 'targetType', 'target_type') || 'CONTENT';
+    const updatedAt = value(guide, 'updatedAt', 'updated_at') || value(guide, 'createdAt', 'created_at');
     const canEdit = user && (
         user.role === 'ADMIN'
         || user.role === 'SUPER_ADMIN'
@@ -40,21 +41,23 @@ export default function GuidePage() {
     return (
         <div className="guide-container">
             <header className="guide-header">
-                <Link to={targetHref} className="guide-back-link">← Back to {targetType.toLowerCase()}</Link>
+                <Link to="/guides" className="guide-back-link">← All guides</Link>
                 <h1>{guide.title}</h1>
                 <div className="guide-meta">
-                    <span>For {targetType.toLowerCase()}: <Link to={targetHref}>{targetTitle}</Link></span>
-                    {guide.author && <span> · Last updated by {guide.author.username || guide.author.login}</span>}
+                    <span className="guide-subject-label">{targetType.toLowerCase()} guide</span>
+                    <Link to={targetHref} className="guide-subject-link">{targetTitle}</Link>
+                    {guide.author && <span>By {guide.author.username || guide.author.login}</span>}
+                    {updatedAt && <time dateTime={updatedAt}>{new Date(updatedAt).toLocaleDateString()}</time>}
                 </div>
             </header>
             <div className="guide-content-wrapper">
                 <div className="guide-markdown-body">
-                    <GuideMarkdown>{guide.description}</GuideMarkdown>
+                    <GuideMarkdown hoistInfobox>{guide.description}</GuideMarkdown>
                 </div>
             </div>
             {canEdit && (
                 <div className="guide-admin-actions">
-                    <Link to={`/guides/${guideId}/edit`} className="guide-edit-btn">Edit</Link>
+                    <Link to={`/guides/${guideId}/edit`} className="guide-edit-btn">Edit guide</Link>
                 </div>
             )}
         </div>

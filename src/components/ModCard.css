@@ -64,8 +64,18 @@
 }
 
 .mod-card-banner-placeholder {
-  font-size: 2.4rem;
-  opacity: 0.3;
+  color: var(--text-muted);
+}
+
+.mod-card-banner-placeholder svg {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.15;
+  opacity: 0.42;
 }
 
 .mod-card-body {

@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
 import CommentItem from './CommentItem';
+import ContentGlyph from './ContentGlyph';
 import Pagination from './Pagination';
 import './CommentsSection.css';
 
+const PAGE_SIZE = 20;
+
 export default function CommentsSection({ externalId }) {
-    const PAGE_SIZE = 20;
     const { isAuthenticated } = useAuth();
     const [comments, setComments] = useState([]);
     const [totalComments, setTotalComments] = useState(0);
@@ -52,8 +54,8 @@ export default function CommentsSection({ externalId }) {
         }
     };
 
-    const handleAddComment = async (e) => {
-        e.preventDefault();
+    const handleAddComment = async (event) => {
+        event.preventDefault();
         if (!commentBody.trim()) return;
         setSubmitting(true);
         try {
@@ -74,39 +76,47 @@ export default function CommentsSection({ externalId }) {
 
     if (loading) {
         return (
-            <section className="mod-comments-section glass-card">
-                <div className="mod-comments-loading">Loading comments...</div>
+            <section className="mod-comments-section" aria-labelledby="comments-heading">
+                <h3 id="comments-heading" className="mod-comments-title">Comments</h3>
+                <div className="mod-comments-loading" aria-live="polite">Loading comments...</div>
             </section>
         );
     }
 
     return (
-        <section className="mod-comments-section glass-card">
-            <h3 className="mod-comments-title">
-                Comments <span className="mod-comments-count">{totalComments}</span>
-            </h3>
+        <section className="mod-comments-section" aria-labelledby="comments-heading">
+            <div className="mod-comments-header">
+                <h3 id="comments-heading" className="mod-comments-title">Comments</h3>
+                <span className="mod-comments-count" aria-label={`${totalComments} comments`}>
+                    {totalComments}
+                </span>
+            </div>
 
             {isAuthenticated ? (
                 <form className="mod-comment-form" onSubmit={handleAddComment}>
                     <textarea
                         className="mod-comment-input"
                         value={commentBody}
-                        onChange={(e) => setCommentBody(e.target.value)}
+                        onChange={(event) => setCommentBody(event.target.value)}
                         placeholder="Write a comment..."
-                        rows="3"
+                        rows="4"
+                        aria-label="Comment"
                         required
                         disabled={submitting}
                     />
-                    <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
-                        {submitting ? 'Sending...' : 'Send'}
-                    </button>
+                    <div className="mod-comment-actions">
+                        <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
+                            {submitting ? 'Posting...' : 'Post comment'}
+                        </button>
+                    </div>
                     {error && <div className="auth-error mod-comments-error">{error}</div>}
                 </form>
             ) : (
                 <div className="mod-comment-guest">
+                    <ContentGlyph name="comment" size={19} />
                     <p>
                         <Link to="/login">Log in</Link> or{' '}
-                        <Link to="/sign-up">sign up</Link> to leave a comment.
+                        <Link to="/sign-up">sign up</Link> to join the discussion.
                     </p>
                 </div>
             )}
@@ -115,11 +125,19 @@ export default function CommentsSection({ externalId }) {
 
             <div className="mod-comments-list">
                 {comments.length === 0 ? (
-                    <p className="mod-comments-empty">No comments yet. Be the first!</p>
+                    <div className="mod-comments-empty">
+                        <span className="mod-comments-empty-icon">
+                            <ContentGlyph name="comment" />
+                        </span>
+                        <div>
+                            <strong>No comments yet</strong>
+                            <p>Start the discussion about this mod.</p>
+                        </div>
+                    </div>
                 ) : (
-                    comments.map((c) => (
-                        <div key={c.id} className="mod-comment-entry">
-                            <CommentItem comment={c} />
+                    comments.map((comment) => (
+                        <div key={comment.id} className="mod-comment-entry">
+                            <CommentItem comment={comment} />
                         </div>
                     ))
                 )}

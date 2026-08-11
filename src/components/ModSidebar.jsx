@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as tagsApi from '../api/tags';
 import TagChips from './TagChips';
+import WorkshopAuthorCard from './WorkshopAuthorCard';
 import './ModSidebar.css';
 
 export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAuthenticated, isAdmin }) {
     const authorName = mod.author_username || mod.authorUsername || 'Unknown';
     const authorSteamId = mod.author_steam_id || mod.authorSteamId || null;
-    const steamProfileUrl = authorSteamId ? `https://steamcommunity.com/profiles/${authorSteamId}` : null;
     const [allTags, setAllTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState('');
     const [isAddingTag, setIsAddingTag] = useState(false);
@@ -31,7 +31,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
 
     return (
         <aside className="mod-sidebar">
-            <div className="mod-sidebar-card glass-card">
+            <section className="mod-sidebar-card">
                 <h4 className="mod-sidebar-heading">Tags</h4>
                 <TagChips 
                     tags={tags} 
@@ -82,10 +82,10 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                         )}
                     </div>
                 )}
-            </div>
+            </section>
 
             {mod.required_mods && mod.required_mods.length > 0 && (
-                <div className="mod-sidebar-card glass-card">
+                <section className="mod-sidebar-card">
                     <h4 className="mod-sidebar-heading">Required mods</h4>
                     <ul className="mod-deps-list">
                         {mod.required_mods.map((depId, i) => (
@@ -97,39 +97,28 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                             </li>
                         ))}
                     </ul>
-                </div>
+                </section>
             )}
 
-            <div className="mod-sidebar-card glass-card">
+            <section className="mod-sidebar-card">
                 <h4 className="mod-sidebar-heading">Author</h4>
-                <div className="mod-creator-card">
-                    <div className="mod-creator-avatar">👤</div>
-                    <div className="mod-creator-info">
-                        {steamProfileUrl ? (
-                            <a
-                                className="mod-creator-name mod-creator-link"
-                                href={steamProfileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                {authorName}
-                            </a>
-                        ) : (
-                            <span className="mod-creator-name">{authorName}</span>
-                        )}
-                        <span className="mod-creator-role">{authorSteamId ? 'Steam Workshop author' : 'BaroLab author'}</span>
-                    </div>
-                </div>
-            </div>
+                <WorkshopAuthorCard
+                    authorName={authorName}
+                    authorSteamId={authorSteamId}
+                    variant="mod"
+                />
+            </section>
 
             {mod.mods_above && mod.mods_above.length > 0 && (
-                <div className="mod-sidebar-card glass-card">
+                <section className="mod-sidebar-card">
                     <h4 className="mod-sidebar-heading">Load above</h4>
                     <ul className="mod-deps-list">
                         {mod.mods_above.map((modId, i) => (
                             <li key={i} className="mod-dep-item">
-                                <div className="mod-similar-avatar">
-                                    🔧
+                                <div className="mod-similar-avatar" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="m14 5 2-2 5 5-2 2M13 6l5 5-9 9H4v-5l9-9Z" />
+                                    </svg>
                                 </div>
                                 <Link to={`/mod/${modId}`} className="mod-dep-name">
                                     Mod ID: {modId}
@@ -137,7 +126,7 @@ export default function ModSidebar({ mod, tags = [], onAddTag, onRemoveTag, isAu
                             </li>
                         ))}
                     </ul>
-                </div>
+                </section>
             )}
         </aside>
     );

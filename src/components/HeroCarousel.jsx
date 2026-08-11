@@ -15,9 +15,11 @@ function formatRelativeTime(dateStr) {
 function StarRating({ value }) {
     const stars = Math.round((value || 0) * 2) / 2;
     return (
-        <span className="hero-stars">
+        <span className="hero-stars" aria-label={`${value ? value.toFixed(1) : 'No'} rating`}>
             {[1, 2, 3, 4, 5].map((i) => (
-                <span key={i} className={i <= stars ? 'star filled' : 'star'}>★</span>
+                <svg key={i} className={i <= stars ? 'star filled' : 'star'} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.4 6.3-.9L12 2.8Z" />
+                </svg>
             ))}
             <span className="hero-rating-val">({value ? value.toFixed(1) : '—'})</span>
         </span>
@@ -31,6 +33,8 @@ export default function HeroCarousel() {
     const [current, setCurrent] = useState(0);
     const [loading, setLoading] = useState(true);
     const [progress, setProgress] = useState(0);
+    const [paused, setPaused] = useState(false);
+    const [reducedMotion, setReducedMotion] = useState(false);
     const progressRef = useRef(null);
     const startRef = useRef(null);
 
@@ -39,6 +43,14 @@ export default function HeroCarousel() {
             .then((res) => setMods(res.items || []))
             .catch(() => setMods([]))
             .finally(() => setLoading(false));
+    }, []);
+
+    useEffect(() => {
+        const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const updatePreference = () => setReducedMotion(media.matches);
+        updatePreference();
+        media.addEventListener?.('change', updatePreference);
+        return () => media.removeEventListener?.('change', updatePreference);
     }, []);
 
     const prev = useCallback(() => {
@@ -53,7 +65,7 @@ export default function HeroCarousel() {
 
     // Progress bar animation
     useEffect(() => {
-        if (mods.length < 2) return;
+        if (mods.length < 2 || paused || reducedMotion) return;
         setProgress(0);
         startRef.current = Date.now();
 
@@ -72,7 +84,7 @@ export default function HeroCarousel() {
             clearTimeout(id);
             cancelAnimationFrame(progressRef.current);
         };
-    }, [current, mods.length, next]);
+    }, [current, mods.length, next, paused, reducedMotion]);
 
     if (loading) {
         return <div className="hero-skeleton"><div className="loading-spinner" /></div>;
@@ -98,9 +110,19 @@ export default function HeroCarousel() {
     };
 
     return (
-        <div className="hero-carousel">
+        <section
+            className="hero-carousel"
+            aria-label="Trending workshop mods"
+            aria-roledescription="carousel"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocusCapture={() => setPaused(true)}
+            onBlurCapture={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
+            }}
+        >
             {/* Background */}
-            <Link to={`/mod/${externalId}`} className="hero-bg-link">
+            <Link to={`/mod/${externalId}`} className="hero-bg-link" aria-label={`Open ${mod.title}`}>
                 {mainImage && (
                     <div
                         className="hero-bg active"
@@ -117,7 +139,7 @@ export default function HeroCarousel() {
                         <span className="hero-badge-dot" />
                         Trending Now
                     </div>
-                    <h1 className="hero-title">{mod.title}</h1>
+                    <h2 className="hero-title">{mod.title}</h2>
                     <p className="hero-desc">
                         {mod.description?.length > 160
                             ? mod.description.slice(0, 160) + '…'
@@ -125,10 +147,16 @@ export default function HeroCarousel() {
                     </p>
                     <div className="hero-actions">
                         <button className="btn btn-primary hero-btn-download" onClick={handleDownload}>
-                            ↓ Download Mod
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" />
+                            </svg>
+                            Download mod
                         </button>
                         <Link to={`/mod/${externalId}`} className="btn btn-outline hero-btn-guide">
-                            Read Guide →
+                            View dossier
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M5 12h13M13 6l6 6-6 6" />
+                            </svg>
                         </Link>
                     </div>
                     <div className="hero-stub-status">
@@ -157,19 +185,25 @@ export default function HeroCarousel() {
                 {mods.map((_, i) => (
                     <button
                         key={i}
+                        type="button"
                         className={`hero-dot ${i === current ? 'active' : ''}`}
                         onClick={() => { setCurrent(i); setProgress(0); }}
-                        aria-label={`Slide ${i + 1}`}
+                        aria-label={`Show ${mods[i].title}`}
+                        aria-current={i === current ? 'true' : undefined}
                     />
                 ))}
             </div>
 
             {/* Arrows */}
-            <button className="hero-arrow hero-arrow-prev" onClick={prev} aria-label="Previous">‹</button>
-            <button className="hero-arrow hero-arrow-next" onClick={next} aria-label="Next">›</button>
+            <button type="button" className="hero-arrow hero-arrow-prev" onClick={prev} aria-label="Previous mod">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+            </button>
+            <button type="button" className="hero-arrow hero-arrow-next" onClick={next} aria-label="Next mod">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+            </button>
 
             {/* Progress bar */}
-            <div className="hero-progress" style={{ width: `${progress}%` }} />
-        </div>
+            <div className="hero-progress" style={{ transform: `scaleX(${progress / 100})` }} />
+        </section>
     );
 }

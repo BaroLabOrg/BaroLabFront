@@ -1,48 +1,105 @@
 .encyclopedia-list-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .encyclopedia-header-box {
-  padding: 24px;
-  text-align: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
   position: relative;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+  padding: 34px 0 30px;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.encyclopedia-header-box::before {
-  content: '';
+.encyclopedia-header-box::after {
   position: absolute;
-  top: 0;
-  left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  bottom: -1px;
+  width: min(34vw, 360px);
+  height: 1px;
+  background: #9fb4cf;
+  content: '';
+}
+
+.encyclopedia-header-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.encyclopedia-header-icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 58px;
+  height: 52px;
+  place-items: center;
+  color: #b7c8dd;
+  border: 1px solid rgba(159, 180, 207, 0.42);
+  background: rgba(159, 180, 207, 0.07);
+}
+
+.encyclopedia-header-icon svg {
+  width: 31px;
+  height: 27px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.3;
 }
 
 .encyclopedia-title {
   margin: 0;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 26px;
+  font-size: clamp(2.6rem, 5.7vw, 5.2rem);
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: -0.025em;
+  line-height: 0.84;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .encyclopedia-subtitle {
-  margin: 8px auto 0;
-  max-width: 780px;
+  max-width: 68ch;
+  margin: 15px 0 0;
   color: var(--text-secondary);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.encyclopedia-header-side {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.encyclopedia-index-status {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.encyclopedia-index-status span {
+  color: var(--text-primary);
   font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .encyclopedia-level-actions {
-  margin-top: 14px;
+  margin: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -50,18 +107,17 @@
 }
 
 .encyclopedia-search-panel {
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
+  background: rgba(14, 17, 24, 0.78);
   transition: border-color var(--transition-fast);
 }
 
 .encyclopedia-search-panel:focus-within {
-  border-color: var(--border-hover);
+  border-color: rgba(159, 180, 207, 0.5);
 }
 
 .encyclopedia-search-form {
@@ -71,9 +127,9 @@
 }
 
 .encyclopedia-search-form label {
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -88,7 +144,12 @@
 
 .encyclopedia-search-row input {
   flex: 1;
-  min-width: min(360px, 100%);
+  min-width: 0;
+  min-height: 48px;
+}
+
+.encyclopedia-search-row .btn {
+  min-height: 48px;
 }
 
 .encyclopedia-filter-row {
@@ -101,9 +162,9 @@
 .encyclopedia-filter-label {
   flex-shrink: 0;
   min-width: 52px;
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -126,7 +187,8 @@
   flex-shrink: 0;
   padding: 5px 12px;
   border: 1px solid var(--border-color);
-  border-radius: 999px;
+  min-height: 34px;
+  border-radius: 4px;
   background: var(--bg-secondary);
   color: var(--text-secondary);
   font-family: var(--font-heading);
@@ -144,14 +206,28 @@
 }
 
 .encyclopedia-chip.active {
-  border-color: var(--accent);
-  background: var(--accent-dim);
+  border-color: #9fb4cf;
+  background: rgba(159, 180, 207, 0.12);
   color: var(--text-primary);
+}
+
+.encyclopedia-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 34px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .encyclopedia-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
   gap: 14px;
 }
 
@@ -196,8 +272,7 @@
 }
 
 .encyclopedia-card:hover {
-  border-color: rgba(249, 115, 22, 0.3);
-  box-shadow: var(--shadow-accent-soft);
+  border-color: rgba(159, 180, 207, 0.42);
   transform: translateY(-3px);
 }
 
@@ -230,9 +305,18 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  font-size: 2rem;
   background: var(--bg-secondary);
-  opacity: 0.4;
+}
+
+.encyclopedia-card-image-placeholder svg {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.15;
+  opacity: 0.42;
 }
 
 .encyclopedia-card-body {
@@ -326,7 +410,34 @@
 }
 
 @media (max-width: 768px) {
-  .encyclopedia-header-box,
+  .encyclopedia-list-page {
+    gap: 16px;
+  }
+
+  .encyclopedia-header-box {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 28px 0 22px;
+  }
+
+  .encyclopedia-header-main {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .encyclopedia-header-icon {
+    width: 46px;
+    height: 42px;
+  }
+
+  .encyclopedia-title {
+    font-size: clamp(2.25rem, 12vw, 3.7rem);
+  }
+
+  .encyclopedia-header-side {
+    align-items: flex-start;
+  }
+
   .encyclopedia-search-panel {
     padding: 14px;
   }
@@ -337,5 +448,12 @@
 
   .encyclopedia-filter-row {
     align-items: flex-start;
+  }
+
+  .encyclopedia-results-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+    padding-bottom: 10px;
   }
 }

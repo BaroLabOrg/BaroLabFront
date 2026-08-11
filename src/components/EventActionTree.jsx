@@ -23,9 +23,13 @@ function EventActionNode({ node, depth }) {
                         type="button"
                         className="event-action-toggle"
                         aria-expanded={expanded}
+                        aria-label={`${expanded ? 'Collapse' : 'Expand'} ${humanizeIdentifier(tag)}`}
                         onClick={() => setExpanded((prev) => !prev)}
                     >
-                        <span aria-hidden="true">{expanded ? '▾' : '▸'}</span>
+                        <span
+                            className={`event-action-chevron${expanded ? ' is-expanded' : ''}`}
+                            aria-hidden="true"
+                        />
                         <span className="event-action-tag">{humanizeIdentifier(tag)}</span>
                         <span className="event-action-count">{children.length}</span>
                     </button>

@@ -54,8 +54,17 @@
 }
 
 .home-mod-card-img-placeholder {
-    font-size: 28px;
     opacity: 0.3;
+}
+
+.home-mod-card-img-placeholder svg {
+    width: 34px;
+    height: 34px;
+    fill: none;
+    stroke: var(--text-secondary);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .home-mod-card-body {
@@ -100,8 +109,23 @@
 
 .home-mod-card-author-icon {
     color: var(--accent);
-    font-size: 10px;
     opacity: 0.7;
+}
+
+.home-mod-card-author-icon svg,
+.home-mod-card-stat svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+}
+
+.home-mod-card-stat:first-child svg {
+    fill: currentColor;
 }
 
 .home-mod-card-desc {

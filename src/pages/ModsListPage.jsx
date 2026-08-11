@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
 import * as tagsApi from '../api/tags';
@@ -53,7 +52,6 @@ export default function ModsListPage() {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
     const guideTargetMode = searchParams.get('guideTarget') === '1';
     const query = normalizeQuery(searchParams.get('q'));
     const selectedTags = parseTags(searchParams);
@@ -79,17 +77,6 @@ export default function ModsListPage() {
     const [tagToAdd, setTagToAdd] = useState('');
     const [tagsLoading, setTagsLoading] = useState(true);
     const [tagsError, setTagsError] = useState('');
-
-    // Create mod state
-    const [showForm, setShowForm] = useState(false);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [externalUrl, setExternalUrl] = useState('');
-    const [mainImage, setMainImage] = useState('');
-    const [additionalImages, setAdditionalImages] = useState('');
-    const [requiredMods, setRequiredMods] = useState('');
-    const [modsAbove, setModsAbove] = useState('');
-    const [creating, setCreating] = useState(false);
 
     const updateSearch = (nextValues = {}) => {
         const nextQuery = normalizeQuery(nextValues.q ?? query);
@@ -272,46 +259,6 @@ export default function ModsListPage() {
         setSearchParams(nextParams);
     };
 
-    const handleCreateMod = async (e) => {
-        e.preventDefault();
-        setCreating(true);
-        setError('');
-        try {
-            const parsedAdditional = additionalImages ? additionalImages.split(',').map(s => s.trim()).filter(Boolean) : [];
-            const parsedRequired = requiredMods ? requiredMods.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
-            const parsedModsAbove = modsAbove ? modsAbove.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)) : [];
-
-            await modsApi.createMod(title, description, externalUrl, mainImage, parsedAdditional, parsedRequired, parsedModsAbove);
-            setTitle('');
-            setDescription('');
-            setExternalUrl('');
-            setMainImage('');
-            setAdditionalImages('');
-            setRequiredMods('');
-            setModsAbove('');
-            setShowForm(false);
-            if (page === 0) {
-                await loadMods({
-                    currentQuery: query,
-                    currentTags: selectedTags,
-                    currentPage: 0,
-                    currentSortBy: sortBy,
-                    currentDirection: direction,
-                });
-            } else {
-                updateSearch({
-                    q: query,
-                    tags: selectedTags,
-                    page: 0,
-                });
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setCreating(false);
-        }
-    };
-
     const hasActiveFilters = query.length > 0
         || selectedTags.length > 0
         || page > 0
@@ -342,36 +289,34 @@ export default function ModsListPage() {
     return (
         <div className="page page--mods">
             <div className="container">
-                <div className="mods-header-box glass-card shine">
-                    <h1 className="mods-title">{guideTargetMode ? 'Choose a mod for your guide' : '🔧 Mods Library'}</h1>
-                    <p className="mods-subtitle">
-                        {guideTargetMode
-                            ? `Use the familiar search and filters, then choose a mod. Found: ${totalMods}`
-                            : `Community Steam Workshop mods · total: ${totalMods}`}
-                    </p>
-                    {guideTargetMode ? (
-                        <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
+                <header className="mods-header-box">
+                    <div className="mods-header-main">
+                        <div className="mods-header-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M8 4h8M6 8h12M5 12h14M7 16h10M9 20h6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 className="mods-title">{guideTargetMode ? 'Choose a mod for your guide' : 'Mods Library'}</h1>
+                            <p className="mods-subtitle">
+                                {guideTargetMode
+                                    ? 'Use the workshop index, then choose the mod your guide belongs to.'
+                                    : 'Search the community workshop by title, tags and activity.'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mods-header-status">
+                        <span>{Number(totalMods).toLocaleString('en-US')}</span>
+                        indexed records
+                    </div>
+                    {guideTargetMode && (
+                        <div className="mods-actions">
                             <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
                                 ← Change guide type
                             </button>
                         </div>
-                    ) : isAuthenticated ? (
-                        <div className="mods-actions" style={{ marginTop: '1.5rem' }}>
-                            <button
-                                id="create-mod-toggle"
-                                className="btn btn-primary"
-                                onClick={() => setShowForm(!showForm)}
-                            >
-                                {showForm ? '✕ Close' : '➕ Add mod'}
-                            </button>
-                        </div>
-                    ) : (
-                        <p className="auth-prompt" style={{ marginTop: '1.5rem', opacity: 0.8 }}>
-                            <Link to="/login" className="auth-link">Log in</Link> or{' '}
-                            <Link to="/sign-up" className="auth-link">sign up</Link> to add mods.
-                        </p>
                     )}
-                </div>
+                </header>
 
                 <section className="mods-search-panel glass-card">
                     <form className="mods-search-form" onSubmit={handleSearchSubmit}>
@@ -387,13 +332,13 @@ export default function ModsListPage() {
                                 placeholder="Enter mod name"
                                 autoComplete="off"
                             />
-                            <button className="btn btn-primary" type="submit" disabled={loading || creating}>
+                            <button className="btn btn-primary" type="submit" disabled={loading}>
                                 Search
                             </button>
                             <button
                                 className="btn btn-ghost"
                                 type="button"
-                                disabled={!hasActiveFilters || loading || creating}
+                                disabled={!hasActiveFilters || loading}
                                 onClick={handleResetFilters}
                             >
                                 Reset
@@ -409,7 +354,7 @@ export default function ModsListPage() {
                             id="mods-sort-select"
                             value={selectedSort.value}
                             onChange={handleSortChange}
-                            disabled={loading || creating}
+                            disabled={loading}
                         >
                             {MOD_SORT_OPTIONS.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -447,7 +392,7 @@ export default function ModsListPage() {
                                 className="btn btn-ghost"
                                 type="button"
                                 onClick={handleAddTagFilter}
-                                disabled={!tagToAdd || loading || creating}
+                                disabled={!tagToAdd || loading}
                             >
                                 Add tag
                             </button>
@@ -467,94 +412,12 @@ export default function ModsListPage() {
                     </div>
                 </section>
 
-                {!guideTargetMode && isAuthenticated && showForm && (
-                    <form className="create-mod-form glass-card fade-in" onSubmit={handleCreateMod}>
-                        <h3 className="form-title">Add mod</h3>
-                        <div className="form-group">
-                            <label className="form-label">Title</label>
-                            <input
-                                id="mod-title-input"
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Mod title"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Description</label>
-                            <textarea
-                                id="mod-content-input"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Mod description"
-                                required
-                                rows="4"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Steam Workshop URL</label>
-                            <input
-                                id="mod-url-input"
-                                type="url"
-                                value={externalUrl}
-                                onChange={(e) => setExternalUrl(e.target.value)}
-                                placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=..."
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Main image (URL)</label>
-                            <input
-                                id="mod-main-image-input"
-                                type="url"
-                                value={mainImage}
-                                onChange={(e) => setMainImage(e.target.value)}
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Additional images (URLs, comma-separated)</label>
-                            <input
-                                id="mod-additional-images-input"
-                                type="text"
-                                value={additionalImages}
-                                onChange={(e) => setAdditionalImages(e.target.value)}
-                                placeholder="https://img1.jpg, https://img2.jpg"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Required mods (Steam IDs, comma-separated)</label>
-                            <input
-                                id="mod-required-input"
-                                type="text"
-                                value={requiredMods}
-                                onChange={(e) => setRequiredMods(e.target.value)}
-                                placeholder="12345678, 87654321"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Mods above (Steam IDs, comma-separated)</label>
-                            <input
-                                id="mod-above-input"
-                                type="text"
-                                value={modsAbove}
-                                onChange={(e) => setModsAbove(e.target.value)}
-                                placeholder="11223344"
-                            />
-                        </div>
-                        <button
-                            id="submit-mod"
-                            type="submit"
-                            className="btn btn-primary"
-                            disabled={creating}
-                        >
-                            {creating ? 'Publishing...' : 'Publish'}
-                        </button>
-                    </form>
-                )}
-
                 {error && <div className="auth-error" style={{ marginBottom: 16 }}>{error}</div>}
+
+                <div className="mods-results-bar" aria-live="polite">
+                    <span>{loading ? 'Syncing workshop index' : `${Number(totalMods).toLocaleString('en-US')} matching records`}</span>
+                    <span>Page {page + 1} / {Math.max(totalPages, 1)}</span>
+                </div>
 
                 {loading ? (
                     <div className="loading-state">
@@ -563,8 +426,8 @@ export default function ModsListPage() {
                     </div>
                 ) : mods.length === 0 ? (
                     <div className="empty-state fade-in">
-                        <span className="empty-icon">🔧</span>
-                        <p>No mods found for the current query.</p>
+                        <strong>No matching mods</strong>
+                        <p>Try a broader title or remove one of the selected tags.</p>
                     </div>
                 ) : (
                     <div className="mods-grid">
@@ -588,7 +451,7 @@ export default function ModsListPage() {
                     totalPages={totalPages}
                     hasNext={hasNext}
                     hasPrevious={hasPrevious}
-                    disabled={loading || creating}
+                    disabled={loading}
                     onPageChange={handlePageChange}
                 />
             </div>

@@ -1,4 +1,4 @@
-import { Children, useEffect, useId, useRef, useState } from 'react';
+import { Children, cloneElement, isValidElement, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -45,7 +45,15 @@ function CustomTable({ children, ...props }) {
     } catch {
         isInfobox = false;
     }
-    return <table className={isInfobox ? 'guide-infobox' : 'guide-table'} {...props}>{children}</table>;
+    const stripInfoboxMarker = (node) => {
+        if (typeof node === 'string') return node.replace(/^INFOBOX:\s*/i, '');
+        if (!isValidElement(node)) return node;
+        return cloneElement(node, node.props, Children.map(node.props.children, stripInfoboxMarker));
+    };
+    const renderedChildren = isInfobox
+        ? Children.map(children, stripInfoboxMarker)
+        : children;
+    return <table className={isInfobox ? 'guide-infobox' : 'guide-table'} {...props}>{renderedChildren}</table>;
 }
 
 function calculatePosition(anchor) {
@@ -186,17 +194,52 @@ function MarkdownLink({ href, children }) {
     return <InternalReferenceLink href={reference.href} reference={reference}>{children}</InternalReferenceLink>;
 }
 
-export default function GuideMarkdown({ children }) {
+const MARKDOWN_COMPONENTS = {
+    a: MarkdownLink,
+    blockquote: CustomQuote,
+    table: CustomTable,
+};
+
+function extractInfobox(markdown) {
+    const lines = String(markdown || '').split(/\r?\n/);
+    const start = lines.findIndex((line) => /^\s*\|\s*INFOBOX:/i.test(line));
+    if (start < 0) return { infobox: '', body: lines.join('\n') };
+
+    let end = start;
+    while (end < lines.length && /^\s*\|/.test(lines[end])) end += 1;
+
+    return {
+        infobox: lines.slice(start, end).join('\n'),
+        body: [...lines.slice(0, start), ...lines.slice(end)].join('\n').replace(/^\s+/, ''),
+    };
+}
+
+export default function GuideMarkdown({ children, hoistInfobox = false }) {
+    const source = String(children || '');
+    const { infobox, body } = hoistInfobox
+        ? extractInfobox(source)
+        : { infobox: '', body: source };
+
+    if (infobox) {
+        return (
+            <div className="guide-markdown-layout">
+                <div className="guide-markdown-article">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+                        {body}
+                    </ReactMarkdown>
+                </div>
+                <aside className="guide-markdown-aside" aria-label="Guide infobox">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+                        {infobox}
+                    </ReactMarkdown>
+                </aside>
+            </div>
+        );
+    }
+
     return (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-                a: MarkdownLink,
-                blockquote: CustomQuote,
-                table: CustomTable,
-            }}
-        >
-            {String(children || '')}
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+            {body}
         </ReactMarkdown>
     );
 }

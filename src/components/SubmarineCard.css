@@ -71,8 +71,17 @@
 
 .submarine-card-preview-empty {
   color: var(--text-muted);
-  font-size: 1.8rem;
-  opacity: 0.4;
+}
+
+.submarine-card-preview-empty svg {
+  width: 48px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.15;
+  opacity: 0.42;
 }
 
 .submarine-card-head {
@@ -125,6 +134,31 @@
   color: var(--text-muted);
   font-size: 0.76rem;
   font-family: var(--font-mono);
+}
+
+.submarine-card-metrics span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.submarine-card-metrics small {
+  color: var(--text-muted);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.submarine-card-metrics strong {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .submarine-card-tags {

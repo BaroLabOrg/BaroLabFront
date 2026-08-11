@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import { searchMods, getMods } from '../api/mods';
 import { searchSubmarines, getSubmarines } from '../api/submarines';
@@ -9,6 +9,14 @@ import HomeModCard from '../components/HomeModCard';
 import SubmarineCard from '../components/SubmarineCard';
 import Footer from '../components/Footer';
 import './HomePage.css';
+
+function ArrowIcon() {
+    return (
+        <svg className="home-arrow-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h13M13 6l6 6-6 6" />
+        </svg>
+    );
+}
 
 const SYSTEM_LOGS = [
     { version: 'V1.2.0', tag: 'NEW', title: 'Interactive Submarine Previews', body: 'Added WebGL support. You can now inspect vessel hull blueprints and wiring layers directly in your browser before downloading.' },
@@ -47,14 +55,10 @@ const CATEGORY_CARDS = [
     },
 ];
 
-// Barotrauma-themed depth gauge data
-const DEPTH_READINGS = [
-    { label: 'DEPTH', value: '3,200m', unit: 'BELOW SURFACE', color: 'var(--accent-blue)' },
-    { label: 'PRESSURE', value: '320 ATM', unit: 'HULL INTEGRITY: 94%', color: 'var(--accent-green)' },
-    { label: 'OXYGEN', value: '87%', unit: 'RECYCLER ACTIVE', color: 'var(--accent-green)' },
-    { label: 'REACTOR', value: 'ONLINE', unit: 'OUTPUT: 4,200 kW', color: 'var(--accent)' },
-    { label: 'CREW', value: '6/8', unit: 'STATIONS MANNED', color: 'var(--accent)' },
-    { label: 'THREAT', value: 'MODERATE', unit: 'CREATURES NEARBY', color: 'var(--warning)' },
+const SEARCH_CATEGORIES = [
+    { value: 'mods', label: 'Mods' },
+    { value: 'submarines', label: 'Submarines' },
+    { value: 'encyclopedia', label: 'Encyclopedia' },
 ];
 
 export default function HomePage() {
@@ -68,6 +72,9 @@ export default function HomePage() {
     const [topSubs, setTopSubs] = useState([]);
     const [loadingMods, setLoadingMods] = useState(true);
     const [loadingSubs, setLoadingSubs] = useState(true);
+    const [searchCategory, setSearchCategory] = useState('mods');
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         Promise.all([
@@ -95,6 +102,14 @@ export default function HomePage() {
 
     const fmt = (n) => (n != null ? Number(n).toLocaleString('en-US') : '—');
 
+    const handleCatalogSearch = (event) => {
+        event.preventDefault();
+        const query = searchQuery.trim();
+        const params = new URLSearchParams();
+        if (query) params.set('q', query);
+        navigate(`/${searchCategory}${params.size ? `?${params.toString()}` : ''}`);
+    };
+
     return (
         <div className="home-page">
             {/* SEO: visually hidden heading for crawlers */}
@@ -102,15 +117,13 @@ export default function HomePage() {
                 BaroLab — Barotrauma Mods, Submarines and Guides. Discover Barotrauma mods, custom submarines, community guides, tags, load order information and encyclopedia entries. Built for Barotrauma players, modders, submarine creators and server owners.
             </h1>
 
-            {/* Hero */}
-            <div className="home-hero-wrap">
-                <HeroCarousel />
-            </div>
-
             {/* Quick Stats Bar */}
             <div className="home-stats-bar">
                 <div className="home-stats-inner container">
-                    <span className="home-stats-label">SYS_STATS</span>
+                    <span className="home-stats-label">
+                        <span className="home-stats-pulse" />
+                        Catalog online
+                    </span>
                     <span className="home-stats-item">
                         <span className="home-stats-num">{fmt(stats.mods)}</span> Mods
                     </span>
@@ -120,43 +133,109 @@ export default function HomePage() {
                     <span className="home-stats-item">
                         <span className="home-stats-num">{fmt(stats.guides)}</span> Guides
                     </span>
-                    <span className="home-stats-item">
-                        <span className="home-stats-num">WIP</span> Authors
-                    </span>
+                    <span className="home-stats-note">Community data / live index</span>
                 </div>
             </div>
 
-
-            {/* Category Cards */}
-            <div className="home-categories container">
-                {CATEGORY_CARDS.map((cat) => (
-                    <Link key={cat.key} to={cat.to} className={`home-cat-card home-cat-card--${cat.key} glass-card`}>
-                        <div className={`home-cat-bg home-cat-bg--${cat.key}`} />
-                        <div className="home-cat-body">
-                            <h2 className="home-cat-title">{cat.title}</h2>
-                            <span className="home-cat-bracket">{cat.bracket}</span>
-                            <p className="home-cat-desc">{cat.desc}</p>
-                            <div className="home-cat-tags">
-                                {cat.tags.map((t) => (
-                                    <span key={t} className="home-cat-tag">{t.toUpperCase()}</span>
-                                ))}
-                            </div>
-                            <span className="home-cat-stub">{cat.stub}</span>
-                        </div>
-                    </Link>
-                ))}
+            {/* Hero */}
+            <div className="home-hero-wrap">
+                <div className="home-hero-frame" aria-hidden="true">
+                    <span>EUROPA / COMMUNITY UPLINK</span>
+                    <span>BAROLAB DEEP DATA</span>
+                </div>
+                <HeroCarousel />
             </div>
 
+            {/* Catalog Search */}
+            <section className="home-search-bar" aria-labelledby="home-search-title">
+                <form className="home-search-form container" onSubmit={handleCatalogSearch}>
+                    <div className="home-search-heading">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <circle cx="11" cy="11" r="6.5" />
+                            <path d="m16 16 4 4" />
+                        </svg>
+                        <div>
+                            <h2 id="home-search-title">Find what your crew needs</h2>
+                            <p>Search mods, submarines, and encyclopedia entries before your next dive.</p>
+                        </div>
+                    </div>
+                    <div className="home-search-controls">
+                        <label className="home-search-category">
+                            <span className="home-search-category-label">Search in</span>
+                            <span className="home-search-category-value" aria-hidden="true">
+                                {SEARCH_CATEGORIES.find((category) => category.value === searchCategory)?.label}
+                            </span>
+                            <select
+                                value={searchCategory}
+                                onChange={(event) => setSearchCategory(event.target.value)}
+                                aria-label="Search category"
+                            >
+                                {SEARCH_CATEGORIES.map((category) => (
+                                    <option key={category.value} value={category.value}>{category.label}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="home-search-query">
+                            <span className="visually-hidden">Search query</span>
+                            <input
+                                type="search"
+                                value={searchQuery}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                placeholder={`Search ${searchCategory}…`}
+                                autoComplete="off"
+                            />
+                        </label>
+                        <button className="home-search-submit" type="submit">
+                            Search
+                            <ArrowIcon />
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+
+            {/* Category Cards */}
+            <section className="home-categories container" aria-labelledby="home-domains-title">
+                <div className="home-categories-intro">
+                    <h2 id="home-domains-title">Choose your depth</h2>
+                    <p>Enter through the workshop, the shipyard, or the field manuals. Each route leads deeper into the Barotrauma community.</p>
+                </div>
+                <div className="home-categories-grid">
+                    {CATEGORY_CARDS.map((cat) => (
+                        <Link key={cat.key} to={cat.to} className={`home-cat-card home-cat-card--${cat.key}`}>
+                            <div className={`home-cat-bg home-cat-bg--${cat.key}`} />
+                            <div className="home-cat-body">
+                                <div className="home-cat-topline">
+                                    <span className="home-cat-bracket">{cat.bracket}</span>
+                                    <ArrowIcon />
+                                </div>
+                                <h3 className="home-cat-title">{cat.title}</h3>
+                                <p className="home-cat-desc">{cat.desc}</p>
+                                <div className="home-cat-tags">
+                                    {cat.tags.map((t) => (
+                                        <span key={t} className="home-cat-tag">{t.toUpperCase()}</span>
+                                    ))}
+                                </div>
+                                <span className="home-cat-stub">{cat.stub}</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
             {/* Trending This Week */}
-            <section className="home-section container">
+            <section className="home-section home-section--mods container">
                 <div className="home-section-header">
-                    <h2 className="home-section-title">Trending This Week</h2>
-                    <Link to="/mods" className="home-section-viewall">View All →</Link>
+                    <div>
+                        <h2 className="home-section-title">Trending this week</h2>
+                        <p className="home-section-summary">The workshop pulse, ordered by current community activity.</p>
+                    </div>
+                    <Link to="/mods" className="home-section-viewall">View all mods <ArrowIcon /></Link>
                 </div>
                 {loadingMods ? (
                     <div className="loading-state"><div className="loading-spinner" /></div>
                 ) : (
-                    <div className="home-cards-grid">
+                    <div className="home-cards-grid home-cards-grid--mods">
                         {trendingMods.map((mod) => (
                             <HomeModCard key={mod.external_id || mod.externalId} mod={mod} />
                         ))}
@@ -165,15 +244,18 @@ export default function HomePage() {
             </section>
 
             {/* Top Rated Vessels */}
-            <section className="home-section container">
+            <section className="home-section home-section--subs container">
                 <div className="home-section-header">
-                    <h2 className="home-section-title">Top Rated Vessels</h2>
-                    <Link to="/submarines" className="home-section-viewall">View All →</Link>
+                    <div>
+                        <h2 className="home-section-title">Fresh from the shipyard</h2>
+                        <p className="home-section-summary">The latest vessels added to the community fleet.</p>
+                    </div>
+                    <Link to="/submarines" className="home-section-viewall">Enter shipyard <ArrowIcon /></Link>
                 </div>
                 {loadingSubs ? (
                     <div className="loading-state"><div className="loading-spinner" /></div>
                 ) : (
-                    <div className="home-cards-grid">
+                    <div className="home-cards-grid home-cards-grid--subs">
                         {topSubs.map((sub) => (
                             <SubmarineCard key={sub.external_id || sub.externalId} submarine={sub} />
                         ))}
@@ -182,10 +264,12 @@ export default function HomePage() {
             </section>
 
             {/* System Logs */}
-            <section className="home-section container">
+            <section className="home-section home-section--logs container">
                 <div className="home-section-header">
-                    <h2 className="home-section-title">System Logs</h2>
-                    <span className="home-section-viewall home-section-viewall--stub">View All →</span>
+                    <div>
+                        <h2 className="home-section-title">System logs</h2>
+                        <p className="home-section-summary">Recent changes from across the BaroLab network.</p>
+                    </div>
                 </div>
                 <div className="home-logs-terminal">
                     <div className="home-logs-topbar">

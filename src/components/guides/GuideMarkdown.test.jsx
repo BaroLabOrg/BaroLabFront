@@ -50,4 +50,47 @@ describe('GuideMarkdown', () => {
             externalId: '42',
         }));
     });
+
+    it('places a hoisted INFOBOX in a separate column from the guide body', () => {
+        const { container } = render(
+            <MemoryRouter>
+                <div className="guide-markdown-body">
+                    <GuideMarkdown hoistInfobox>
+                        {'# Field notes\n\nIntro text.\n\n| INFOBOX: Scavenger | |\n| :--- | :--- |\n| Health | 100 HP |\n\n## Tactics'}
+                    </GuideMarkdown>
+                </div>
+            </MemoryRouter>,
+        );
+
+        const infobox = container.querySelector('.guide-infobox');
+        const heading = screen.getByRole('heading', { name: 'Field notes' });
+        const layout = container.querySelector('.guide-markdown-layout');
+        const article = container.querySelector('.guide-markdown-article');
+        const aside = container.querySelector('.guide-markdown-aside');
+        expect(infobox).toBeInTheDocument();
+        expect(within(infobox).getByText('Scavenger')).toBeInTheDocument();
+        expect(within(infobox).queryByText(/INFOBOX:/)).not.toBeInTheDocument();
+        expect(layout).toBeInTheDocument();
+        expect(article).toContainElement(heading);
+        expect(aside).toContainElement(infobox);
+        expect(article).not.toContainElement(infobox);
+    });
+
+    it('keeps INFOBOX examples in their authored position by default', () => {
+        const { container } = render(
+            <MemoryRouter>
+                <div className="guide-markdown-body">
+                    <GuideMarkdown>
+                        {'# Infobox instructions\n\nCopy this example below.\n\n| INFOBOX: Example | |\n| :--- | :--- |\n| Health | 100 HP |\n\n```markdown\n| INFOBOX: Copy me | |\n```'}
+                    </GuideMarkdown>
+                </div>
+            </MemoryRouter>,
+        );
+
+        const paragraph = screen.getByText('Copy this example below.');
+        const infobox = container.querySelector('.guide-infobox');
+        expect(paragraph.compareDocumentPosition(infobox) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(container.querySelector('.guide-markdown-layout')).not.toBeInTheDocument();
+        expect(screen.getByText('| INFOBOX: Copy me | |')).toBeInTheDocument();
+    });
 });
