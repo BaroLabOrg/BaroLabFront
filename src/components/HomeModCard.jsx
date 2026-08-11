@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './HomeModCard.css';
 
 function MetricIcon({ type }) {
@@ -47,9 +48,7 @@ export default function HomeModCard({ mod }) {
                     <span className="home-mod-card-author-icon"><MetricIcon type="author" /></span> {author}
                 </p>
                 <p className="home-mod-card-desc">
-                    {mod.description?.length > 90
-                        ? mod.description.slice(0, 90) + '…'
-                        : mod.description}
+                    {steamBbcodeToExcerpt(mod.description, 90) || 'No description'}
                 </p>
                 {tags.length > 0 && (
                     <div className="home-mod-card-tags">

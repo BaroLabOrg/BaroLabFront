@@ -83,7 +83,7 @@ describe('SubmarinePage', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
-        expect(screen.getByText('Attack submarine')).toBeInTheDocument();
+        expect(screen.getAllByText('Attack submarine')).toHaveLength(2);
         expect(screen.getByText('COILGUN')).toBeInTheDocument();
         expect(screen.getByText('RAILGUN')).toBeInTheDocument();
         expect(screen.getByText('Military')).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe('SubmarinePage', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
-        expect(screen.getByText('No images available.')).toBeInTheDocument();
+        expect(await screen.findByText('No images available.')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /Show image/i })).not.toBeInTheDocument();
     });
 

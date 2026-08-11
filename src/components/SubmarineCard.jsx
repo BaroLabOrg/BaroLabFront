@@ -1,5 +1,6 @@
 ﻿import { Link } from 'react-router-dom';
 import TagChips from './TagChips';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './SubmarineCard.css';
 
 function formatNumber(value, fractionDigits = 0) {
@@ -22,6 +23,7 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
     const externalId = submarine.externalId ?? submarine.external_id;
     const mainImage = submarine.main_image || submarine.mainImage;
     const previewAlt = submarine.title ? `${submarine.title} preview` : 'Submarine preview';
+    const descriptionExcerpt = steamBbcodeToExcerpt(submarine.description, 140);
 
     const content = (
         <>
@@ -53,9 +55,7 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
             </div>
 
             <p className="submarine-card-description">
-                {submarine.description?.length > 140
-                    ? `${submarine.description.slice(0, 140)}…`
-                    : submarine.description || 'No description'}
+                {descriptionExcerpt || 'No description'}
             </p>
 
             <div className="submarine-card-metrics">
