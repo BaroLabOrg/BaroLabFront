@@ -9,6 +9,7 @@ import UsedInCollections from '../components/UsedInCollections';
 import GuidesSection from '../components/GuidesSection';
 import CommentsSection from '../components/CommentsSection';
 import ImageGallery from '../components/ImageGallery';
+import SteamDescription from '../components/SteamDescription';
 import './ModPage.css';
 
 export default function ModPage() {
@@ -116,7 +117,7 @@ export default function ModPage() {
                                 <section className="mod-content-section fade-in">
                                     <h3 className="mod-content-heading">Description</h3>
                                     <div className="mod-content-body">
-                                        {mod.description || 'No description.'}
+                                        <SteamDescription source={mod.description} variant="mod" />
                                     </div>
                                 </section>
 

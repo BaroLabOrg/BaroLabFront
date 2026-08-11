@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './ModHero.css';
 
 function DownloadIcon() {
@@ -19,11 +20,8 @@ export default function ModHero({ mod, onSubscribe, canWriteGuide = false }) {
     const versionLabel = mod.version || mod.mod_version || mod.modVersion || '';
     const externalId = mod.external_id || mod.externalId;
 
-    const subtitle = mod.description
-        ? mod.description.length > 180
-            ? `${mod.description.slice(0, 180)}…`
-            : mod.description
-        : 'Community modification for Barotrauma.';
+    const subtitle = steamBbcodeToExcerpt(mod.description, 180)
+        || 'Community modification for Barotrauma.';
 
     const handleSubscribe = async () => {
         setSubscribing(true);

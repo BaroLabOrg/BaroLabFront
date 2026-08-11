@@ -1,0 +1,196 @@
+.steam-description {
+    --steam-description-accent: var(--accent);
+    --steam-description-accent-soft: rgba(249, 115, 22, 0.18);
+    max-width: 76ch;
+    color: #b8c1c8;
+    font-size: clamp(0.95rem, 0.92rem + 0.12vw, 1.02rem);
+    line-height: 1.76;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.steam-description[data-variant="submarine"] {
+    --steam-description-accent: var(--submarine-accent, #4c8dff);
+    --steam-description-accent-soft: rgba(76, 141, 255, 0.18);
+}
+
+.steam-description h2,
+.steam-description h3,
+.steam-description h4 {
+    color: var(--steam-description-accent);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    text-transform: none;
+    text-wrap: balance;
+    white-space: normal;
+}
+
+.steam-description h2 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(1.45rem, 2.6vw, 2rem);
+}
+
+.steam-description h3 {
+    margin: 2.5rem 0 0.7rem;
+    font-size: clamp(1.22rem, 2vw, 1.55rem);
+}
+
+.steam-description h4 {
+    margin: 1.8rem 0 0.55rem;
+    font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+}
+
+.steam-description p {
+    margin: 0 0 1.2rem;
+    white-space: pre-line;
+}
+
+.steam-description strong { color: #e7ebee; }
+.steam-description u { text-underline-offset: 0.18em; }
+
+.steam-description a {
+    color: var(--steam-description-accent);
+    font-weight: 600;
+    text-decoration-color: color-mix(in srgb, var(--steam-description-accent) 48%, transparent);
+    text-underline-offset: 0.22em;
+}
+
+.steam-description a:hover { text-decoration-color: currentColor; }
+
+.steam-description a:focus-visible,
+.steam-description summary:focus-visible {
+    border-radius: 3px;
+    outline: 2px solid var(--steam-description-accent);
+    outline-offset: 3px;
+}
+
+.steam-description hr {
+    height: 1px;
+    margin: 2.35rem 0;
+    border: 0;
+    background: linear-gradient(90deg, var(--steam-description-accent), var(--border-color) 38%, transparent);
+}
+
+.steam-description ul,
+.steam-description ol {
+    margin: 0.65rem 0 1.35rem;
+    padding-inline-start: 1.45rem;
+    white-space: normal;
+}
+
+.steam-description li { padding-inline-start: 0.3rem; }
+.steam-description li + li { margin-top: 0.28rem; }
+.steam-description li::marker { color: var(--steam-description-accent); }
+
+.steam-description blockquote {
+    margin: 1.4rem 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--steam-description-accent-soft);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--steam-description-accent) 6%, transparent);
+    color: #c8d0d6;
+    white-space: pre-line;
+}
+
+.steam-description pre {
+    max-width: 100%;
+    margin: 1rem 0 1.5rem;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    border: 1px solid var(--steam-description-accent-soft);
+    border-radius: 12px;
+    background: #080d14;
+    color: #dce7ef;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.65;
+    tab-size: 4;
+    white-space: pre;
+}
+
+.steam-description-image {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 680px;
+    margin: 1.4rem auto;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+.steam-description-table-wrap {
+    max-width: 100%;
+    margin: 1.4rem 0;
+    overflow-x: auto;
+    white-space: normal;
+}
+
+.steam-description table {
+    width: 100%;
+    min-width: 460px;
+    border-collapse: collapse;
+}
+
+.steam-description th,
+.steam-description td {
+    padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: start;
+    vertical-align: top;
+}
+
+.steam-description th {
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+}
+
+.steam-description-center { text-align: center; }
+.steam-description-right { text-align: end; }
+
+.steam-description-spoiler {
+    margin: 1.25rem 0;
+    border-block: 1px solid var(--steam-description-accent-soft);
+    padding-block: 0.7rem;
+    white-space: normal;
+}
+
+.steam-description-spoiler summary {
+    width: fit-content;
+    color: var(--steam-description-accent);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.steam-description-spoiler > div { margin-top: 0.8rem; }
+
+.steam-description-video {
+    display: inline-flex;
+    margin-block: 0.7rem;
+}
+
+.steam-description-empty {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+    .steam-description {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .steam-description pre {
+        margin-inline: -6px;
+        border-radius: 8px;
+        font-size: 0.76rem;
+    }
+}
+
+@media (forced-colors: active) {
+    .steam-description hr { background: CanvasText; }
+    .steam-description blockquote,
+    .steam-description pre { border: 1px solid CanvasText; }
+}

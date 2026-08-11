@@ -7,6 +7,8 @@ import TagChips from '../components/TagChips';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
 import ContentGlyph from '../components/ContentGlyph';
 import WorkshopAuthorCard from '../components/WorkshopAuthorCard';
+import SteamDescription from '../components/SteamDescription';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './SubmarinePage.css';
 
 const TAGS_PAGE_SIZE = 100;
@@ -247,6 +249,7 @@ export default function SubmarinePage() {
         : Array.isArray(submarine.additionalImages)
             ? submarine.additionalImages
             : [];
+    const descriptionExcerpt = steamBbcodeToExcerpt(submarine.description, 240);
 
     return (
         <div className="page submarine-page">
@@ -284,7 +287,9 @@ export default function SubmarinePage() {
                             </div>
                         </div>
                     </div>
-                    <p className="submarine-hero-description">{submarine.description || 'No description.'}</p>
+                    <p className="submarine-hero-description">
+                        {descriptionExcerpt || 'Community submarine for Barotrauma.'}
+                    </p>
                     {subscribeError && <div className="submarine-subscribe-error">{subscribeError}</div>}
                 </header>
 
@@ -303,6 +308,11 @@ export default function SubmarinePage() {
                                 additional_images={additionalImages}
                             />
                         </Suspense>
+
+                        <section className="submarine-section submarine-description-section">
+                            <h2>Description</h2>
+                            <SteamDescription source={submarine.description} variant="submarine" />
+                        </section>
 
                         <section className="submarine-section">
                             <h2>Base stats</h2>

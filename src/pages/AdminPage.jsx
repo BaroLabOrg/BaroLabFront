@@ -9,6 +9,7 @@ import Pagination from '../components/Pagination';
 import { Link } from 'react-router-dom';
 import SteamSyncTab from './SteamSyncTab';
 import SteamAvailabilityTab from './SteamAvailabilityTab';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
@@ -521,7 +522,7 @@ function ModsTab() {
                                     <div className="admin-item-main">
                                         <span className="admin-item-name">{mod.title}</span>
                                         <span className="admin-item-sub">
-                                            {mod.description?.slice(0, 80)}{mod.description?.length > 80 ? '...' : ''}
+                                            {steamBbcodeToExcerpt(mod.description, 80)}
                                         </span>
                                         <span className="admin-item-meta">
                                             🔥 Popularity: {mod.popularity} &nbsp;|&nbsp; 👤 {mod.author_username}
@@ -1008,8 +1009,7 @@ function SubmarinesTab() {
                                             {submarine.title || `Submarine #${externalId}`}
                                         </span>
                                         <span className="admin-item-sub">
-                                            {submarine.description?.slice(0, 100)}
-                                            {submarine.description?.length > 100 ? '...' : ''}
+                                            {steamBbcodeToExcerpt(submarine.description, 100)}
                                         </span>
                                         <span className="admin-item-meta">
                                             🧭 {submarine.submarineClass || submarine.submarine_class || '—'}

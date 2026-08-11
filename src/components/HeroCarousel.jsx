@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { searchMods, subscribeMod } from '../api/mods';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './HeroCarousel.css';
 
 function formatRelativeTime(dateStr) {
@@ -141,9 +142,7 @@ export default function HeroCarousel() {
                     </div>
                     <h2 className="hero-title">{mod.title}</h2>
                     <p className="hero-desc">
-                        {mod.description?.length > 160
-                            ? mod.description.slice(0, 160) + '…'
-                            : mod.description}
+                        {steamBbcodeToExcerpt(mod.description, 160) || 'No description'}
                     </p>
                     <div className="hero-actions">
                         <button className="btn btn-primary hero-btn-download" onClick={handleDownload}>

@@ -198,6 +198,14 @@
     text-transform: uppercase;
 }
 
+.submarine-description-section {
+    padding-block: 30px 38px;
+}
+
+.submarine-description-section > h2 {
+    margin-bottom: 24px;
+}
+
 .submarine-metrics-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

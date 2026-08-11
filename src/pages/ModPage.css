@@ -54,11 +54,6 @@
 
 .mod-content-body {
     max-width: 76ch;
-    color: #b3bcc1;
-    font-size: 0.95rem;
-    line-height: 1.82;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
 }
 
 .mod-context-grid {

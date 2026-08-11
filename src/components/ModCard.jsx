@@ -1,4 +1,5 @@
 ﻿import { Link } from 'react-router-dom';
+import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
 import './ModCard.css';
 
 const compactNumberFormatter = new Intl.NumberFormat('en-US', {
@@ -23,6 +24,7 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
             year: 'numeric',
         })
         : '';
+    const descriptionExcerpt = steamBbcodeToExcerpt(mod.description, 100);
 
     const content = (
         <>
@@ -42,9 +44,7 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
             <div className="mod-card-body">
                 <h3 className="mod-card-title">{mod.title}</h3>
                 <p className="mod-card-content">
-                    {mod.description?.length > 100
-                        ? mod.description.slice(0, 100) + '…'
-                        : mod.description}
+                    {descriptionExcerpt || 'No description'}
                 </p>
                 <div className="mod-card-footer">
                     <span className="mod-card-author">
