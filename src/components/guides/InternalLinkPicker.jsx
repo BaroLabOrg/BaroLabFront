@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { searchInternalReferences } from '../../api/internalReferences';
 import { buildInternalGuideLink, INTERNAL_REFERENCE_TYPES } from '../../utils/internalGuideLinks';
 import { MOD_SORT_OPTIONS } from '../../utils/modSearch';
+import ImageWithFallback from '../ImageWithFallback';
 import './InternalLinkPicker.css';
 
 const PAGE_SIZE = 12;
@@ -198,7 +199,13 @@ export default function InternalLinkPicker({ open, onClose, onSelect }) {
                                 onClick={() => onSelect({ href, title: itemTitle(item), type, item })}
                             >
                                 <span className="internal-link-picker-result-image">
-                                    {image ? <img src={image} alt="" referrerPolicy="no-referrer" /> : '◆'}
+                                    <ImageWithFallback
+                                        src={image}
+                                        alt={`${itemTitle(item)} preview`}
+                                        fallbackLabel="Image unavailable"
+                                        showFallbackLabel={false}
+                                        referrerPolicy="no-referrer"
+                                    />
                                 </span>
                                 <span>
                                     <strong>{itemTitle(item)}</strong>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import ImageWithFallback from './ImageWithFallback';
 import './HomeSubCard.css';
 
 function formatRelativeTime(dateStr) {
@@ -21,12 +22,13 @@ export default function HomeSubCard({ submarine }) {
 
     return (
         <Link to={`/submarines/${externalId}`} className="home-sub-card glass-card">
-            <div
+            <ImageWithFallback
                 className="home-sub-card-img"
-                style={mainImage ? { backgroundImage: `url(${mainImage})` } : {}}
-            >
-                {!mainImage && <span className="home-sub-card-img-placeholder">🚢</span>}
-            </div>
+                src={mainImage}
+                alt={`${submarine.title || 'Submarine'} preview`}
+                fallbackLabel="Preview unavailable"
+                referrerPolicy="no-referrer"
+            />
             <div className="home-sub-card-body">
                 <h3 className="home-sub-card-title">{submarine.title}</h3>
                 {tags.length > 0 && (

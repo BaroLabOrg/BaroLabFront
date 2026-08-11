@@ -581,6 +581,11 @@
   background: #0b0e15;
 }
 
+.encyclopedia-primary-image.image-with-fallback {
+  min-height: 240px;
+  aspect-ratio: 4 / 3;
+}
+
 .encyclopedia-primary-image-placeholder {
   width: 100%;
   aspect-ratio: 4 / 3;

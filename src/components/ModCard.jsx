@@ -1,5 +1,6 @@
 ﻿import { Link } from 'react-router-dom';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './ModCard.css';
 
 const compactNumberFormatter = new Intl.NumberFormat('en-US', {
@@ -28,18 +29,14 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
 
     const content = (
         <>
-            <div
-                className="mod-card-banner"
-                style={mainImage ? { backgroundImage: `url(${mainImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-            >
-                {!mainImage && (
-                    <span className="mod-card-banner-placeholder" aria-hidden="true">
-                        <svg viewBox="0 0 32 32" focusable="false">
-                            <path d="M7 7h18v18H7zM11 3v8M21 3v8M11 21v8M21 21v8M3 11h8M21 11h8M3 21h8M21 21h8" />
-                            <path d="M13 13h6v6h-6z" />
-                        </svg>
-                    </span>
-                )}
+            <div className="mod-card-banner">
+                <ImageWithFallback
+                    className="mod-card-banner-image"
+                    src={mainImage}
+                    alt={`${mod.title || 'Mod'} cover`}
+                    fallbackLabel="Cover unavailable"
+                    referrerPolicy="no-referrer"
+                />
             </div>
             <div className="mod-card-body">
                 <h3 className="mod-card-title">{mod.title}</h3>

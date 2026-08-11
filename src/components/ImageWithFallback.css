@@ -1,0 +1,55 @@
+.image-with-fallback[data-image-state='unavailable'] {
+  box-sizing: border-box;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px dashed color-mix(in srgb, var(--text-muted) 36%, transparent);
+}
+
+.image-with-fallback-icon {
+  width: clamp(30px, 24%, 52px);
+  height: auto;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.68;
+}
+
+.image-with-fallback-label {
+  max-width: 22ch;
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.image-with-fallback--compact[data-image-state='unavailable'] {
+  gap: 0;
+  padding: 6px;
+}
+
+.image-with-fallback--compact .image-with-fallback-icon {
+  width: min(55%, 34px);
+}
+
+@media (forced-colors: active) {
+  .image-with-fallback[data-image-state='unavailable'] {
+    border-color: CanvasText;
+  }
+}

@@ -18,10 +18,14 @@
   border: 1px solid var(--border-color);
 }
 
-.image-gallery-preview img {
-  max-width: 100%;
-  max-height: 100%;
+.image-gallery-preview-image {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+}
+
+.image-gallery-preview-image.image-with-fallback {
+  border: 0;
 }
 
 .image-gallery-thumbnails {
@@ -53,6 +57,7 @@
 .image-gallery-thumbnail {
   height: 64px;
   min-width: 114px;
+  padding: 0;
   cursor: pointer;
   border-radius: var(--radius-sm);
   border: 2px solid transparent;
@@ -62,6 +67,17 @@
   background-position: center;
   background-repeat: no-repeat;
   background-color: var(--bg-card-hover);
+  overflow: hidden;
+}
+
+.image-gallery-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-gallery-thumbnail-image.image-with-fallback {
+  border: 0;
 }
 
 .image-gallery-thumbnail:hover,

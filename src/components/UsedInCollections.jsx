@@ -1,4 +1,5 @@
 import ContentGlyph from './ContentGlyph';
+import ImageWithFallback from './ImageWithFallback';
 import './UsedInCollections.css';
 
 const MOCK_COLLECTIONS = [
@@ -30,11 +31,13 @@ export default function UsedInCollections({ collections = MOCK_COLLECTIONS }) {
                     {collections.map((collection, index) => (
                         <div key={collection.id ?? collection.title ?? index} className="collection-card">
                             <div className="collection-img-placeholder">
-                                {collection.image ? (
-                                    <img src={collection.image} alt={collection.title} />
-                                ) : (
-                                    <ContentGlyph name="collection" />
-                                )}
+                                <ImageWithFallback
+                                    src={collection.image}
+                                    alt={collection.title || 'Collection'}
+                                    fallbackLabel="Image unavailable"
+                                    showFallbackLabel={false}
+                                    referrerPolicy="no-referrer"
+                                />
                             </div>
                             <span className="collection-name">{collection.title}</span>
                         </div>

@@ -294,7 +294,11 @@
   transition: transform var(--transition-slow);
 }
 
-.encyclopedia-card:hover .encyclopedia-card-image {
+.encyclopedia-card-image.image-with-fallback {
+  border: 0;
+}
+
+.encyclopedia-card:hover .encyclopedia-card-image:not(.image-with-fallback) {
   transform: scale(1.04);
 }
 

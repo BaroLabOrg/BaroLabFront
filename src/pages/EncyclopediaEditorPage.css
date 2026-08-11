@@ -342,6 +342,10 @@
   object-fit: contain;
 }
 
+.available-entity-thumb.image-with-fallback {
+  padding: 5px;
+}
+
 .available-entity-thumb-placeholder {
   display: inline-flex;
   align-items: center;
@@ -371,6 +375,10 @@
 
 .available-entity-preview-image {
   object-fit: contain;
+}
+
+.available-entity-preview-image.image-with-fallback {
+  padding: 8px;
 }
 
 .available-entity-preview-placeholder {

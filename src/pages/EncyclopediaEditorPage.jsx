@@ -18,6 +18,7 @@ import {
 } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
+import ImageWithFallback from '../components/ImageWithFallback';
 import './EncyclopediaEditorPage.css';
 
 function buildEmptyInfoboxField(sortOrder = 0) {
@@ -505,15 +506,14 @@ export default function EncyclopediaEditorPage() {
                                                         type="button"
                                                         onClick={() => handleSelectAvailableEntity(entity)}
                                                     >
-                                                        {entity.primaryImageUrl ? (
-                                                            <img
-                                                                src={entity.primaryImageUrl}
-                                                                alt={entity.title}
-                                                                className="available-entity-thumb"
-                                                            />
-                                                        ) : (
-                                                            <span className="available-entity-thumb-placeholder">📄</span>
-                                                        )}
+                                                        <ImageWithFallback
+                                                            className="available-entity-thumb"
+                                                            src={entity.primaryImageUrl}
+                                                            alt={entity.title || 'Encyclopedia entry'}
+                                                            fallbackLabel="Image unavailable"
+                                                            showFallbackLabel={false}
+                                                            referrerPolicy="no-referrer"
+                                                        />
                                                         <span className="available-entity-content">
                                                             <strong>{entity.title}</strong>
                                                             <span>{entity.slug}</span>
@@ -545,15 +545,13 @@ export default function EncyclopediaEditorPage() {
                             </div>
                             {selectedCreateEntity && (
                                 <div className="available-entity-preview">
-                                    {selectedCreateEntity.primaryImageUrl ? (
-                                        <img
-                                            src={selectedCreateEntity.primaryImageUrl}
-                                            alt={selectedCreateEntity.title}
-                                            className="available-entity-preview-image"
-                                        />
-                                    ) : (
-                                        <div className="available-entity-preview-placeholder">No image</div>
-                                    )}
+                                    <ImageWithFallback
+                                        className="available-entity-preview-image"
+                                        src={selectedCreateEntity.primaryImageUrl}
+                                        alt={selectedCreateEntity.title || 'Encyclopedia entry'}
+                                        fallbackLabel="Image unavailable"
+                                        referrerPolicy="no-referrer"
+                                    />
                                     <div className="available-entity-preview-meta">
                                         <strong>{selectedCreateEntity.title}</strong>
                                         <span>{selectedCreateEntity.entityType}</span>

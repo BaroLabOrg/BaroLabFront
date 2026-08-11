@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { loadInternalReferencePreview } from '../../api/internalReferences';
 import { parseInternalGuideLink } from '../../utils/internalGuideLinks';
+import ImageWithFallback from '../ImageWithFallback';
 import './GuideMarkdown.css';
 
 function CustomQuote({ children }) {
@@ -74,9 +75,27 @@ function calculatePosition(anchor) {
 }
 
 function PreviewImage({ src }) {
-    const [failed, setFailed] = useState(false);
-    if (!src || failed) return <span aria-hidden="true">◆</span>;
-    return <img src={src} alt="" referrerPolicy="no-referrer" onError={() => setFailed(true)} />;
+    return (
+        <ImageWithFallback
+            src={src}
+            alt="Reference preview"
+            fallbackLabel="Image unavailable"
+            showFallbackLabel={false}
+            referrerPolicy="no-referrer"
+        />
+    );
+}
+
+function MarkdownImage({ src, alt = '' }) {
+    return (
+        <ImageWithFallback
+            className="guide-markdown-image"
+            src={src}
+            alt={alt || 'Guide image'}
+            fallbackLabel="Guide image unavailable"
+            referrerPolicy="no-referrer"
+        />
+    );
 }
 
 function ReferenceTooltip({ anchorRef, reference, id }) {
@@ -197,6 +216,7 @@ function MarkdownLink({ href, children }) {
 const MARKDOWN_COMPONENTS = {
     a: MarkdownLink,
     blockquote: CustomQuote,
+    img: MarkdownImage,
     table: CustomTable,
 };
 

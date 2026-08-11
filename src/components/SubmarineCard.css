@@ -65,7 +65,11 @@
   transition: transform var(--transition-slow);
 }
 
-.submarine-card:hover .submarine-card-preview-image {
+.submarine-card-preview-image.image-with-fallback {
+  border: 0;
+}
+
+.submarine-card:hover .submarine-card-preview-image:not(.image-with-fallback) {
   transform: scale(1.04);
 }
 

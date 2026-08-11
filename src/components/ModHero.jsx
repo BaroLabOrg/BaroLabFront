@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ImageWithFallback from './ImageWithFallback';
 import './ModHero.css';
 
 function DownloadIcon() {
@@ -39,14 +40,13 @@ export default function ModHero({ mod, onSubscribe, canWriteGuide = false }) {
         <header className="mod-hero fade-in">
             <div className="mod-hero-left">
                 <div className="mod-hero-avatar">
-                    {mod.main_image ? (
-                        <img src={mod.main_image} alt={`${mod.title} cover`} referrerPolicy="no-referrer" />
-                    ) : (
-                        <svg viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="m29 8 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6Z" />
-                            <path d="M20 27 9 38m2-8 7 7" />
-                        </svg>
-                    )}
+                    <ImageWithFallback
+                        src={mod.main_image}
+                        alt={`${mod.title || 'Mod'} cover`}
+                        fallbackLabel="Cover unavailable"
+                        showFallbackLabel={false}
+                        referrerPolicy="no-referrer"
+                    />
                 </div>
                 <div className="mod-hero-info">
                     <h1 className="mod-hero-title">
