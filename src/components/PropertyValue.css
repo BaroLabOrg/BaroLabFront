@@ -1,54 +1,66 @@
 .property-field-grid {
   display: grid;
-  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  grid-template-columns: minmax(112px, 156px) minmax(0, 1fr);
   align-items: baseline;
-  column-gap: 10px;
-  row-gap: 8px;
+  column-gap: 16px;
+  row-gap: 10px;
+  min-width: 0;
 }
 
-/* Row wrapper disappears from layout so its dt/dd become direct grid items —
-   this is what keeps every row's label column the same width. */
 .property-field-row {
   display: contents;
 }
 
 .property-field-label {
   min-width: 0;
-  color: var(--text-muted);
+  color: #708098;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 0.68rem;
+  font-weight: 600;
   line-height: 1.5;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
 .property-field-value {
   min-width: 0;
   margin: 0;
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 1.5;
+  color: #c8cdd8;
+  font-size: 0.8rem;
+  line-height: 1.55;
   overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 
 .property-value-path {
+  color: #aab9cc;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 0.72rem;
   word-break: break-all;
 }
 
 .property-nested-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 
-/* The only cue that a value is nested — a hairline rule + indent — so
-   Status Effects-style nested objects stay legible without borrowed
-   card borders. */
 .property-nested-block {
   min-width: 0;
-  padding-left: 12px;
-  border-left: 1px solid var(--border-color);
+  padding: 3px 0 3px 13px;
+  border-left: 1px solid rgba(159, 180, 207, 0.2);
+}
+
+@media (max-width: 640px) {
+  .property-field-grid {
+    grid-template-columns: minmax(88px, 34%) minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 9px;
+  }
+
+  .property-nested-block {
+    padding-left: 9px;
+  }
 }

@@ -1,16 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import SubmarinesListPage from './SubmarinesListPage';
 import * as submarinesApi from '../api/submarines';
 import * as tagsApi from '../api/tags';
 
-let authState = { isAuthenticated: false };
-
 vi.mock('../api/submarines', () => ({
     searchSubmarines: vi.fn(),
-    createSubmarine: vi.fn(),
     SUBMARINE_CLASS_VALUES: ['TRANSPORT', 'ATTACK', 'SCOUT', 'DEEP_DIVER', 'SUPPORT', 'OTHER'],
     FABRICATION_TYPE_VALUES: ['DEFAULT', 'DECONSTRUCTOR_ONLY', 'SPECIAL', 'OTHER'],
     TURRET_WEAPON_VALUES: ['COILGUN', 'CHAIN_GUN', 'PULSE_LASER'],
@@ -19,10 +16,6 @@ vi.mock('../api/submarines', () => ({
 
 vi.mock('../api/tags', () => ({
     getTags: vi.fn(),
-}));
-
-vi.mock('../context/AuthContext', () => ({
-    useAuth: () => authState,
 }));
 
 function buildSubmarine(externalId, title, overrides = {}) {
@@ -91,19 +84,6 @@ function getLocation() {
     return screen.getByTestId('submarines-location').textContent || '';
 }
 
-function fillCreateSubmarineForm(form) {
-    fireEvent.change(within(form).getByLabelText('Title'), { target: { value: 'Kastrull' } });
-    fireEvent.change(within(form).getByLabelText('Description'), { target: { value: 'Attack submarine' } });
-    fireEvent.change(within(form).getByLabelText('Tier'), { target: { value: '2' } });
-    fireEvent.change(within(form).getByLabelText('Price'), { target: { value: '2100' } });
-    fireEvent.change(within(form).getByLabelText('Min crew'), { target: { value: '2' } });
-    fireEvent.change(within(form).getByLabelText('Max crew'), { target: { value: '5' } });
-    fireEvent.change(within(form).getByLabelText('Cargo capacity'), { target: { value: '18' } });
-    fireEvent.change(within(form).getByLabelText('Max speed (horizontal), km/h'), { target: { value: '29.5' } });
-    fireEvent.change(within(form).getByLabelText('Turret slots'), { target: { value: '3' } });
-    fireEvent.change(within(form).getByLabelText('Large turret slots'), { target: { value: '1' } });
-}
-
 const TAGS = [
     { id: '1', name: 'Military', slug: 'military' },
     { id: '2', name: 'Fast', slug: 'fast' },
@@ -111,10 +91,8 @@ const TAGS = [
 
 describe('SubmarinesListPage', () => {
     beforeEach(() => {
-        authState = { isAuthenticated: false };
         tagsApi.getTags.mockResolvedValue(paged(TAGS, { total: TAGS.length, size: 100 }));
         submarinesApi.searchSubmarines.mockResolvedValue(paged([buildSubmarine(1, 'Typhon')]));
-        submarinesApi.createSubmarine.mockResolvedValue({ externalId: 777 });
     });
 
     it('renders submarines list and requests data', async () => {
@@ -353,44 +331,10 @@ describe('SubmarinesListPage', () => {
         });
     });
 
-    it('shows create form only for authenticated users', async () => {
-        const firstRender = renderSubmarinesPage();
+    it('does not expose the retired submarine creation action', async () => {
+        renderSubmarinesPage();
         await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
         expect(screen.queryByRole('button', { name: 'Add submarine' })).not.toBeInTheDocument();
-        firstRender.unmount();
-
-        authState = { isAuthenticated: true };
-        renderSubmarinesPage();
-        await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-        expect(screen.getByRole('button', { name: 'Add submarine' })).toBeInTheDocument();
-    });
-
-    it('creates submarine successfully', async () => {
-        authState = { isAuthenticated: true };
-        const user = userEvent.setup();
-
-        renderSubmarinesPage();
-        await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-
-        await user.click(screen.getByRole('button', { name: 'Add submarine' }));
-        const form = screen.getByRole('form', { name: 'Submarine creation form' });
-        fillCreateSubmarineForm(form);
-        fireEvent.submit(form);
-
-        await waitFor(() => {
-            expect(submarinesApi.createSubmarine).toHaveBeenCalledWith(expect.objectContaining({
-                title: 'Kastrull',
-                description: 'Attack submarine',
-                tier: 2,
-                price: 2100,
-                recommendedCrewMin: 2,
-                recommendedCrewMax: 5,
-                cargoCapacity: 18,
-                maxHorizontalSpeedKph: 29.5,
-                turretSlotCount: 3,
-                largeTurretSlotCount: 1,
-            }));
-        });
     });
 
     it('shows load error', async () => {
@@ -399,19 +343,4 @@ describe('SubmarinesListPage', () => {
         expect(await screen.findByText('Failed to load')).toBeInTheDocument();
     });
 
-    it('shows create error', async () => {
-        authState = { isAuthenticated: true };
-        submarinesApi.createSubmarine.mockRejectedValue(new Error('Create failed'));
-        const user = userEvent.setup();
-
-        renderSubmarinesPage();
-        await waitFor(() => expect(submarinesApi.searchSubmarines).toHaveBeenCalled());
-
-        await user.click(screen.getByRole('button', { name: 'Add submarine' }));
-        const form = screen.getByRole('form', { name: 'Submarine creation form' });
-        fillCreateSubmarineForm(form);
-        fireEvent.submit(form);
-
-        expect(await screen.findByText('Create failed')).toBeInTheDocument();
-    });
 });

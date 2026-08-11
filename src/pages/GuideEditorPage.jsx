@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import guideInstructions from '../../GUIDE_INSTRUCTIONS.md?raw';
 import { createGuide, getGuideById, updateGuide } from '../api/modGuides';
 import { getMod } from '../api/mods';
@@ -145,10 +145,10 @@ export default function GuideEditorPage() {
         <div className="admin-guide-editor">
             {showInstructions && (
                 <div className="instructions-modal-overlay" onClick={() => setShowInstructions(false)}>
-                    <div className="instructions-modal-content" onClick={(event) => event.stopPropagation()}>
+                    <div className="instructions-modal-content" role="dialog" aria-modal="true" aria-labelledby="guide-instructions-title" onClick={(event) => event.stopPropagation()}>
                         <div className="instructions-modal-header">
-                            <h3>How to write guides?</h3>
-                            <button onClick={() => setShowInstructions(false)}>Close</button>
+                            <h3 id="guide-instructions-title">How to write guides</h3>
+                            <button type="button" onClick={() => setShowInstructions(false)}>Close</button>
                         </div>
                         <div className="instructions-modal-body guide-markdown-body">
                             <GuideMarkdown>{guideInstructions}</GuideMarkdown>
@@ -162,15 +162,15 @@ export default function GuideEditorPage() {
                         {target.imageUrl && <img src={target.imageUrl} alt="" referrerPolicy="no-referrer" />}
                         <div>
                             <span>{isEditMode ? 'Editing guide for' : 'Creating guide for'} {target.type.toLowerCase()}</span>
-                            <h2>{target.title}</h2>
+                            <h2><Link to={target.href}>{target.title}</Link></h2>
                         </div>
                     </div>
                     {error && <div className="editor-error-msg">{error}</div>}
                 </div>
                 <div className="editor-header-right">
-                    <button className="btn-help" onClick={() => setShowInstructions(true)}>How to write guides?</button>
-                    <button className="btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
-                    <button className="btn-save" onClick={handleSave} disabled={saving}>
+                    <button type="button" className="btn-help" onClick={() => setShowInstructions(true)}>Writing help</button>
+                    <button type="button" className="btn-cancel" onClick={() => navigate(-1)}>Cancel</button>
+                    <button type="button" className="btn-save" onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : 'Save Guide'}
                     </button>
                 </div>
@@ -179,6 +179,7 @@ export default function GuideEditorPage() {
                 <input
                     type="text"
                     className="guide-title-input"
+                    aria-label="Guide title"
                     placeholder="Guide title"
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
@@ -193,6 +194,7 @@ export default function GuideEditorPage() {
                     <textarea
                         ref={textareaRef}
                         className="markdown-textarea"
+                        aria-label="Guide content in Markdown"
                         value={description}
                         onChange={(event) => setDescription(event.target.value)}
                         placeholder="Write your guide here using Markdown..."
@@ -202,7 +204,7 @@ export default function GuideEditorPage() {
                     <div className="pane-header">Live Preview</div>
                     <div className="guide-markdown-body preview-content">
                         {title && <h1>{title}</h1>}
-                        <GuideMarkdown>{description}</GuideMarkdown>
+                        <GuideMarkdown hoistInfobox>{description}</GuideMarkdown>
                     </div>
                 </div>
             </div>

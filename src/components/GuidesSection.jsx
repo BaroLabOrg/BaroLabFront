@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getModGuides } from '../api/modGuides';
 import { mapPaginationError } from '../api/api';
 import { useAuth } from '../context/AuthContext';
+import ContentGlyph from './ContentGlyph';
 import Pagination from './Pagination';
 import './GuidesSection.css';
 
+const PAGE_SIZE = 10;
+
 export default function GuidesSection() {
-    const PAGE_SIZE = 10;
     const { externalId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -20,7 +22,11 @@ export default function GuidesSection() {
     const [loading, setLoading] = useState(true);
 
     const canCreateGuide = user !== null;
-    const canEditGuide = (guideAuthorId) => user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.id === guideAuthorId);
+    const canEditGuide = (guideAuthorId) => user && (
+        user.role === 'ADMIN'
+        || user.role === 'SUPER_ADMIN'
+        || user.id === guideAuthorId
+    );
 
     useEffect(() => {
         setPage(0);
@@ -66,31 +72,30 @@ export default function GuidesSection() {
 
     if (loading) {
         return (
-            <section className="guides-section glass-card">
+            <section className="guides-section" aria-labelledby="related-guides-heading">
                 <div className="guides-header">
-                    <div className="guides-header-main">
-                        <span className="guides-accent-bar" />
-                        <h3 className="guides-title">Related guides</h3>
-                    </div>
+                    <h3 id="related-guides-heading" className="guides-title">Related guides</h3>
                 </div>
-                <div className="guides-empty">
-                    <p>Loading...</p>
+                <div className="guides-loading" aria-live="polite">
+                    <span className="guides-loading-line" />
+                    <span className="guides-loading-line guides-loading-line-short" />
                 </div>
             </section>
         );
     }
 
     return (
-        <section className="guides-section glass-card">
+        <section className="guides-section" aria-labelledby="related-guides-heading">
             <div className="guides-header">
                 <div className="guides-header-main">
-                    <span className="guides-accent-bar" />
-                    <h3 className="guides-title">Related guides</h3>
+                    <h3 id="related-guides-heading" className="guides-title">Related guides</h3>
+                    {guides.length > 0 && <span className="guides-count">{guides.length}</span>}
                 </div>
                 {canCreateGuide && (
                     <button
+                        type="button"
                         onClick={handleCreateGuide}
-                        className="btn btn-primary btn-sm guides-create-btn"
+                        className="btn btn-sm guides-create-btn"
                     >
                         Create guide
                     </button>
@@ -99,8 +104,13 @@ export default function GuidesSection() {
 
             {guides.length === 0 ? (
                 <div className="guides-empty">
-                    <span className="guides-empty-icon">📖</span>
-                    <p>No guides for this mod yet.</p>
+                    <span className="guides-empty-icon">
+                        <ContentGlyph name="guide" />
+                    </span>
+                    <div className="guides-empty-copy">
+                        <strong>No field guides yet</strong>
+                        <p>Setup notes, strategies and compatibility tips will appear here.</p>
+                    </div>
                 </div>
             ) : (
                 <ul className="guides-list">
@@ -110,20 +120,23 @@ export default function GuidesSection() {
                         return (
                             <li key={guide.id} className="guide-item">
                                 <Link to={`/guides/${guide.id}`} className="guide-link">
-                                    <span className="guide-icon">📄</span>
-                                    <div className="guide-info">
+                                    <span className="guide-icon">
+                                        <ContentGlyph name="document" size={18} />
+                                    </span>
+                                    <span className="guide-info">
                                         <span className="guide-name">{guide.title}</span>
                                         <span className="guide-meta">
                                             Author: {guide.author?.username || 'Unknown'} · {guideCreatedAt ? new Date(guideCreatedAt).toLocaleDateString() : 'N/A'}
                                         </span>
-                                    </div>
+                                    </span>
                                 </Link>
                                 {canEditGuide(guide.author?.id) && (
                                     <div className="guides-item-actions">
                                         <button
+                                            type="button"
                                             className="btn btn-secondary btn-sm guides-edit-btn"
-                                            onClick={(e) => {
-                                                e.preventDefault();
+                                            onClick={(event) => {
+                                                event.preventDefault();
                                                 handleEditGuide(guide.id);
                                             }}
                                         >
@@ -137,11 +150,7 @@ export default function GuidesSection() {
                 </ul>
             )}
 
-            {error && (
-                <div className="auth-error guides-error">
-                    {error}
-                </div>
-            )}
+            {error && <div className="auth-error guides-error">{error}</div>}
 
             <Pagination
                 page={page}

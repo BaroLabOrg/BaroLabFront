@@ -166,7 +166,7 @@ export default function ModGuideEditor() {
                     <div className="guide-markdown-body preview-content">
                         {/* We use the same classes as viewing so it looks identical */}
                         {title && <h1>{title}</h1>}
-                        <GuideMarkdown>{description}</GuideMarkdown>
+                        <GuideMarkdown hoistInfobox>{description}</GuideMarkdown>
                     </div>
                 </div>
             </div>

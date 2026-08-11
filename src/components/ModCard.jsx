@@ -30,7 +30,14 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
                 className="mod-card-banner"
                 style={mainImage ? { backgroundImage: `url(${mainImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
             >
-                {!mainImage && <span className="mod-card-banner-placeholder">🔧</span>}
+                {!mainImage && (
+                    <span className="mod-card-banner-placeholder" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" focusable="false">
+                            <path d="M7 7h18v18H7zM11 3v8M21 3v8M11 21v8M21 21v8M3 11h8M21 11h8M3 21h8M21 21h8" />
+                            <path d="M13 13h6v6h-6z" />
+                        </svg>
+                    </span>
+                )}
             </div>
             <div className="mod-card-body">
                 <h3 className="mod-card-title">{mod.title}</h3>
@@ -41,7 +48,7 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
                 </p>
                 <div className="mod-card-footer">
                     <span className="mod-card-author">
-                        👤 {authorName}
+                        By {authorName}
                     </span>
                     <span className="mod-card-date" title={date ? `Published on Steam: ${date}` : undefined}>
                         {date}
@@ -53,7 +60,7 @@ export default function ModCard({ mod, onSelect, actionLabel = 'Read more →', 
                         title={`${exactNumberFormatter.format(subscriptions)} Steam subscribers`}
                         aria-label={`${exactNumberFormatter.format(subscriptions)} Steam subscribers`}
                     >
-                        👥 {subscriptionLabel}
+                        {subscriptionLabel} subscribers
                     </span>
                     <span className="mod-card-read">{actionLabel}</span>
                 </div>

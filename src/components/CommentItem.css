@@ -1,72 +1,77 @@
 .comment-item {
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  transition: border-color var(--transition-fast), background var(--transition-fast);
-  position: relative;
-  overflow: hidden;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-color);
 }
 
-.comment-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--accent-blue);
-  transform: scaleY(0);
-  transform-origin: bottom;
-  transition: transform var(--transition-base);
-}
-
-.comment-item:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-hover);
-}
-
-.comment-item:hover::before {
-  transform: scaleY(1);
+.mod-comment-entry:last-child .comment-item {
+  border-bottom: 1px solid var(--border-color);
 }
 
 .comment-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
-  gap: 8px;
+}
+
+.comment-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 50%;
+  color: #ff9a52;
+  background: rgba(249, 115, 22, 0.08);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
 .comment-author {
+  min-width: 0;
+  overflow: hidden;
   color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.035em;
+  text-overflow: ellipsis;
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.comment-author::before {
-  content: '◉';
-  color: var(--accent);
-  font-size: 8px;
+  white-space: nowrap;
 }
 
 .comment-body {
-  margin: 0 0 8px;
-  color: var(--text-secondary);
+  max-width: 75ch;
+  margin: 0 0 0 40px;
+  color: #aeb7c6;
   font-size: 0.88rem;
-  line-height: 1.65;
+  line-height: 1.68;
+  overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
 .comment-date {
-  color: var(--text-muted);
-  font-size: 10px;
+  color: #818b9e;
   font-family: var(--font-mono);
-  letter-spacing: 0.04em;
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .comment-header {
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  .comment-date {
+    grid-column: 2;
+  }
+
+  .comment-body {
+    margin-left: 0;
+  }
 }

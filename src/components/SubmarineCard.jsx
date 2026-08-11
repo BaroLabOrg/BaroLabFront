@@ -36,7 +36,10 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
                 </div>
             ) : (
                 <div className="submarine-card-preview submarine-card-preview-empty" aria-hidden="true">
-                    <span>🚢</span>
+                    <svg viewBox="0 0 42 26" focusable="false">
+                        <path d="M5 13c4-7 11-9 25-9 6 0 9 3 11 9-2 6-5 9-11 9-14 0-21-2-25-9Z" />
+                        <path d="M17 4V1h8v3M7 13H1M31 8l6-4M31 18l6 4" />
+                    </svg>
                 </div>
             )}
 
@@ -56,12 +59,12 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
             </p>
 
             <div className="submarine-card-metrics">
-                <span>💰 {formatNumber(submarine.price)} mk</span>
-                <span>👥 {formatCrew(submarine)}</span>
-                <span>📦 {formatNumber(submarine.cargoCapacity)}</span>
-                <span>↔ {formatNumber(submarine.maxHorizontalSpeedKph, 1)} km/h</span>
-                <span>🔫 {formatNumber(submarine.turretSlotCount)}</span>
-                <span>🛠 {submarine.fabricationType || '—'}</span>
+                <span><small>Price</small><strong>{formatNumber(submarine.price)} mk</strong></span>
+                <span><small>Crew</small><strong>{formatCrew(submarine)}</strong></span>
+                <span><small>Cargo</small><strong>{formatNumber(submarine.cargoCapacity)}</strong></span>
+                <span><small>Speed</small><strong>{formatNumber(submarine.maxHorizontalSpeedKph, 1)} km/h</strong></span>
+                <span><small>Turrets</small><strong>{formatNumber(submarine.turretSlotCount)}</strong></span>
+                <span><small>Build</small><strong>{submarine.fabricationType || '—'}</strong></span>
             </div>
 
             <div className="submarine-card-tags">

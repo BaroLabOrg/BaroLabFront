@@ -146,15 +146,30 @@ export default function EncyclopediaListPage() {
     return (
         <div className="page">
             <div className="container encyclopedia-list-page">
-                <header className="encyclopedia-header-box glass-card">
-                    <h1 className="encyclopedia-title">
-                        {guideTargetMode ? 'Choose an encyclopedia subject for your guide' : '📖 Barotrauma Encyclopedia'}
-                    </h1>
-                    <p className="encyclopedia-subtitle">
-                        {guideTargetMode
-                            ? 'Use the encyclopedia search and filters, then choose the subject.'
-                            : 'Vanilla and mod content in one place — search by name, filter by type and source.'}
-                    </p>
+                <header className="encyclopedia-header-box">
+                    <div className="encyclopedia-header-main">
+                        <div className="encyclopedia-header-icon" aria-hidden="true">
+                            <svg viewBox="0 0 28 24" focusable="false">
+                                <path d="M14 5c-3-2-7-3-11-2v17c4-1 8 0 11 2 3-2 7-3 11-2V3c-4-1-8 0-11 2Z" />
+                                <path d="M14 5v17M6 7h5M6 11h5M17 7h5M17 11h5" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 className="encyclopedia-title">
+                                {guideTargetMode ? 'Choose an encyclopedia subject' : 'Barotrauma Encyclopedia'}
+                            </h1>
+                            <p className="encyclopedia-subtitle">
+                                {guideTargetMode
+                                    ? 'Filter the reference index, then choose the subject your guide belongs to.'
+                                    : 'A unified reference index for vanilla and modded entities, systems and locations.'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="encyclopedia-header-side">
+                        <div className="encyclopedia-index-status">
+                            <span>{Number(total).toLocaleString('en-US')}</span>
+                            published entries
+                        </div>
                     {guideTargetMode ? (
                         <div className="encyclopedia-level-actions">
                             <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
@@ -163,9 +178,10 @@ export default function EncyclopediaListPage() {
                         </div>
                     ) : isAdmin && (
                         <div className="encyclopedia-level-actions">
-                            <Link to="/admin/encyclopedia/new" className="btn btn-primary">➕ Create page</Link>
+                            <Link to="/admin/encyclopedia/new" className="btn btn-primary">Create page</Link>
                         </div>
                     )}
+                    </div>
                 </header>
 
                 <section className="encyclopedia-search-panel glass-card">
@@ -261,6 +277,11 @@ export default function EncyclopediaListPage() {
                 </section>
 
                 {error && <div className="auth-error">{error}</div>}
+
+                <div className="encyclopedia-results-bar" aria-live="polite">
+                    <span>{loading ? 'Reading reference index' : `${Number(total).toLocaleString('en-US')} matching entries`}</span>
+                    <span>Page {page + 1} / {Math.max(totalPages, 1)}</span>
+                </div>
 
                 {loading ? (
                     <div className="loading-state">

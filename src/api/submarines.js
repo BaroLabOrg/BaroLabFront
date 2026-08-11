@@ -101,6 +101,12 @@ export function normalizeSubmarine(submarine) {
         submarine.authorUsername,
         submarine.author?.username,
     );
+    const authorSteamId = firstDefined(
+        submarine.author_steam_id,
+        submarine.authorSteamId,
+        submarine.author?.steam_id,
+        submarine.author?.steamId,
+    );
     const createdAt = firstDefined(submarine.created_at, submarine.createdAt);
     const updatedAt = firstDefined(submarine.updated_at, submarine.updatedAt);
     const steamManaged = firstDefined(submarine.steam_managed, submarine.steamManaged, false);
@@ -156,6 +162,8 @@ export function normalizeSubmarine(submarine) {
         userId,
         author_username: authorUsername,
         authorUsername,
+        author_steam_id: authorSteamId,
+        authorSteamId,
         active: firstDefined(submarine.active, status ? status === 'ACTIVE' : undefined),
         blocked: firstDefined(submarine.blocked, status ? status === 'BLOCKED' : undefined),
         created_at: createdAt,

@@ -81,7 +81,7 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.getByText('Max Strength')).toBeInTheDocument();
         expect(screen.getByText('Parasitic')).toBeInTheDocument();
         expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'Source: Vanilla')).toBeInTheDocument();
-        expect(screen.queryByRole('link', { name: '✏️ Edit' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Edit article' })).not.toBeInTheDocument();
     });
 
     it('shows edit button for admins', async () => {
@@ -94,7 +94,7 @@ describe('EncyclopediaDetailPage', () => {
             expect(screen.getByRole('heading', { name: 'Husk Infection' })).toBeInTheDocument();
         });
 
-        expect(screen.getByRole('link', { name: '✏️ Edit' })).toHaveAttribute(
+        expect(screen.getByRole('link', { name: 'Edit article' })).toHaveAttribute(
             'href',
             '/admin/encyclopedia/entity-1/edit',
         );

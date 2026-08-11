@@ -55,6 +55,7 @@ function buildSubmarine(overrides = {}) {
         tags: [{ id: 'tag-1', name: 'Military', slug: 'military' }],
         userId: 'author-1',
         authorUsername: 'captain',
+        authorSteamId: '76561198000000000',
         active: true,
         blocked: false,
         createdAt: '2026-01-01T12:00:00.000Z',
@@ -88,8 +89,27 @@ describe('SubmarinePage', () => {
         expect(screen.getByText('Military')).toBeInTheDocument();
          expect(await screen.findByRole('img', { name: 'Orca - image 1' })).toBeInTheDocument();
          expect(await screen.findByRole('button', { name: 'Show image 2' })).toBeInTheDocument();
-         expect(screen.getByRole('button', { name: '⬇ Download' })).toBeInTheDocument();
+         expect(screen.getByRole('button', { name: 'Open in Workshop' })).toBeInTheDocument();
+         expect(screen.getByRole('link', { name: "Open captain's Steam profile" })).toHaveAttribute(
+             'href',
+             'https://steamcommunity.com/profiles/76561198000000000',
+         );
          expect(screen.queryByRole('button', { name: '+ Add tag' })).not.toBeInTheDocument();
+    });
+
+    it('renders a non-clickable author card when Steam ID is unavailable', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({ authorSteamId: null }));
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByText('captain')).toBeInTheDocument();
+        expect(screen.getByText('BaroLab author')).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /Steam profile/ })).not.toBeInTheDocument();
     });
 
      it('shows gallery placeholder when images are missing', async () => {
@@ -185,7 +205,7 @@ describe('SubmarinePage', () => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole('button', { name: '⬇ Download' }));
+        await user.click(screen.getByRole('button', { name: 'Open in Workshop' }));
 
         await waitFor(() => {
             expect(subscribeSpy).toHaveBeenCalledWith('42');

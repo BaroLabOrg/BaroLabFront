@@ -5,6 +5,8 @@ import * as submarinesApi from '../api/submarines';
 import { useAuth } from '../context/AuthContext';
 import TagChips from '../components/TagChips';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
+import ContentGlyph from '../components/ContentGlyph';
+import WorkshopAuthorCard from '../components/WorkshopAuthorCard';
 import './SubmarinePage.css';
 
 const TAGS_PAGE_SIZE = 100;
@@ -35,6 +37,14 @@ function metric(label, value) {
             <span>{label}</span>
             <strong>{value}</strong>
         </div>
+    );
+}
+
+function DownloadIcon() {
+    return (
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M10 3v9m-4-3 4 4 4-4M4 16h12" />
+        </svg>
     );
 }
 
@@ -86,6 +96,8 @@ export default function SubmarinePage() {
 
     const submarineTags = Array.isArray(submarine?.tags) ? submarine.tags : [];
     const authorUsername = submarine?.author_username || submarine?.authorUsername || '';
+    const authorName = authorUsername || 'Unknown author';
+    const authorSteamId = submarine?.author_steam_id || submarine?.authorSteamId || '';
     const authorId = submarine?.user_id ?? submarine?.userId;
     const currentUserId = user?.id;
     const normalizedAuthorUsername = String(authorUsername || '').trim().toLowerCase();
@@ -241,7 +253,7 @@ export default function SubmarinePage() {
             <div className="container submarine-page-container">
                 <Link to="/submarines" className="back-link">← Back to submarines</Link>
 
-                <section className="submarine-hero glass-card">
+                <header className="submarine-hero">
                     <div className="submarine-hero-top">
                         <div className="submarine-hero-copy">
                             <h1>{submarine.title}</h1>
@@ -256,29 +268,30 @@ export default function SubmarinePage() {
                                     className="btn btn-outline"
                                     to={`/guides/new/editor?targetType=SUBMARINE&targetId=${encodeURIComponent(externalId)}`}
                                 >
-                                    ✍️ Write guide
+                                    Write a guide
                                 </Link>
                             )}
                             <button
-                                className="btn btn-primary submarine-download-btn"
+                                className="submarine-download-btn"
                                 onClick={handleSubscribe}
                                 disabled={subscribing}
                             >
-                                {subscribing ? 'Loading...' : '⬇ Download'}
+                                <DownloadIcon />
+                                {subscribing ? 'Opening Workshop…' : 'Open in Workshop'}
                             </button>
                             <div className="submarine-hero-popularity" title="Steam Workshop visits">
-                                🔗 {submarine.popularity ?? 0} visits
+                                {Number(submarine.popularity ?? 0).toLocaleString()} Workshop visits
                             </div>
                         </div>
                     </div>
                     <p className="submarine-hero-description">{submarine.description || 'No description.'}</p>
                     {subscribeError && <div className="submarine-subscribe-error">{subscribeError}</div>}
-                </section>
+                </header>
 
                 <div className="submarine-layout">
                     <main className="submarine-main">
                         <Suspense fallback={(
-                            <section className="submarine-section glass-card">
+                            <section className="submarine-section">
                                 <h2>Gallery</h2>
                                 <p className="submarine-gallery-loading">Loading gallery...</p>
                             </section>
@@ -291,7 +304,7 @@ export default function SubmarinePage() {
                             />
                         </Suspense>
 
-                        <section className="submarine-section glass-card">
+                        <section className="submarine-section">
                             <h2>Base stats</h2>
                             <div className="submarine-metrics-grid">
                                 {metric('Price', `${formatNumber(submarine.price)} mk`)}
@@ -303,7 +316,7 @@ export default function SubmarinePage() {
                             </div>
                         </section>
 
-                        <section className="submarine-section glass-card">
+                        <section className="submarine-section">
                             <h2>Technical parameters</h2>
                             <div className="submarine-metrics-grid">
                                 {metric('Length', submarine.lengthMeters !== undefined && submarine.lengthMeters !== null ? `${formatNumber(submarine.lengthMeters, 1)} m` : '—')}
@@ -313,49 +326,69 @@ export default function SubmarinePage() {
                             </div>
                         </section>
 
-                        <section className="submarine-section glass-card">
+                        <section className="submarine-section">
                             <h2>Default armament</h2>
                             <div className="submarine-weapons">
-                                <div>
-                                    <h3>Regular turrets</h3>
-                                    {submarine.defaultTurretWeapons?.length ? (
-                                        <ul>
-                                            {submarine.defaultTurretWeapons.map((weapon) => (
-                                                <li key={weapon}>{weapon}</li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p>Not specified</p>
-                                    )}
+                                <div className="submarine-weapon-group">
+                                    <span className="submarine-weapon-icon">
+                                        <ContentGlyph name="weapon" size={20} />
+                                    </span>
+                                    <div className="submarine-weapon-copy">
+                                        <h3>Regular turrets</h3>
+                                        {submarine.defaultTurretWeapons?.length ? (
+                                            <ul>
+                                                {submarine.defaultTurretWeapons.map((weapon) => (
+                                                    <li key={weapon}>{weapon}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>Not specified</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3>Large turrets</h3>
-                                    {submarine.defaultLargeTurretWeapons?.length ? (
-                                        <ul>
-                                            {submarine.defaultLargeTurretWeapons.map((weapon) => (
-                                                <li key={weapon}>{weapon}</li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p>Not specified</p>
-                                    )}
+                                <div className="submarine-weapon-group">
+                                    <span className="submarine-weapon-icon submarine-weapon-icon-large">
+                                        <ContentGlyph name="weapon" size={22} />
+                                    </span>
+                                    <div className="submarine-weapon-copy">
+                                        <h3>Large turrets</h3>
+                                        {submarine.defaultLargeTurretWeapons?.length ? (
+                                            <ul>
+                                                {submarine.defaultLargeTurretWeapons.map((weapon) => (
+                                                    <li key={weapon}>{weapon}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>Not specified</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </section>
+
+                        <RelatedGuidesSection targetType="SUBMARINE" targetId={externalId} />
                     </main>
 
                     <aside className="submarine-sidebar">
-                        <section className="submarine-section glass-card">
+                        <section className="submarine-section">
                             <h2>Metadata</h2>
                             <div className="submarine-meta">
                                 <p><strong>External ID:</strong> {submarine.externalId ?? submarine.external_id ?? '—'}</p>
-                                <p><strong>Author:</strong> {submarine.authorUsername || submarine.author_username || '—'}</p>
                                 <p><strong>Created:</strong> {formatDate(submarine.createdAt || submarine.created_at)}</p>
                                 <p><strong>Updated:</strong> {formatDate(submarine.updatedAt || submarine.updated_at)}</p>
                             </div>
                         </section>
 
-                        <section className="submarine-section glass-card">
+                        <section className="submarine-section submarine-author-section">
+                            <h2>Author</h2>
+                            <WorkshopAuthorCard
+                                authorName={authorName}
+                                authorSteamId={authorSteamId}
+                                variant="submarine"
+                            />
+                        </section>
+
+                        <section className="submarine-section">
                             <h2>Tags</h2>
                             <TagChips
                                 tags={submarineTags}
@@ -427,7 +460,6 @@ export default function SubmarinePage() {
                         </section>
                     </aside>
                 </div>
-                <RelatedGuidesSection targetType="SUBMARINE" targetId={externalId} />
             </div>
         </div>
     );

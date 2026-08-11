@@ -1,9 +1,8 @@
 ﻿import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as tagsApi from '../api/tags';
 import * as submarinesApi from '../api/submarines';
-import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import SubmarineCard from '../components/SubmarineCard';
 import TagChips from '../components/TagChips';
@@ -166,37 +165,6 @@ function setParam(params, key, value) {
     params.set(key, String(value));
 }
 
-function parseRequiredNumber(rawValue, label, { integer = true, min } = {}) {
-    const value = String(rawValue || '').trim().replace(',', '.');
-    if (!value) {
-        throw new Error(`Field "${label}" is required`);
-    }
-    const parsed = Number(value);
-    if (!Number.isFinite(parsed)) {
-        throw new Error(`Field "${label}" must be a number`);
-    }
-    if (integer && !Number.isInteger(parsed)) {
-        throw new Error(`Field "${label}" must be an integer`);
-    }
-    if (min !== undefined && parsed < min) {
-        throw new Error(`Field "${label}" must be at least ${min}`);
-    }
-    return parsed;
-}
-
-function parseOptionalNumber(rawValue, label, { integer = false } = {}) {
-    const value = String(rawValue || '').trim().replace(',', '.');
-    if (!value) return undefined;
-    const parsed = Number(value);
-    if (!Number.isFinite(parsed)) {
-        throw new Error(`Field "${label}" must be a number`);
-    }
-    if (integer && !Number.isInteger(parsed)) {
-        throw new Error(`Field "${label}" must be an integer`);
-    }
-    return parsed;
-}
-
 function isBlockedSubmarine(submarine) {
     return submarine?.blocked === true || String(submarine?.status || '').toUpperCase() === 'BLOCKED';
 }
@@ -220,7 +188,6 @@ export default function SubmarinesListPage() {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const guideTargetMode = searchParams.get('guideTarget') === '1';
-    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     const query = normalizeQuery(searchParams.get('q'));
@@ -267,30 +234,6 @@ export default function SubmarinesListPage() {
     const [tagToAdd, setTagToAdd] = useState('');
     const [tagsLoading, setTagsLoading] = useState(true);
     const [tagsError, setTagsError] = useState('');
-
-    const [showForm, setShowForm] = useState(false);
-    const [creating, setCreating] = useState(false);
-    const [createError, setCreateError] = useState('');
-    const [createForm, setCreateForm] = useState({
-        title: '',
-        description: '',
-        submarineClass: submarinesApi.SUBMARINE_CLASS_VALUES[0],
-        tier: '',
-        price: '',
-        recommendedCrewMin: '',
-        recommendedCrewMax: '',
-        cargoCapacity: '',
-        maxHorizontalSpeedKph: '',
-        turretSlotCount: '',
-        largeTurretSlotCount: '',
-        lengthMeters: '',
-        heightMeters: '',
-        maxDescentSpeedKph: '',
-        maxReactorOutputKw: '',
-        fabricationType: '',
-        defaultTurretWeapons: [],
-        defaultLargeTurretWeapons: [],
-    });
 
     const updateSearch = (patch = {}) => {
         const nextState = {
@@ -581,137 +524,6 @@ export default function SubmarinesListPage() {
         });
     };
 
-    const resetCreateForm = () => {
-        setCreateForm({
-            title: '',
-            description: '',
-            submarineClass: submarinesApi.SUBMARINE_CLASS_VALUES[0],
-            tier: '',
-            price: '',
-            recommendedCrewMin: '',
-            recommendedCrewMax: '',
-            cargoCapacity: '',
-            maxHorizontalSpeedKph: '',
-            turretSlotCount: '',
-            largeTurretSlotCount: '',
-            lengthMeters: '',
-            heightMeters: '',
-            maxDescentSpeedKph: '',
-            maxReactorOutputKw: '',
-            fabricationType: '',
-            defaultTurretWeapons: [],
-            defaultLargeTurretWeapons: [],
-        });
-    };
-
-    const handleCreateFieldChange = (field, value) => {
-        setCreateForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
-    const toggleCreateArrayValue = (field, value) => {
-        setCreateForm((prev) => {
-            const current = Array.isArray(prev[field]) ? prev[field] : [];
-            const isPresent = current.includes(value);
-            return {
-                ...prev,
-                [field]: isPresent
-                    ? current.filter((item) => item !== value)
-                    : [...current, value],
-            };
-        });
-    };
-
-    const handleCreateSubmarine = async (event) => {
-        event.preventDefault();
-        setCreateError('');
-        setCreating(true);
-
-        try {
-            const title = createForm.title.trim();
-            const description = createForm.description.trim();
-            if (!title) {
-                throw new Error('Field "Title" is required');
-            }
-            if (!description) {
-                throw new Error('Field "Description" is required');
-            }
-
-            const tierValue = parseRequiredNumber(createForm.tier, 'Tier', { integer: true, min: 1 });
-            const priceValue = parseRequiredNumber(createForm.price, 'Price', { integer: true, min: 0 });
-            const crewMinValue = parseRequiredNumber(createForm.recommendedCrewMin, 'Min crew', { integer: true, min: 1 });
-            const crewMaxValue = parseRequiredNumber(createForm.recommendedCrewMax, 'Max crew', { integer: true, min: 1 });
-            const cargoValue = parseRequiredNumber(createForm.cargoCapacity, 'Cargo capacity', { integer: true, min: 0 });
-            const speedValue = parseRequiredNumber(createForm.maxHorizontalSpeedKph, 'Max horizontal speed', {
-                integer: false,
-                min: 0.000001,
-            });
-            const turretSlotsValue = parseRequiredNumber(createForm.turretSlotCount, 'Regular turret slots', {
-                integer: true,
-                min: 0,
-            });
-            const largeTurretSlotsValue = parseRequiredNumber(createForm.largeTurretSlotCount, 'Large turret slots', {
-                integer: true,
-                min: 0,
-            });
-            const lengthMetersValue = parseOptionalNumber(createForm.lengthMeters, 'Length, m');
-            const heightMetersValue = parseOptionalNumber(createForm.heightMeters, 'Height, m');
-            const maxDescentSpeedValue = parseOptionalNumber(createForm.maxDescentSpeedKph, 'Max descent speed, km/h');
-            const maxReactorOutputValue = parseOptionalNumber(createForm.maxReactorOutputKw, 'Max reactor output, kW');
-
-            if (crewMinValue > crewMaxValue) {
-                throw new Error('Minimum crew must be less than or equal to maximum crew');
-            }
-            if (createForm.defaultTurretWeapons.length > turretSlotsValue) {
-                throw new Error('Number of regular weapons cannot exceed regular turret slots');
-            }
-            if (createForm.defaultLargeTurretWeapons.length > largeTurretSlotsValue) {
-                throw new Error('Number of large weapons cannot exceed large turret slots');
-            }
-
-            const created = await submarinesApi.createSubmarine({
-                title,
-                description,
-                submarineClass: createForm.submarineClass,
-                tier: tierValue,
-                price: priceValue,
-                recommendedCrewMin: crewMinValue,
-                recommendedCrewMax: crewMaxValue,
-                cargoCapacity: cargoValue,
-                maxHorizontalSpeedKph: speedValue,
-                turretSlotCount: turretSlotsValue,
-                largeTurretSlotCount: largeTurretSlotsValue,
-                lengthMeters: lengthMetersValue,
-                heightMeters: heightMetersValue,
-                maxDescentSpeedKph: maxDescentSpeedValue,
-                maxReactorOutputKw: maxReactorOutputValue,
-                fabricationType: createForm.fabricationType || undefined,
-                defaultTurretWeapons: createForm.defaultTurretWeapons,
-                defaultLargeTurretWeapons: createForm.defaultLargeTurretWeapons,
-            });
-
-            resetCreateForm();
-            setShowForm(false);
-            const createdExternalId = created?.externalId ?? created?.external_id;
-            if (createdExternalId !== undefined && createdExternalId !== null) {
-                navigate(`/submarines/${createdExternalId}`);
-                return;
-            }
-
-            if (page === 0) {
-                await loadSubmarines();
-            } else {
-                updateSearch({ page: 0 });
-            }
-        } catch (error) {
-            setCreateError(error?.message || 'Failed to create submarine');
-        } finally {
-            setCreating(false);
-        }
-    };
-
     const hasActiveFilters = (
         query ||
         submarineClass ||
@@ -762,36 +574,37 @@ export default function SubmarinesListPage() {
     return (
         <div className="page page--submarines">
             <div className="container submarines-page">
-                <section className="submarines-header-box glass-card shine">
-                    <h1 className="submarines-title">{guideTargetMode ? 'Choose a submarine for your guide' : 'Submarines'}</h1>
-                    <p className="submarines-subtitle">
-                        {guideTargetMode
-                            ? `Use the catalog filters, then choose a submarine. Found: ${totalSubmarines}`
-                            : `Community submarine catalog. Total: ${totalSubmarines}`}
-                    </p>
-                    {guideTargetMode ? (
+                <header className="submarines-header-box">
+                    <div className="submarines-header-main">
+                        <div className="submarines-header-icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 20" focusable="false">
+                                <path d="M3 10c3-5 8-7 17-7 5 0 8 2 10 7-2 5-5 7-10 7-9 0-14-2-17-7Z" />
+                                <path d="M13 3V1h6v2M5 10H1M22 6l5-3M22 14l5 3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 className="submarines-title">{guideTargetMode ? 'Choose a submarine for your guide' : 'Submarines'}</h1>
+                            <p className="submarines-subtitle">
+                                {guideTargetMode
+                                    ? 'Filter the fleet, then choose the vessel your guide belongs to.'
+                                    : 'Inspect community vessels by class, tier, crew and engineering limits.'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="submarines-header-side">
+                        <div className="submarines-index-status">
+                            <span>{Number(totalSubmarines).toLocaleString('en-US')}</span>
+                            indexed vessels
+                        </div>
+                    {guideTargetMode && (
                         <div className="submarines-actions">
                             <button className="btn btn-ghost" type="button" onClick={() => navigate('/guides/new')}>
                                 ← Change guide type
                             </button>
                         </div>
-                    ) : isAuthenticated ? (
-                        <div className="submarines-actions">
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => setShowForm((prev) => !prev)}
-                                id="create-submarine-toggle"
-                            >
-                                {showForm ? 'Close form' : 'Add submarine'}
-                            </button>
-                        </div>
-                    ) : (
-                        <p className="auth-prompt submarine-auth-prompt">
-                            <Link to="/login" className="auth-link">Log in</Link> or{' '}
-                            <Link to="/sign-up" className="auth-link">sign up</Link>, to add submarines.
-                        </p>
                     )}
-                </section>
+                    </div>
+                </header>
 
                 <section className="submarines-filters glass-card">
                     <form className="submarines-search-form" onSubmit={handleSearchSubmit}>
@@ -804,14 +617,14 @@ export default function SubmarinesListPage() {
                                 placeholder="Enter submarine title"
                                 autoComplete="off"
                             />
-                            <button className="btn btn-primary" type="submit" disabled={loading || creating}>
+                            <button className="btn btn-primary" type="submit" disabled={loading}>
                                 Search
                             </button>
                             <button
                                 className="btn btn-ghost"
                                 type="button"
                                 onClick={handleResetFilters}
-                                disabled={!hasActiveFilters || loading || creating}
+                                disabled={!hasActiveFilters || loading}
                             >
                                 Reset
                             </button>
@@ -1107,7 +920,7 @@ export default function SubmarinesListPage() {
                                 className="btn btn-ghost"
                                 type="button"
                                 onClick={handleAddTagFilter}
-                                disabled={!tagToAdd || loading || creating}
+                                disabled={!tagToAdd || loading}
                             >
                                 Add tag
                             </button>
@@ -1165,221 +978,12 @@ export default function SubmarinesListPage() {
                     )}
                 </section>
 
-                {!guideTargetMode && isAuthenticated && showForm && (
-                    <form
-                        className="create-submarine-form glass-card fade-in"
-                        onSubmit={handleCreateSubmarine}
-                        aria-label="Submarine creation form"
-                    >
-                        <h2>New submarine</h2>
-                        <div className="create-submarine-grid">
-                            <label>
-                                Title
-                                <input
-                                    id="submarine-title-input"
-                                    value={createForm.title}
-                                    onChange={(event) => handleCreateFieldChange('title', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Class
-                                <select
-                                    id="submarine-class-input"
-                                    value={createForm.submarineClass}
-                                    onChange={(event) => handleCreateFieldChange('submarineClass', event.target.value)}
-                                >
-                                    {submarinesApi.SUBMARINE_CLASS_VALUES.map((value) => (
-                                        <option key={value} value={value}>{CLASS_LABELS[value] || value}</option>
-                                    ))}
-                                </select>
-                            </label>
-                            <label>
-                                Tier
-                                <input
-                                    id="submarine-tier-input"
-                                    type="number"
-                                    min="1"
-                                    value={createForm.tier}
-                                    onChange={(event) => handleCreateFieldChange('tier', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Price
-                                <input
-                                    id="submarine-price-input"
-                                    type="number"
-                                    min="0"
-                                    value={createForm.price}
-                                    onChange={(event) => handleCreateFieldChange('price', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Min crew
-                                <input
-                                    id="submarine-crew-min-input"
-                                    type="number"
-                                    min="1"
-                                    value={createForm.recommendedCrewMin}
-                                    onChange={(event) => handleCreateFieldChange('recommendedCrewMin', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Max crew
-                                <input
-                                    id="submarine-crew-max-input"
-                                    type="number"
-                                    min="1"
-                                    value={createForm.recommendedCrewMax}
-                                    onChange={(event) => handleCreateFieldChange('recommendedCrewMax', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Cargo capacity
-                                <input
-                                    id="submarine-cargo-input"
-                                    type="number"
-                                    min="0"
-                                    value={createForm.cargoCapacity}
-                                    onChange={(event) => handleCreateFieldChange('cargoCapacity', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Max speed (horizontal), km/h
-                                <input
-                                    id="submarine-speed-input"
-                                    type="number"
-                                    step="0.1"
-                                    min="0.000001"
-                                    value={createForm.maxHorizontalSpeedKph}
-                                    onChange={(event) => handleCreateFieldChange('maxHorizontalSpeedKph', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Turret slots
-                                <input
-                                    id="submarine-turret-slots-input"
-                                    type="number"
-                                    min="0"
-                                    value={createForm.turretSlotCount}
-                                    onChange={(event) => handleCreateFieldChange('turretSlotCount', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Large turret slots
-                                <input
-                                    id="submarine-large-turret-slots-input"
-                                    type="number"
-                                    min="0"
-                                    value={createForm.largeTurretSlotCount}
-                                    onChange={(event) => handleCreateFieldChange('largeTurretSlotCount', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Length, m
-                                <input
-                                    id="submarine-length-input"
-                                    type="number"
-                                    step="0.1"
-                                    value={createForm.lengthMeters}
-                                    onChange={(event) => handleCreateFieldChange('lengthMeters', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Height, m
-                                <input
-                                    id="submarine-height-input"
-                                    type="number"
-                                    step="0.1"
-                                    value={createForm.heightMeters}
-                                    onChange={(event) => handleCreateFieldChange('heightMeters', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Max descent speed, km/h
-                                <input
-                                    id="submarine-descent-speed-input"
-                                    type="number"
-                                    step="0.1"
-                                    value={createForm.maxDescentSpeedKph}
-                                    onChange={(event) => handleCreateFieldChange('maxDescentSpeedKph', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Max reactor output, kW
-                                <input
-                                    id="submarine-reactor-output-input"
-                                    type="number"
-                                    step="0.1"
-                                    value={createForm.maxReactorOutputKw}
-                                    onChange={(event) => handleCreateFieldChange('maxReactorOutputKw', event.target.value)}
-                                />
-                            </label>
-                            <label>
-                                Fabrication type
-                                <select
-                                    id="submarine-fabrication-input"
-                                    value={createForm.fabricationType}
-                                    onChange={(event) => handleCreateFieldChange('fabricationType', event.target.value)}
-                                >
-                                    <option value="">Not specified</option>
-                                    {submarinesApi.FABRICATION_TYPE_VALUES.map((value) => (
-                                        <option key={value} value={value}>{FABRICATION_LABELS[value] || value}</option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-
-                        <label className="create-submarine-description">
-                            Description
-                            <textarea
-                                id="submarine-description-input"
-                                rows="4"
-                                value={createForm.description}
-                                onChange={(event) => handleCreateFieldChange('description', event.target.value)}
-                            />
-                        </label>
-
-                        <div className="create-submarine-weapons">
-                            <div className="create-submarine-weapon-block">
-                                <h3>Regular turrets</h3>
-                                <div className="create-submarine-weapon-grid">
-                                    {submarinesApi.TURRET_WEAPON_VALUES.map((weapon) => (
-                                        <label key={weapon} className="create-submarine-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={createForm.defaultTurretWeapons.includes(weapon)}
-                                                onChange={() => toggleCreateArrayValue('defaultTurretWeapons', weapon)}
-                                            />
-                                            <span>{weapon}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="create-submarine-weapon-block">
-                                <h3>Large turrets</h3>
-                                <div className="create-submarine-weapon-grid">
-                                    {submarinesApi.LARGE_TURRET_WEAPON_VALUES.map((weapon) => (
-                                        <label key={weapon} className="create-submarine-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={createForm.defaultLargeTurretWeapons.includes(weapon)}
-                                                onChange={() => toggleCreateArrayValue('defaultLargeTurretWeapons', weapon)}
-                                            />
-                                            <span>{weapon}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {createError && <div className="auth-error">{createError}</div>}
-
-                        <button className="btn btn-primary" type="submit" id="submit-submarine" disabled={creating}>
-                            {creating ? 'Creating...' : 'Create submarine'}
-                        </button>
-                    </form>
-                )}
                 {loadingError && <div className="auth-error submarines-load-error">{loadingError}</div>}
+
+                <div className="submarines-results-bar" aria-live="polite">
+                    <span>{loading ? 'Scanning shipyard index' : `${Number(totalSubmarines).toLocaleString('en-US')} matching vessels`}</span>
+                    <span>Page {page + 1} / {Math.max(totalPages, 1)}</span>
+                </div>
 
                 {loading ? (
                     <div className="loading-state">
@@ -1411,7 +1015,7 @@ export default function SubmarinesListPage() {
                     totalPages={totalPages}
                     hasNext={hasNext}
                     hasPrevious={hasPrevious}
-                    disabled={loading || creating}
+                    disabled={loading}
                     onPageChange={handlePageChange}
                 />
 

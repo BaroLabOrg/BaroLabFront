@@ -8,17 +8,10 @@ import * as tagsApi from '../api/tags';
 
 vi.mock('../api/mods', () => ({
     searchMods: vi.fn(),
-    createMod: vi.fn(),
 }));
 
 vi.mock('../api/tags', () => ({
     getTags: vi.fn(),
-}));
-
-vi.mock('../context/AuthContext', () => ({
-    useAuth: () => ({
-        isAuthenticated: false,
-    }),
 }));
 
 function buildMod(externalId, title) {
@@ -108,6 +101,7 @@ describe('ModsListPage search flow', () => {
             sortBy: 'popularity',
             direction: 'desc',
         });
+        expect(screen.queryByRole('button', { name: /add mod/i })).not.toBeInTheDocument();
     });
 
     it('reuses the catalog to select a mod for a new guide', async () => {

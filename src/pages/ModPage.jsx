@@ -94,14 +94,14 @@ export default function ModPage() {
 
                 {mod && (
                     <>
-                        <ModHero mod={mod} onSubscribe={handleSubscribe} />
+                        <ModHero mod={mod} onSubscribe={handleSubscribe} canWriteGuide={isAuthenticated} />
 
                         <div className="mod-page-layout">
                             {/* Left column: content */}
                             <main className="mod-page-main">
                                 {/* Image Gallery */}
                                 <ImageGallery
-                                    className="mod-media-gallery glass-card fade-in"
+                                    className="mod-media-gallery fade-in"
                                     title={mod.title}
                                     includeMainImage={false}
                                     additionalImages={Array.isArray(mod.additional_images)
@@ -113,18 +113,20 @@ export default function ModPage() {
                                 />
 
                                 {/* Content */}
-                                <section className="mod-content-section glass-card fade-in">
+                                <section className="mod-content-section fade-in">
                                     <h3 className="mod-content-heading">Description</h3>
                                     <div className="mod-content-body">
                                         {mod.description || 'No description.'}
                                     </div>
                                 </section>
 
-                                {/* Used in collections */}
-                                <UsedInCollections />
+                                <div className="mod-context-grid fade-in">
+                                    {/* Used in collections */}
+                                    <UsedInCollections />
 
-                                {/* Guides */}
-                                <GuidesSection />
+                                    {/* Guides */}
+                                    <GuidesSection />
+                                </div>
 
                                 {/* Comments */}
                                 <CommentsSection externalId={externalId} />
