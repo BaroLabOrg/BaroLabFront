@@ -1,17 +1,42 @@
-.steam-description {
+.steam-description-shell {
     --steam-description-accent: var(--accent);
     --steam-description-accent-soft: rgba(249, 115, 22, 0.18);
     max-width: 76ch;
-    color: #b8c1c8;
-    font-size: clamp(0.95rem, 0.92rem + 0.12vw, 1.02rem);
-    line-height: 1.76;
-    overflow-wrap: anywhere;
-    white-space: pre-line;
 }
 
-.steam-description[data-variant="submarine"] {
+.steam-description-shell[data-variant="submarine"] {
     --steam-description-accent: var(--submarine-accent, #4c8dff);
     --steam-description-accent-soft: rgba(76, 141, 255, 0.18);
+}
+
+.steam-description-viewport {
+    position: relative;
+    max-width: 100%;
+}
+
+.steam-description-viewport[data-collapsed="true"] {
+    max-height: 9.75rem;
+    overflow: hidden;
+}
+
+.steam-description-viewport[data-collapsed="true"][data-overflowing="true"]::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1.7rem;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--bg-primary));
+}
+
+.steam-description {
+    max-width: 76ch;
+    color: #b8c1c8;
+    font-size: clamp(0.875rem, 0.855rem + 0.08vw, 0.94rem);
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
 .steam-description h2,
@@ -28,24 +53,31 @@
 }
 
 .steam-description h2 {
-    margin: 0 0 0.8rem;
-    font-size: clamp(1.45rem, 2.6vw, 2rem);
+    margin: 0 0 0.3rem;
+    font-size: clamp(1.15rem, 1.05rem + 0.35vw, 1.32rem);
 }
 
 .steam-description h3 {
-    margin: 2.5rem 0 0.7rem;
-    font-size: clamp(1.22rem, 2vw, 1.55rem);
+    margin: 1rem 0 0.24rem;
+    font-size: clamp(1.02rem, 0.98rem + 0.2vw, 1.14rem);
 }
 
 .steam-description h4 {
-    margin: 1.8rem 0 0.55rem;
-    font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+    margin: 0.38rem 0 0.16rem;
+    font-size: clamp(0.94rem, 0.91rem + 0.12vw, 1.02rem);
 }
 
 .steam-description p {
-    margin: 0 0 1.2rem;
-    white-space: pre-line;
+    margin: 0 0 0.72rem;
+    white-space: normal;
 }
+
+.steam-description-paragraph-break {
+    display: block;
+    height: 0.62rem;
+}
+
+.steam-description-noparse { white-space: pre-wrap; }
 
 .steam-description strong { color: #e7ebee; }
 .steam-description u { text-underline-offset: 0.18em; }
@@ -53,8 +85,10 @@
 .steam-description a {
     color: var(--steam-description-accent);
     font-weight: 600;
-    text-decoration-color: color-mix(in srgb, var(--steam-description-accent) 48%, transparent);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in srgb, var(--steam-description-accent) 42%, transparent);
     text-underline-offset: 0.22em;
+    cursor: pointer;
 }
 
 .steam-description a:hover { text-decoration-color: currentColor; }
@@ -68,25 +102,25 @@
 
 .steam-description hr {
     height: 1px;
-    margin: 2.35rem 0;
+    margin: 1.2rem 0;
     border: 0;
     background: linear-gradient(90deg, var(--steam-description-accent), var(--border-color) 38%, transparent);
 }
 
 .steam-description ul,
 .steam-description ol {
-    margin: 0.65rem 0 1.35rem;
+    margin: 0.35rem 0 0.8rem;
     padding-inline-start: 1.45rem;
     white-space: normal;
 }
 
 .steam-description li { padding-inline-start: 0.3rem; }
-.steam-description li + li { margin-top: 0.28rem; }
+.steam-description li + li { margin-top: 0.12rem; }
 .steam-description li::marker { color: var(--steam-description-accent); }
 
 .steam-description blockquote {
-    margin: 1.4rem 0;
-    padding: 0.85rem 1rem;
+    margin: 0.85rem 0;
+    padding: 0.65rem 0.8rem;
     border: 1px solid var(--steam-description-accent-soft);
     border-radius: 12px;
     background: color-mix(in srgb, var(--steam-description-accent) 6%, transparent);
@@ -96,8 +130,8 @@
 
 .steam-description pre {
     max-width: 100%;
-    margin: 1rem 0 1.5rem;
-    padding: 1rem 1.1rem;
+    margin: 0.75rem 0 1rem;
+    padding: 0.8rem 0.9rem;
     overflow-x: auto;
     border: 1px solid var(--steam-description-accent-soft);
     border-radius: 12px;
@@ -115,7 +149,7 @@
     width: auto;
     max-width: 100%;
     max-height: 680px;
-    margin: 1.4rem auto;
+    margin: 0.9rem auto;
     border-radius: 12px;
     object-fit: contain;
 }
@@ -127,7 +161,7 @@
 
 .steam-description-table-wrap {
     max-width: 100%;
-    margin: 1.4rem 0;
+    margin: 0.9rem 0;
     overflow-x: auto;
     white-space: normal;
 }
@@ -155,7 +189,7 @@
 .steam-description-right { text-align: end; }
 
 .steam-description-spoiler {
-    margin: 1.25rem 0;
+    margin: 0.8rem 0;
     border-block: 1px solid var(--steam-description-accent-soft);
     padding-block: 0.7rem;
     white-space: normal;
@@ -173,7 +207,48 @@
 
 .steam-description-video {
     display: inline-flex;
-    margin-block: 0.7rem;
+    margin-block: 0.45rem;
+}
+
+.steam-description-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 36px;
+    margin-top: 0.55rem;
+    padding: 0.35rem 0;
+    border: 0;
+    color: var(--steam-description-accent);
+    background: transparent;
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.steam-description-toggle svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform var(--transition-fast);
+}
+
+.steam-description-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.steam-description-toggle:hover {
+    color: color-mix(in srgb, var(--steam-description-accent) 72%, white);
+}
+
+.steam-description-toggle:focus-visible {
+    border-radius: 3px;
+    outline: 2px solid var(--steam-description-accent);
+    outline-offset: 3px;
 }
 
 .steam-description-empty {
@@ -183,8 +258,8 @@
 
 @media (max-width: 640px) {
     .steam-description {
-        font-size: 1rem;
-        line-height: 1.7;
+        font-size: 0.9rem;
+        line-height: 1.55;
     }
 
     .steam-description pre {
