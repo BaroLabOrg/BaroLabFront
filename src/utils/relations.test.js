@@ -19,6 +19,23 @@ describe('relationLabel', () => {
         expect(relationLabel('CRAFTED_FROM', 'INCOMING')).toBe('Used to craft');
     });
 
+    it('labels every relation type the projection can produce', () => {
+        const produced = [
+            'CRAFTED_FROM', 'DECONSTRUCTS_INTO', 'UNLOCKS_RECIPE', 'VARIANT_OF', 'HOLDS',
+            'SHIPPED_IN', 'CAUSES', 'TREATS', 'PROTECTS_FROM', 'REQUIRES_REPUTATION',
+            'REWARDS_REPUTATION', 'AVAILABLE_AT', 'TRIGGERS_EVENT', 'FOUND_IN', 'SPAWNS',
+            'CARRIES', 'ARMED_WITH', 'REPAIRED_WITH', 'GRANTS_TALENT',
+        ];
+
+        for (const relationType of produced) {
+            for (const direction of ['OUTGOING', 'INCOMING']) {
+                const label = relationLabel(relationType, direction);
+                expect(label).not.toMatch(/_/);
+                expect(label).not.toMatch(/\(incoming\)/);
+            }
+        }
+    });
+
     it('falls back to a humanized type for unknown relations', () => {
         expect(relationLabel('SOME_NEW_TYPE', 'OUTGOING')).toBe('Some New Type');
         expect(relationLabel('SOME_NEW_TYPE', 'INCOMING')).toBe('Some New Type (incoming)');
