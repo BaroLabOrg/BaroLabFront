@@ -7,8 +7,10 @@ import { useAuth } from '../context/AuthContext';
 import EventActionTree from '../components/EventActionTree';
 import { PropertyFieldList } from '../components/PropertyValue';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
+import RelationGroup from '../components/RelationGroup';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
+import { groupRelations } from '../utils/relations';
 import { humanizeIdentifier } from '../utils/text';
 import './EncyclopediaDetailPage.css';
 
@@ -257,6 +259,9 @@ export default function EncyclopediaDetailPage() {
         : (detail.crafting?.recipe ? [detail.crafting.recipe] : []);
     const hasCraftRecipe = Boolean(detail.crafting?.hasRecipe ?? detail.crafting?.has_recipe ?? craftingRecipes.length > 0);
     const hasArmament = Boolean(detail.armament);
+    const relationGroups = groupRelations(detail.relatedEntities, {
+        hasCraftingSection: hasCraftRecipe && craftingRecipes.length > 0,
+    });
 
     return (
         <div className="page encyclopedia-detail-page">
@@ -320,24 +325,16 @@ export default function EncyclopediaDetailPage() {
                             )}
                         </section>
 
-                        <section className="encyclopedia-detail-section glass-card">
-                            <SectionTitle>Related entities</SectionTitle>
-                            {detail.relatedEntities.length === 0 ? (
-                                <p className="encyclopedia-empty-text">No relations added.</p>
-                            ) : (
-                                <ul className="encyclopedia-compact-list">
-                                    {detail.relatedEntities.map((relation, index) => (
-                                        <li key={`${relation.id}-${relation.relationType}-${index}`}>
-                                            <Link to={`/encyclopedia/${relation.slug}`}>
-                                                {relation.title}
-                                            </Link>
-                                            <span>{relation.relationType}</span>
-                                            <small>{relation.origin}</small>
-                                        </li>
+                        {relationGroups.length > 0 && (
+                            <section className="encyclopedia-detail-section glass-card">
+                                <SectionTitle>Related entities</SectionTitle>
+                                <div className="encyclopedia-relation-groups">
+                                    {relationGroups.map((group) => (
+                                        <RelationGroup group={group} key={group.key} />
                                     ))}
-                                </ul>
-                            )}
-                        </section>
+                                </div>
+                            </section>
+                        )}
 
                         {hasCraftRecipe && (
                             <section className="encyclopedia-detail-section glass-card">
