@@ -388,6 +388,87 @@
   font-size: 0.66rem;
 }
 
+/* Relations read as several small lists rather than one long one: the label
+   carries the meaning, so it has to sit above its own entries. */
+.encyclopedia-relation-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.encyclopedia-relation-group + .encyclopedia-relation-group {
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.encyclopedia-relation-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: #9fb4cf;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.encyclopedia-relation-count {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.encyclopedia-relation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.encyclopedia-relation-list li {
+  min-width: 0;
+}
+
+.encyclopedia-relation-list li a {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.encyclopedia-relation-list li a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.encyclopedia-relation-more {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.encyclopedia-relation-more:hover {
+  text-decoration: underline;
+}
+
 .encyclopedia-crafting-stack {
   display: flex;
   flex-direction: column;

@@ -241,6 +241,8 @@ function normalizeRelatedEntity(entity) {
     const relationType = firstDefined(entity.relationType, entity.relation_type);
     const origin = firstDefined(entity.origin);
     const sortOrder = Number(firstDefined(entity.sortOrder, entity.sort_order, 0)) || 0;
+    // Older payloads have no direction; everything they carried was outgoing.
+    const direction = firstDefined(entity.direction) === 'INCOMING' ? 'INCOMING' : 'OUTGOING';
 
     return {
         ...entity,
@@ -252,6 +254,7 @@ function normalizeRelatedEntity(entity) {
         origin,
         sortOrder,
         sort_order: sortOrder,
+        direction,
     };
 }
 

@@ -272,6 +272,48 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.queryByRole('heading', { name: 'Infobox' })).not.toBeInTheDocument();
     });
 
+    it('groups relations by type and direction with readable labels', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            slug: 'physicorium',
+            title: 'Physicorium Bar',
+            relatedEntities: [
+                { id: 'e1', slug: 'assault-rifle', title: 'Assault Rifle', relationType: 'CRAFTED_FROM', direction: 'INCOMING', origin: 'SYSTEM' },
+                { id: 'e2', slug: 'alien-spear', title: 'Alien Spear', relationType: 'CRAFTED_FROM', direction: 'INCOMING', origin: 'SYSTEM' },
+                { id: 'e3', slug: 'raw-ore', title: 'Raw Ore', relationType: 'DECONSTRUCTS_INTO', direction: 'OUTGOING', origin: 'SYSTEM' },
+            ],
+        }));
+
+        renderPage('/encyclopedia/physicorium');
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Physicorium Bar' })).toBeInTheDocument();
+        });
+
+        expect(screen.getByRole('heading', { name: /Used to craft/ })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /Deconstructs into/ })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Assault Rifle' })).toHaveAttribute(
+            'href',
+            '/encyclopedia/assault-rifle',
+        );
+        // the raw enum name never reaches the page
+        expect(screen.queryByText('CRAFTED_FROM')).not.toBeInTheDocument();
+    });
+
+    it('omits the relations section when there is nothing to link', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            relatedEntities: [],
+        }));
+
+        renderPage();
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Husk Infection' })).toBeInTheDocument();
+        });
+
+        expect(screen.queryByRole('heading', { name: 'Related entities' })).not.toBeInTheDocument();
+    });
+
     it('renders the armament section when armament data is present', async () => {
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'SUBMARINE',
