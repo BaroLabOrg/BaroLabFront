@@ -41,6 +41,13 @@ export default function Navbar() {
                     <NavLink to="/load-order" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Load Order
                     </NavLink>
+                    {/* Only signed-in users have collections of their own; a shared one
+                        opens by its link without an account. */}
+                    {user && (
+                        <NavLink to="/collections" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                            Collections
+                        </NavLink>
+                    )}
                     <NavLink to="/encyclopedia" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         Encyclopedia
                     </NavLink>
