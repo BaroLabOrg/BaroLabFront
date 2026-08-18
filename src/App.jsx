@@ -31,6 +31,9 @@ const GuideEditorPage = lazy(() => import('./pages/GuideEditorPage'));
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const TagsPage = lazy(() => import('./pages/TagsPage'));
 const LoadOrderPage = lazy(() => import('./pages/LoadOrderPage'));
+const CollectionsPage = lazy(() => import('./pages/CollectionsPage'));
+const CollectionBuilderPage = lazy(() => import('./pages/CollectionBuilderPage'));
+const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
 const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
 const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
@@ -115,6 +118,35 @@ export default function App() {
                     <Route
                         path="/load-order"
                         element={<LoadOrderPage />}
+                    />
+                    {/* Collections: built by their author, read by anyone with the link */}
+                    <Route
+                        path="/collections"
+                        element={(
+                            <ProtectedRoute>
+                                <CollectionsPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/collections/new"
+                        element={(
+                            <ProtectedRoute>
+                                <CollectionBuilderPage />
+                            </ProtectedRoute>
+                        )}
+                    />
+                    <Route
+                        path="/collections/:slug"
+                        element={<CollectionPage />}
+                    />
+                    <Route
+                        path="/collections/:slug/edit"
+                        element={(
+                            <ProtectedRoute>
+                                <CollectionBuilderPage />
+                            </ProtectedRoute>
+                        )}
                     />
                     <Route
                         path="/encyclopedia"
