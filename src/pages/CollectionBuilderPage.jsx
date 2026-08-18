@@ -6,6 +6,7 @@ import {
     getCollection,
     updateCollection,
 } from '../api/modCollections';
+import { getMod } from '../api/mods';
 import { useAuth } from '../context/AuthContext';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import CollectionProblems from '../components/collection/CollectionProblems';
@@ -120,11 +121,43 @@ export default function CollectionBuilderPage() {
         };
     }, [idsKey]);
 
+    const [addingMissingId, setAddingMissingId] = useState(null);
+    const [missingErrors, setMissingErrors] = useState({});
+
     const addMod = (mod) => {
         setMods((current) => (current.some((entry) => entry.workshopId === mod.workshopId)
             ? current
             : [...current, mod]));
         setSaveError('');
+    };
+
+    /**
+     * The graph names packages the site itself may not carry as mods -- a
+     * content mod its author tagged as a submarine ends up in the submarine
+     * section, and the API then refuses it. Better to say so on the row than
+     * to fail the save minutes later.
+     */
+    const addMissing = async (entry) => {
+        setAddingMissingId(entry.externalId);
+        try {
+            await getMod(entry.externalId);
+            addMod({
+                workshopId: entry.externalId,
+                name: entry.name || `Mod #${entry.externalId}`,
+            });
+            setMissingErrors((current) => {
+                const next = { ...current };
+                delete next[entry.externalId];
+                return next;
+            });
+        } catch {
+            setMissingErrors((current) => ({
+                ...current,
+                [entry.externalId]: 'The site does not carry this one as a mod, so it cannot go into a collection.',
+            }));
+        } finally {
+            setAddingMissingId(null);
+        }
     };
 
     const orderedEntries = useMemo(() => {
@@ -314,10 +347,9 @@ export default function CollectionBuilderPage() {
                         </h2>
                         <MissingMods
                             missing={analysis?.missing || []}
-                            onAdd={(entry) => addMod({
-                                workshopId: entry.externalId,
-                                name: entry.name || `Mod #${entry.externalId}`,
-                            })}
+                            onAdd={addMissing}
+                            addingId={addingMissingId}
+                            errors={missingErrors}
                             emptyLabel={analysis ? 'Nothing is missing.' : 'Add mods to see what they need.'}
                         />
                     </section>

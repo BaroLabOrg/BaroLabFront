@@ -10,6 +10,7 @@ export default function MissingMods({
     missing = [],
     onAdd,
     addingId = null,
+    errors = {},
     emptyLabel = 'Nothing is missing.',
 }) {
     if (missing.length === 0) {
@@ -51,6 +52,9 @@ export default function MissingMods({
                             <p className="missing-mod-note">
                                 Not published on the Workshop, so it cannot be added from here.
                             </p>
+                        )}
+                        {errors[entry.externalId] && (
+                            <p className="collection-note is-error">{errors[entry.externalId]}</p>
                         )}
                     </li>
                 );

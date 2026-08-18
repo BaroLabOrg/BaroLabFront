@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CollectionBuilderPage from './CollectionBuilderPage';
 import { analyseCollection, createCollection } from '../api/modCollections';
-import { searchMods } from '../api/mods';
+import { getMod, searchMods } from '../api/mods';
 
 vi.mock('../api/modCollections', async (importOriginal) => ({
     ...(await importOriginal()),
@@ -14,7 +14,7 @@ vi.mock('../api/modCollections', async (importOriginal) => ({
     getCollection: vi.fn(),
 }));
 
-vi.mock('../api/mods', () => ({ searchMods: vi.fn() }));
+vi.mock('../api/mods', () => ({ searchMods: vi.fn(), getMod: vi.fn() }));
 
 vi.mock('../context/AuthContext', () => ({
     useAuth: () => ({ user: { id: 'author-1' } }),
@@ -61,9 +61,30 @@ async function addFirstResult(user) {
     await user.click(screen.getAllByRole('button', { name: 'Add' })[0]);
 }
 
+function withMissing(externalId, name) {
+    return analysis({
+        order: [{
+            packageId: 'p1',
+            externalId: NEUROTRAUMA.external_id,
+            name: 'Neurotrauma',
+            position: 1,
+            reason: '',
+        }],
+        missing: [{
+            packageId: 'p9',
+            externalId,
+            name,
+            neededBy: 'Neurotrauma',
+            hard: true,
+            alternatives: ['Barotraumatic RU'],
+        }],
+    });
+}
+
 beforeEach(() => {
     searchMods.mockResolvedValue({ items: [NEUROTRAUMA, PATCH] });
     analyseCollection.mockResolvedValue(analysis());
+    getMod.mockResolvedValue({ external_id: 2559634234, title: 'Barotraumatic' });
 });
 
 describe('CollectionBuilderPage', () => {
@@ -155,23 +176,7 @@ describe('CollectionBuilderPage', () => {
 
     it('offers a missing mod for adding and keeps its alternatives as an any-one-of list', async () => {
         const user = userEvent.setup();
-        analyseCollection.mockResolvedValue(analysis({
-            order: [{
-                packageId: 'p1',
-                externalId: NEUROTRAUMA.external_id,
-                name: 'Neurotrauma',
-                position: 1,
-                reason: '',
-            }],
-            missing: [{
-                packageId: 'p9',
-                externalId: 2559634234,
-                name: 'Barotraumatic',
-                neededBy: 'Neurotrauma',
-                hard: true,
-                alternatives: ['Barotraumatic RU'],
-            }],
-        }));
+        analyseCollection.mockResolvedValue(withMissing(2559634234, 'Barotraumatic'));
 
         renderBuilder();
         await addFirstResult(user);
@@ -185,6 +190,24 @@ describe('CollectionBuilderPage', () => {
             () => expect(analyseCollection).toHaveBeenLastCalledWith([NEUROTRAUMA.external_id, 2559634234]),
             { timeout: 3000 },
         );
+    });
+
+    it('refuses on the row itself when the site has no such mod', async () => {
+        const user = userEvent.setup();
+        // DynamicEuropa is in the graph, but its author tagged it a submarine
+        // on Steam, so the site files it outside /mods and the API would
+        // refuse it at save time.
+        analyseCollection.mockResolvedValue(withMissing(2532991202, 'DynamicEuropa'));
+        getMod.mockRejectedValue(Object.assign(new Error('nope'), { status: 404 }));
+
+        renderBuilder();
+        await addFirstResult(user);
+
+        await user.click(await screen.findByRole('button', { name: /Add to collection/i }, { timeout: 3000 }));
+
+        expect(await screen.findByText(/does not carry this one as a mod/i)).toBeInTheDocument();
+        // and it did not quietly land in the list anyway
+        expect(screen.queryByText('DynamicEuropa', { selector: '.selected-mod-title' })).not.toBeInTheDocument();
     });
 
     it('shows the message the API sends when a mod is not on the site', async () => {
