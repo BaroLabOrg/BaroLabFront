@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
-import { ENCYCLOPEDIA_ENTITY_SOURCES, ENCYCLOPEDIA_ENTITY_TYPES, searchEncyclopedia } from '../api/encyclopedia';
+import {
+    ENCYCLOPEDIA_ENTITY_SOURCES,
+    ENCYCLOPEDIA_ENTITY_TYPES,
+    getEncyclopediaList,
+    searchEncyclopedia,
+} from '../api/encyclopedia';
 import Pagination from '../components/Pagination';
 import EncyclopediaCard from '../components/EncyclopediaCard';
 import { useAuth } from '../context/AuthContext';
@@ -52,6 +57,11 @@ function normalizeSortKey(value) {
     return SORT_PRESETS.some((preset) => preset.key === value) ? value : DEFAULT_SORT_KEY;
 }
 
+function normalizeModFilter(value) {
+    const id = Number(value);
+    return Number.isInteger(id) && id > 0 ? String(id) : '';
+}
+
 function setParam(params, key, value) {
     if (value === undefined || value === null || value === '') {
         params.delete(key);
@@ -76,6 +86,8 @@ export default function EncyclopediaListPage() {
     const entitySource = normalizeEntitySource(searchParams.get('entitySource'));
     const sortKey = normalizeSortKey(searchParams.get('sort'));
     const page = normalizePage(searchParams.get('page'));
+    // Workshop id: "everything this mod adds", linked to from the mod's page
+    const modFilter = normalizeModFilter(searchParams.get('mod'));
     const sortPreset = SORT_PRESETS.find((preset) => preset.key === sortKey) || SORT_PRESETS[0];
 
     const [searchInput, setSearchInput] = useState(q);
@@ -92,11 +104,12 @@ export default function EncyclopediaListPage() {
     }, [q]);
 
     const updateSearch = (patch = {}) => {
-        const nextState = { q, entityType, entitySource, sort: sortKey, page, ...patch };
+        const nextState = { q, entityType, entitySource, mod: modFilter, sort: sortKey, page, ...patch };
         const next = new URLSearchParams(searchParams);
         setParam(next, 'q', normalizeQuery(nextState.q));
         setParam(next, 'entityType', normalizeEntityType(nextState.entityType));
         setParam(next, 'entitySource', normalizeEntitySource(nextState.entitySource));
+        setParam(next, 'mod', normalizeModFilter(nextState.mod));
         setParam(next, 'sort', normalizeSortKey(nextState.sort) === DEFAULT_SORT_KEY ? '' : nextState.sort);
         setParam(next, 'page', Number(nextState.page) > 0 ? nextState.page : '');
         setSearchParams(next);
@@ -109,10 +122,15 @@ export default function EncyclopediaListPage() {
             setLoading(true);
             setError('');
             try {
-                const data = await searchEncyclopedia({
+                // Only the plain list endpoint knows about the mod filter --
+                // the ranked search runs through Typesense, which does not
+                // index which mod an entity came from.
+                const load = modFilter ? getEncyclopediaList : searchEncyclopedia;
+                const data = await load({
                     q,
                     entityType: entityType || undefined,
                     entitySource: entitySource || undefined,
+                    mod: modFilter || undefined,
                     page,
                     size: PAGE_SIZE,
                     sortBy: sortPreset.sortBy,
@@ -141,7 +159,7 @@ export default function EncyclopediaListPage() {
 
         load();
         return () => { cancelled = true; };
-    }, [q, entityType, entitySource, sortPreset.sortBy, sortPreset.direction, page]);
+    }, [q, entityType, entitySource, modFilter, sortPreset.sortBy, sortPreset.direction, page]);
 
     return (
         <div className="page">
