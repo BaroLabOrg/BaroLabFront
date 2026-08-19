@@ -1,0 +1,48 @@
+.mod-encyclopedia-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  transition: border-color var(--transition-fast),
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.mod-encyclopedia-link:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  border-left-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.mod-encyclopedia-link-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mod-encyclopedia-link-copy strong {
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.mod-encyclopedia-link-copy small {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.mod-encyclopedia-link-arrow {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1;
+}

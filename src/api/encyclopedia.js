@@ -842,9 +842,15 @@ function normalizeRelationsPayload(relations) {
     }));
 }
 
+/**
+ * @param mod Workshop id -- everything that one mod adds. Only this endpoint
+ *            knows about it; the Typesense-backed search does not index it.
+ */
 export async function getEncyclopediaList({
     q = '',
     entityType,
+    entitySource,
+    mod,
     primaryCategory,
     secondaryCategory,
     page = 0,
@@ -856,6 +862,8 @@ export async function getEncyclopediaList({
         query: {
             q: String(q || '').trim(),
             entityType,
+            entitySource,
+            mod,
             primaryCategory,
             secondaryCategory,
             page,

@@ -5,6 +5,7 @@ import * as modsApi from '../api/mods';
 
 import ModHero from '../components/ModHero';
 import ModSidebar from '../components/ModSidebar';
+import ModEncyclopediaLink from '../components/ModEncyclopediaLink';
 import UsedInCollections from '../components/UsedInCollections';
 import GuidesSection from '../components/GuidesSection';
 import CommentsSection from '../components/CommentsSection';
@@ -120,6 +121,8 @@ export default function ModPage() {
                                         <SteamDescription source={mod.description} variant="mod" />
                                     </div>
                                 </section>
+
+                                <ModEncyclopediaLink externalId={externalId} />
 
                                 <div className="mod-context-grid fade-in">
                                     {/* Used in collections */}
