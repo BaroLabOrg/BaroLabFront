@@ -36,6 +36,12 @@ export default function MissingMods({
                                     требует мод, она его использует, и отсутствие
                                     предмета ей ничем не грозит */}
                                 {entry.hard ? 'Needed by' : 'Used by'} {entry.neededBy}
+                                {/* Сколько именно взято. Без числа строка ровно
+                                    одинакова для лодки, взявшей один стул, и для лодки,
+                                    целиком построенной вокруг мода, а решение разное */}
+                                {!entry.hard && entry.usedContent > 0 && (
+                                    <> — {entry.usedContent} {entry.usedContent === 1 ? 'item' : 'items'} from it</>
+                                )}
                             </p>
                         )}
                         {entry.alternatives.length > 0 && (

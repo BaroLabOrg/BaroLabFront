@@ -50,6 +50,11 @@ function toList(value) {
     return Array.isArray(value) ? value : [];
 }
 
+function toCount(value) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? Math.trunc(number) : 0;
+}
+
 function toWorkshopId(value) {
     // Number(null) is 0, and 0 is not a Workshop id -- reject the empties first.
     if (value === null || value === undefined || value === '') return null;
@@ -81,7 +86,7 @@ function normalizeOrderedPackage(raw, index) {
     };
 }
 
-function normalizeMissingPackage(raw) {
+export function normalizeMissingPackage(raw) {
     if (!raw || typeof raw !== 'object') return null;
     return {
         packageId: firstDefined(raw.package_id, raw.packageId) ?? null,
@@ -91,6 +96,9 @@ function normalizeMissingPackage(raw) {
         hard: Boolean(raw.hard),
         // "any one of these will do" -- never all of them
         alternatives: toList(raw.alternatives).map(toText).filter(Boolean),
+        // Сколько чужих идентификаторов названо. Отделяет "взяли один предмет"
+        // от "построено вокруг мода" -- решение об установке разное.
+        usedContent: toCount(firstDefined(raw.used_content, raw.usedContent)),
     };
 }
 

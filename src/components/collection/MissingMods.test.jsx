@@ -40,6 +40,20 @@ describe('MissingMods', () => {
         expect(screen.getByText(/Any one of these does the job instead/)).toBeInTheDocument();
     });
 
+    it('says how much was borrowed, so one chair does not read like a whole mod', () => {
+        render(<MissingMods missing={[entry({ usedContent: 56 })]} />);
+
+        expect(screen.getByText(/56 items from it/)).toBeInTheDocument();
+    });
+
+    it('does not put a borrowed count on something the author demands', () => {
+        // требование автора не про количество: там хоть один предмет, хоть сто --
+        // мод всё равно ставить
+        render(<MissingMods missing={[entry({ hard: true, usedContent: 56 })]} />);
+
+        expect(screen.queryByText(/56 items from it/)).not.toBeInTheDocument();
+    });
+
     it('says nothing is missing when nothing is', () => {
         render(<MissingMods missing={[]} />);
 

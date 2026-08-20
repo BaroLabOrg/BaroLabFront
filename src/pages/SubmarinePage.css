@@ -411,3 +411,69 @@
     color: var(--text-muted, #8b96a5);
     font-size: 0.95rem;
 }
+
+.submarine-mod-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.submarine-mod-group h3 {
+    margin: 0 0 6px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #cfd8e4;
+}
+
+.submarine-mod-note {
+    margin: 0 0 10px;
+    color: #8797aa;
+    font-size: 0.84rem;
+}
+
+.submarine-mod-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.submarine-mod {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    border-left: 2px solid transparent;
+    background: rgba(76, 141, 255, 0.05);
+}
+
+/* Требование автора -- единственное, что лодку действительно останавливает,
+   и единственное, что здесь выделено. */
+.submarine-mod.is-hard {
+    border-left-color: var(--submarine-accent);
+    background: rgba(76, 141, 255, 0.1);
+}
+
+.submarine-mod-name {
+    min-width: 0;
+    color: #aeb9c7;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+a.submarine-mod-name:hover {
+    color: var(--submarine-accent);
+    text-decoration: underline;
+}
+
+.submarine-mod-count {
+    flex: none;
+    color: #8797aa;
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+}

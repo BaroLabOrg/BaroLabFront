@@ -67,6 +67,11 @@ function buildSubmarine(overrides = {}) {
 describe('SubmarinePage', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
+        // Секция модов грузится своим запросом на каждой отрисовке страницы;
+        // без заглушки каждый здешний тест уходил бы в сеть
+        vi.spyOn(submarinesApi, 'getSubmarineMods').mockResolvedValue({
+            known: false, required: [], used: [],
+        });
         authState = {
             isAuthenticated: false,
             isAdmin: false,
@@ -272,7 +277,11 @@ describe('SubmarinePage', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
-        expect(screen.getByText(/Nobody has read this submarine/i)).toBeInTheDocument();
+        // именно про характеристики: тем же оборотом начинается и пустая
+        // секция модов, так что «Nobody has read» теперь на странице дважды
+        expect(screen.getByText(
+            "Nobody has read this submarine's own file yet, so its stats are unknown.",
+        )).toBeInTheDocument();
         expect(screen.getByText('Community submarine')).toBeInTheDocument();
     });
 
@@ -291,5 +300,54 @@ describe('SubmarinePage', () => {
             expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
         });
         expect(screen.queryByRole('heading', { name: 'Technical parameters' })).not.toBeInTheDocument();
+    });
+
+    it('says a boat nobody has read is unread, rather than saying it needs nothing', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+        vi.spyOn(submarinesApi, 'getSubmarineMods').mockResolvedValue({
+            known: false, required: [], used: [],
+        });
+
+        render(<SubmarinePage />);
+
+        expect(await screen.findByText(
+            "Nobody has read this submarine's own file yet, so its mods are unknown.",
+        )).toBeInTheDocument();
+    });
+
+    it('separates what the author requires from what the boat merely borrows', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+        vi.spyOn(submarinesApi, 'getSubmarineMods').mockResolvedValue({
+            known: true,
+            required: [{ externalId: 111, name: 'RuinsRework', usedContent: 0 }],
+            used: [
+                { externalId: 222, name: 'Neurotrauma', usedContent: 56 },
+                { externalId: 333, name: 'NT Surgery Plus', usedContent: 1 },
+            ],
+        });
+
+        render(<SubmarinePage />);
+
+        expect(await screen.findByRole('heading', { name: 'The author says these are required' }))
+            .toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Built with content from' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'RuinsRework' })).toHaveAttribute('href', '/mod/111');
+        // единственное число на одном предмете -- «1 items» выдаёт машину
+        expect(screen.getByText('56 items')).toBeInTheDocument();
+        expect(screen.getByText('1 item')).toBeInTheDocument();
+    });
+
+    it('tells a boat built from vanilla apart from an unread one', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine());
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+        vi.spyOn(submarinesApi, 'getSubmarineMods').mockResolvedValue({
+            known: true, required: [], used: [],
+        });
+
+        render(<SubmarinePage />);
+
+        expect(await screen.findByText('Built from base game content only.')).toBeInTheDocument();
     });
  });
