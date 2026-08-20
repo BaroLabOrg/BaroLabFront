@@ -211,4 +211,85 @@ describe('SubmarinePage', () => {
             expect(subscribeSpy).toHaveBeenCalledWith('42');
         });
     });
+ 
+    it('shows engine thrust instead of a speed the file cannot state', async () => {
+        // скорость -- ответ физического движка, из .sub она не выводится;
+        // тяга записана в определении двигателя и складывается без домыслов
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+            maxHorizontalSpeedKph: null,
+            engineForce: 1100,
+        }));
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Engine thrust')).toBeInTheDocument();
+        });
+        expect(screen.getByText('1,100')).toBeInTheDocument();
+        expect(screen.queryByText('Max speed (horizontal)')).not.toBeInTheDocument();
+    });
+
+    it('leaves out a stat it does not know rather than dangling its unit', async () => {
+        // до этого пустое значение рисовалось как «— mk» и «— km/h»
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+            price: null,
+            cargoCapacity: null,
+        }));
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+        expect(screen.queryByText('Price')).not.toBeInTheDocument();
+        expect(screen.queryByText('Cargo capacity')).not.toBeInTheDocument();
+        expect(screen.queryByText(/— mk/)).not.toBeInTheDocument();
+    });
+
+    it('says so plainly when nobody has read the boat file yet', async () => {
+        // так выглядит лодка, которую свип ещё не разобрал: раньше это была
+        // сетка нулей, выдававших себя за настоящие цифры
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+            submarineClass: null,
+            tier: null,
+            price: null,
+            cargoCapacity: null,
+            recommendedCrewMin: null,
+            recommendedCrewMax: null,
+            recommendedCrewDisplay: null,
+            maxHorizontalSpeedKph: null,
+            engineForce: null,
+            turretSlotCount: null,
+            largeTurretSlotCount: null,
+            fabricationType: null,
+        }));
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+        expect(screen.getByText(/Nobody has read this submarine/i)).toBeInTheDocument();
+        expect(screen.getByText('Community submarine')).toBeInTheDocument();
+    });
+
+    it('drops the technical section entirely when it holds nothing', async () => {
+        vi.spyOn(submarinesApi, 'getSubmarine').mockResolvedValue(buildSubmarine({
+            lengthMeters: null,
+            heightMeters: null,
+            maxDescentSpeedKph: null,
+            maxReactorOutputKw: null,
+        }));
+        vi.spyOn(submarinesApi, 'subscribeSubmarine').mockResolvedValue(undefined);
+
+        render(<SubmarinePage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: 'Orca' })).toBeInTheDocument();
+        });
+        expect(screen.queryByRole('heading', { name: 'Technical parameters' })).not.toBeInTheDocument();
+    });
  });

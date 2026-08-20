@@ -186,3 +186,11 @@
   letter-spacing: 0.1em;
   border-top-color: rgba(59, 130, 246, 0.2);
 }
+
+/* Лодка, чей файл ещё не разбирали: цифр нет вовсе, а не нули. */
+.submarine-card-metrics-empty {
+    margin: 0;
+    color: var(--text-muted, #8b96a5);
+    font-size: 0.85rem;
+    font-style: italic;
+}

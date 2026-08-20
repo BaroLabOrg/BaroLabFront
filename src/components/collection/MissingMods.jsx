@@ -31,7 +31,12 @@ export default function MissingMods({
                             </span>
                         </div>
                         {entry.neededBy && (
-                            <p className="missing-mod-reason">Needed by {entry.neededBy}</p>
+                            <p className="missing-mod-reason">
+                                {/* «Needed by» стояло и на рекомендациях: лодка не
+                                    требует мод, она его использует, и отсутствие
+                                    предмета ей ничем не грозит */}
+                                {entry.hard ? 'Needed by' : 'Used by'} {entry.neededBy}
+                            </p>
                         )}
                         {entry.alternatives.length > 0 && (
                             <p className="missing-mod-alternatives">
