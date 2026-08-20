@@ -404,3 +404,10 @@
     .submarine-download-btn,
     .submarine-hero-actions .btn-outline { transition: none; }
 }
+
+/* Когда у лодки нечего показать: файл её ещё не читали. */
+.submarine-metrics-empty {
+    margin: 0;
+    color: var(--text-muted, #8b96a5);
+    font-size: 0.95rem;
+}

@@ -33,12 +33,67 @@ function formatNumber(value, fractionDigits = 0) {
     });
 }
 
-function metric(label, value) {
+/** Экипаж пишем, только если известны обе границы. */
+function crewDisplay(submarine) {
+    if (submarine.recommendedCrewDisplay) return submarine.recommendedCrewDisplay;
+    const { recommendedCrewMin: min, recommendedCrewMax: max } = submarine;
+    if (!isKnown(min) || !isKnown(max)) return null;
+    return `${min} - ${max}`;
+}
+
+/**
+ * Подзаголовок из того, что известно.
+ *
+ * Пустой класс и пустой тир раньше давали «— · Tier —» под каждым названием;
+ * лучше не писать ничего, чем писать два прочерка.
+ */
+function heroSubtitle(submarine) {
+    const parts = [];
+    if (submarine.submarineClass) parts.push(submarine.submarineClass);
+    if (isKnown(submarine.tier)) parts.push(`Tier ${submarine.tier}`);
+    if (submarine.fabricationType) parts.push(submarine.fabricationType);
+    return parts.length ? parts.join(' · ') : 'Community submarine';
+}
+
+function isKnown(value) {
+    return value !== undefined && value !== null && !Number.isNaN(Number(value));
+}
+
+/**
+ * Одна графа характеристик, и только если её есть чем заполнить.
+ *
+ * Раньше неизвестное показывалось прочерком, а единица измерения оставалась:
+ * «— mk», «— km/h». Числа в базе тогда были нулями у всех лодок до одной, так
+ * что на прочерк никто и не смотрел; теперь пустое действительно значит «файл
+ * этой лодки ещё никто не читал», и висящая рядом единица только мешает.
+ */
+function metric(label, value, unit = '') {
+    if (!isKnown(value)) return null;
+    const shown = typeof value === 'number' ? formatNumber(value, Number.isInteger(value) ? 0 : 1) : value;
     return (
-        <div className="submarine-metric">
+        <div className="submarine-metric" key={label}>
             <span>{label}</span>
-            <strong>{value}</strong>
+            <strong>{unit ? `${shown} ${unit}` : shown}</strong>
         </div>
+    );
+}
+
+/** Секция с характеристиками исчезает целиком, когда показывать нечего. */
+function MetricSection({ title, metrics, empty }) {
+    const shown = metrics.filter(Boolean);
+    if (shown.length === 0) {
+        return empty ? (
+            <section className="submarine-section">
+                <h2>{title}</h2>
+                <p className="submarine-metrics-empty">{empty}</p>
+            </section>
+        ) : null;
+    }
+    return (
+        <section className="submarine-section">
+            <h2>{title}</h2>
+            <div className="submarine-metrics-grid">{shown}</div>
+        </section>
     );
 }
 
@@ -261,8 +316,7 @@ export default function SubmarinePage() {
                         <div className="submarine-hero-copy">
                             <h1>{submarine.title}</h1>
                             <p className="submarine-hero-subtitle">
-                                {submarine.submarineClass || '—'} · Tier {submarine.tier ?? '—'}
-                                {submarine.fabricationType ? ` · ${submarine.fabricationType}` : ''}
+                                {heroSubtitle(submarine)}
                             </p>
                         </div>
                         <div className="submarine-hero-actions">
@@ -314,27 +368,30 @@ export default function SubmarinePage() {
                             <SteamDescription source={submarine.description} variant="submarine" />
                         </section>
 
-                        <section className="submarine-section">
-                            <h2>Base stats</h2>
-                            <div className="submarine-metrics-grid">
-                                {metric('Price', `${formatNumber(submarine.price)} mk`)}
-                                {metric('Crew', submarine.recommendedCrewDisplay || `${submarine.recommendedCrewMin ?? '—'} - ${submarine.recommendedCrewMax ?? '—'}`)}
-                                {metric('Cargo capacity', formatNumber(submarine.cargoCapacity))}
-                                {metric('Max speed (horizontal)', `${formatNumber(submarine.maxHorizontalSpeedKph, 1)} km/h`)}
-                                {metric('Turret slots', formatNumber(submarine.turretSlotCount))}
-                                {metric('Large slots', formatNumber(submarine.largeTurretSlotCount))}
-                            </div>
-                        </section>
+                        <MetricSection
+                            title="Base stats"
+                            empty="Nobody has read this submarine's own file yet, so its stats are unknown."
+                            metrics={[
+                                metric('Price', submarine.price, 'mk'),
+                                metric('Crew', crewDisplay(submarine)),
+                                metric('Cargo capacity', submarine.cargoCapacity),
+                                // Тяга, а не скорость: скорость -- ответ физического
+                                // движка, из файла лодки она не выводится
+                                metric('Engine thrust', submarine.engineForce),
+                                metric('Turret slots', submarine.turretSlotCount),
+                                metric('Large slots', submarine.largeTurretSlotCount),
+                            ]}
+                        />
 
-                        <section className="submarine-section">
-                            <h2>Technical parameters</h2>
-                            <div className="submarine-metrics-grid">
-                                {metric('Length', submarine.lengthMeters !== undefined && submarine.lengthMeters !== null ? `${formatNumber(submarine.lengthMeters, 1)} m` : '—')}
-                                {metric('Height', submarine.heightMeters !== undefined && submarine.heightMeters !== null ? `${formatNumber(submarine.heightMeters, 1)} m` : '—')}
-                                {metric('Max descent speed', submarine.maxDescentSpeedKph !== undefined && submarine.maxDescentSpeedKph !== null ? `${formatNumber(submarine.maxDescentSpeedKph, 1)} km/h` : '—')}
-                                {metric('Reactor', submarine.maxReactorOutputKw !== undefined && submarine.maxReactorOutputKw !== null ? `${formatNumber(submarine.maxReactorOutputKw, 1)} kW` : '—')}
-                            </div>
-                        </section>
+                        <MetricSection
+                            title="Technical parameters"
+                            metrics={[
+                                metric('Length', submarine.lengthMeters, 'm'),
+                                metric('Height', submarine.heightMeters, 'm'),
+                                metric('Max descent speed', submarine.maxDescentSpeedKph, 'km/h'),
+                                metric('Reactor', submarine.maxReactorOutputKw, 'kW'),
+                            ]}
+                        />
 
                         <section className="submarine-section">
                             <h2>Default armament</h2>
