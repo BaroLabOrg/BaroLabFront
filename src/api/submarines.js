@@ -1,4 +1,5 @@
 import { API_BASE, normalizePagedResponse, request } from './api';
+import { normalizeMissingPackage } from './modCollections';
 
 export const SUBMARINE_CLASS_VALUES = [
     'TRANSPORT',
@@ -342,6 +343,28 @@ export async function searchSubmarines({
 export async function getSubmarine(externalId) {
     const response = await request(`/api/submarines/${externalId}`);
     return normalizeSubmarine(response);
+}
+
+/**
+ * Моды, с которыми построена лодка.
+ *
+ * Два списка, а не один: лодка почти никогда не *требует* мод -- ненайденный
+ * идентификатор просто не появится, и лодка поплывёт без него. Жёстким
+ * требование делает только слово автора.
+ *
+ * `known` отдельно от пустых списков: без него «лодке ничего не нужно» и
+ * «файлы этой лодки ещё никто не читал» выглядели бы одинаково.
+ */
+export async function getSubmarineMods(externalId) {
+    const response = await request(`/api/submarines/${externalId}/mods`);
+    const list = (values) => (Array.isArray(values) ? values : [])
+        .map(normalizeMissingPackage)
+        .filter(Boolean);
+    return {
+        known: Boolean(response?.known),
+        required: list(response?.required),
+        used: list(response?.used),
+    };
 }
 
 export async function createSubmarine(payload) {

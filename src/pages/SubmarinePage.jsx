@@ -97,6 +97,79 @@ function MetricSection({ title, metrics, empty }) {
     );
 }
 
+/**
+ * Моды, с которыми построена лодка.
+ *
+ * Списка два, и разделение важнее самих списков: лодка почти никогда не
+ * *требует* мод -- ненайденный идентификатор просто не появится, и лодка
+ * поплывёт без него. Жёстким требование делает только слово автора, поэтому
+ * второй список назван «построена с», а не «нужно скачать».
+ */
+function ModDependencies({ state }) {
+    const { loading, error, known, required, used } = state;
+
+    if (loading) return <p className="submarine-metrics-empty">Reading this submarine's file…</p>;
+    if (error) return <p className="submarine-metrics-empty">{error}</p>;
+    // Пустые списки у непрочитанной лодки читались бы как «ничего не нужно»
+    if (!known) {
+        return (
+            <p className="submarine-metrics-empty">
+                Nobody has read this submarine's own file yet, so its mods are unknown.
+            </p>
+        );
+    }
+    if (required.length === 0 && used.length === 0) {
+        return <p className="submarine-metrics-empty">Built from base game content only.</p>;
+    }
+
+    return (
+        <div className="submarine-mod-groups">
+            {required.length > 0 && (
+                <div className="submarine-mod-group">
+                    <h3>The author says these are required</h3>
+                    <ul className="submarine-mod-list">
+                        {required.map((entry) => (
+                            <li key={entry.externalId ?? entry.name} className="submarine-mod is-hard">
+                                <ModName entry={entry} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {used.length > 0 && (
+                <div className="submarine-mod-group">
+                    <h3>Built with content from</h3>
+                    <p className="submarine-mod-note">
+                        Missing items simply will not appear — the boat still sails without these.
+                    </p>
+                    <ul className="submarine-mod-list">
+                        {used.map((entry) => (
+                            <li key={entry.externalId ?? entry.name} className="submarine-mod">
+                                <ModName entry={entry} />
+                                {/* Число отделяет «взят один стул» от «построено
+                                    вокруг мода» -- решение об установке разное */}
+                                {entry.usedContent > 0 && (
+                                    <span className="submarine-mod-count">
+                                        {entry.usedContent} {entry.usedContent === 1 ? 'item' : 'items'}
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ModName({ entry }) {
+    const label = entry.name || (entry.externalId ? `Mod #${entry.externalId}` : 'Unnamed package');
+    if (!entry.externalId) return <span className="submarine-mod-name">{label}</span>;
+    return (
+        <Link className="submarine-mod-name" to={`/mod/${entry.externalId}`}>{label}</Link>
+    );
+}
+
 function DownloadIcon() {
     return (
         <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -120,6 +193,9 @@ export default function SubmarinePage() {
     const [tagMutationLoading, setTagMutationLoading] = useState(false);
     const [subscribing, setSubscribing] = useState(false);
     const [subscribeError, setSubscribeError] = useState('');
+    const [mods, setMods] = useState({
+        loading: true, error: '', known: false, required: [], used: [],
+    });
 
     useEffect(() => {
         let cancelled = false;
@@ -145,6 +221,34 @@ export default function SubmarinePage() {
         };
 
         loadSubmarine();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [externalId]);
+
+    // Отдельным запросом: список модов считается по графу зависимостей и
+    // приходит заметно позже самой карточки, а держать карточку ради него
+    // пустой незачем.
+    useEffect(() => {
+        let cancelled = false;
+
+        setMods({ loading: true, error: '', known: false, required: [], used: [] });
+        submarinesApi.getSubmarineMods(externalId)
+            .then((response) => {
+                if (cancelled) return;
+                setMods({ loading: false, error: '', ...response });
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                setMods({
+                    loading: false,
+                    error: err?.message || 'Could not read which mods this submarine uses.',
+                    known: false,
+                    required: [],
+                    used: [],
+                });
+            });
 
         return () => {
             cancelled = true;
@@ -431,6 +535,11 @@ export default function SubmarinePage() {
                                     </div>
                                 </div>
                             </div>
+                        </section>
+
+                        <section className="submarine-section">
+                            <h2>Mods</h2>
+                            <ModDependencies state={mods} />
                         </section>
 
                         <RelatedGuidesSection targetType="SUBMARINE" targetId={externalId} />

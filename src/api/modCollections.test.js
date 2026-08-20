@@ -83,6 +83,22 @@ describe('analyseCollection', () => {
         expect(analysis.contentPackagesXml).toBe('<contentpackages />');
     });
 
+    it('keeps how many items were borrowed, in either spelling', async () => {
+        // счёт отделяет «взяли один предмет» от «построено вокруг мода»;
+        // без него обе строки на экране одинаковы
+        global.fetch.mockResolvedValue(jsonResponse({
+            missing: [
+                { external_id: 10, name: 'Snake', hard: false, used_content: 56 },
+                { external_id: 20, name: 'Camel', hard: false, usedContent: 7 },
+                { external_id: 30, name: 'Silent', hard: false },
+            ],
+        }));
+
+        const analysis = await analyseCollection([10]);
+
+        expect(analysis.missing.map((entry) => entry.usedContent)).toEqual([56, 7, 0]);
+    });
+
     it('survives a response with nothing in it', async () => {
         global.fetch.mockResolvedValue(jsonResponse({}));
 
