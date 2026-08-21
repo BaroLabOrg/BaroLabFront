@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import CollectionBuilderPage from './CollectionBuilderPage';
 import { analyseCollection, createCollection } from '../api/modCollections';
 import { getMod, searchMods } from '../api/mods';
+import { searchSubmarines } from '../api/submarines';
 
 vi.mock('../api/modCollections', async (importOriginal) => ({
     ...(await importOriginal()),
@@ -15,6 +16,9 @@ vi.mock('../api/modCollections', async (importOriginal) => ({
 }));
 
 vi.mock('../api/mods', () => ({ searchMods: vi.fn(), getMod: vi.fn() }));
+
+// Конструктор теперь спрашивает и лодки: без заглушки поиск уйдёт в сеть
+vi.mock('../api/submarines', () => ({ searchSubmarines: vi.fn() }));
 
 vi.mock('../context/AuthContext', () => ({
     useAuth: () => ({ user: { id: 'author-1' } }),
@@ -85,6 +89,7 @@ beforeEach(() => {
     searchMods.mockResolvedValue({ items: [NEUROTRAUMA, PATCH] });
     analyseCollection.mockResolvedValue(analysis());
     getMod.mockResolvedValue({ external_id: 2559634234, title: 'Barotraumatic' });
+    searchSubmarines.mockResolvedValue({ items: [] });
 });
 
 describe('CollectionBuilderPage', () => {
@@ -112,7 +117,7 @@ describe('CollectionBuilderPage', () => {
         renderBuilder();
         await addFirstResult(user);
 
-        await waitFor(() => expect(analyseCollection).toHaveBeenCalledWith([NEUROTRAUMA.external_id]),
+        await waitFor(() => expect(analyseCollection).toHaveBeenCalledWith([NEUROTRAUMA.external_id], null),
             { timeout: 3000 });
 
         const rows = await screen.findAllByRole('listitem', {}, { timeout: 3000 });
@@ -187,7 +192,7 @@ describe('CollectionBuilderPage', () => {
         await user.click(screen.getByRole('button', { name: /Add to collection/i }));
 
         await waitFor(
-            () => expect(analyseCollection).toHaveBeenLastCalledWith([NEUROTRAUMA.external_id, 2559634234]),
+            () => expect(analyseCollection).toHaveBeenLastCalledWith([NEUROTRAUMA.external_id, 2559634234], null),
             { timeout: 3000 },
         );
     });
@@ -235,5 +240,54 @@ describe('CollectionBuilderPage', () => {
 
         expect(await screen.findByText('Give the collection a title.')).toBeInTheDocument();
         expect(createCollection).not.toHaveBeenCalled();
+    });
+
+    it('asks about a boat before a single mod is added', async () => {
+        // выбрал лодку, модов ещё нет -- это начало работы, а не пустой случай
+        const user = userEvent.setup();
+        searchSubmarines.mockResolvedValue({ items: [
+            { external_id: 2951705369, title: 'Barsuk 3.1', submarineClass: 'ATTACK' },
+        ] });
+
+        renderBuilder();
+        await waitFor(() => expect(screen.getByText('Barsuk 3.1')).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Build for this' }));
+
+        await waitFor(() => expect(analyseCollection).toHaveBeenCalledWith([], 2951705369),
+            { timeout: 3000 });
+    });
+
+    it('keeps the boat out of the mod list it is built for', async () => {
+        const user = userEvent.setup();
+        searchSubmarines.mockResolvedValue({ items: [
+            { external_id: 2951705369, title: 'Barsuk 3.1' },
+        ] });
+
+        renderBuilder();
+        await waitFor(() => expect(screen.getByText('Barsuk 3.1')).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Build for this' }));
+
+        // счётчик "In this collection" считает элементы, а лодка -- не элемент
+        await waitFor(() => expect(screen.getByRole('button', { name: 'Not this one' }))
+            .toBeInTheDocument());
+        expect(screen.getByText('In this collection').parentElement)
+            .toHaveTextContent('0');
+    });
+
+    it('saves the boat alongside the mods', async () => {
+        const user = userEvent.setup();
+        searchSubmarines.mockResolvedValue({ items: [
+            { external_id: 2951705369, title: 'Barsuk 3.1' },
+        ] });
+        createCollection.mockResolvedValue({ slug: 'for-the-barsuk' });
+
+        renderBuilder();
+        await waitFor(() => expect(screen.getByText('Barsuk 3.1')).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Build for this' }));
+        await user.type(screen.getByLabelText(/title/i), 'For the Barsuk');
+        await user.click(screen.getByRole('button', { name: 'Create collection' }));
+
+        await waitFor(() => expect(createCollection).toHaveBeenCalledWith(
+            expect.objectContaining({ submarineExternalId: 2951705369, workshopIds: [] })));
     });
 });

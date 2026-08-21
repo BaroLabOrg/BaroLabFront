@@ -157,23 +157,38 @@ export function normalizeCollection(response) {
         createdAt: toText(firstDefined(response.created_at, response.createdAt)),
         updatedAt: toText(firstDefined(response.updated_at, response.updatedAt)),
         items,
+        // Лодка, под которую собирают. Не элемент списка: элементы игрок ведёт
+        // сам, а лодка задаёт вопрос, на который сборка отвечает.
+        submarineExternalId: toWorkshopId(
+            firstDefined(response.submarine_external_id, response.submarineExternalId)),
+        submarineName: toText(firstDefined(response.submarine_name, response.submarineName)),
     };
 }
 
-function toCollectionBody({ title, description, gameVersion, workshopIds }) {
+function toCollectionBody({ title, description, gameVersion, workshopIds, submarineExternalId }) {
     return {
         title: toText(title).trim(),
         description: toText(description).trim() || null,
         game_version: toText(gameVersion).trim() || null,
         workshop_ids: normalizeWorkshopIds(workshopIds),
+        submarine_external_id: toWorkshopId(submarineExternalId),
     };
 }
 
-/** Analysis of a list nobody has saved yet. Public. */
-export async function analyseCollection(workshopIds) {
+/**
+ * Analysis of a list nobody has saved yet. Public.
+ *
+ * `submarineExternalId` is the boat the collection is for. A boat with no mods
+ * yet is the opening move, not an edge case: pick the boat, see what it was
+ * built with, add from there.
+ */
+export async function analyseCollection(workshopIds, submarineExternalId = null) {
     const response = await request('/api/mod-collections/analyse', {
         method: 'POST',
-        body: { workshop_ids: normalizeWorkshopIds(workshopIds) },
+        body: {
+            workshop_ids: normalizeWorkshopIds(workshopIds),
+            submarine_external_id: toWorkshopId(submarineExternalId),
+        },
     });
     return normalizeAnalysis(response);
 }
