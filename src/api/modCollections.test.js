@@ -73,7 +73,7 @@ describe('analyseCollection', () => {
         const [url, options] = lastCall();
         expect(url).toContain('/api/mod-collections/analyse');
         expect(options.method).toBe('POST');
-        expect(lastBody()).toEqual({ workshop_ids: [20, 10, 40], submarine_external_id: null });
+        expect(lastBody()).toEqual({ workshop_ids: [20, 10, 40] });
 
         expect(analysis.order.map((entry) => entry.externalId)).toEqual([20, 10]);
         expect(analysis.order[0].reason).toBe('patches Base');
@@ -114,40 +114,15 @@ describe('analyseCollection', () => {
     });
 });
 
-describe('the boat a collection is for', () => {
-    it('travels with the analysis, so its mods can be recommended', async () => {
+describe('submarines in a collection', () => {
+    it('travel in the same list as the mods', async () => {
+        // лодка едет в тот же contentpackages.xml, и сборка вольна держать
+        // их сколько угодно
         global.fetch.mockResolvedValue(jsonResponse({}));
 
-        await analyseCollection([10], 2951705369);
+        await analyseCollection([10, 2951705369, 2951705370]);
 
-        expect(lastBody()).toEqual({
-            workshop_ids: [10],
-            submarine_external_id: 2951705369,
-        });
-    });
-
-    it('can be the only thing asked about', async () => {
-        // выбрал лодку, модов ещё нет -- это начало работы, а не пустой случай
-        global.fetch.mockResolvedValue(jsonResponse({}));
-
-        await analyseCollection([], 2951705369);
-
-        expect(lastBody()).toEqual({
-            workshop_ids: [],
-            submarine_external_id: 2951705369,
-        });
-    });
-
-    it('comes back off a saved collection under both spellings', async () => {
-        global.fetch.mockResolvedValue(jsonResponse({
-            id: 'c1', slug: 'setup', title: 'Setup', items: [],
-            submarine_external_id: 2951705369, submarine_name: 'Barsuk 3.1',
-        }));
-
-        const saved = await createCollection({ title: 'Setup', workshopIds: [] });
-
-        expect(saved.submarineExternalId).toBe(2951705369);
-        expect(saved.submarineName).toBe('Barsuk 3.1');
+        expect(lastBody()).toEqual({ workshop_ids: [10, 2951705369, 2951705370] });
     });
 });
 
@@ -173,7 +148,6 @@ describe('createCollection', () => {
             description: null,
             game_version: '1.13.4.0',
             workshop_ids: [10, 20],
-            submarine_external_id: null,
         });
     });
 

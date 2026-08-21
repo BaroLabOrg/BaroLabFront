@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { searchMods } from '../../api/mods';
+import { searchSubmarines } from '../../api/submarines';
 import ImageWithFallback from '../ImageWithFallback';
 import './collection.css';
 
@@ -21,6 +22,7 @@ function subtitle(mod) {
     const author = mod?.author_username || mod?.authorUsername;
     const popularity = Number(mod?.popularity);
     return [
+        mod?.isSubmarine ? 'Submarine' : null,
         author ? `by ${author}` : null,
         Number.isFinite(popularity) && popularity > 0
             ? `${compactNumber.format(popularity)} subscribers`
@@ -29,9 +31,21 @@ function subtitle(mod) {
 }
 
 /**
- * Search over the site's own mods. Mods can only come from here: the API
- * refuses a Workshop id it has no mod for, so a free-text id field would only
- * produce errors.
+ * Мод и лодка сортируются вперемешку, по популярности.
+ *
+ * Разделять их незачем: в игру они едут одним contentpackages.xml, и человек
+ * ищет по названию, а не по разделу сайта.
+ */
+function merge(mods, boats) {
+    const rank = (entry) => Number(entry?.popularity) || 0;
+    return [...mods, ...boats.map((boat) => ({ ...boat, isSubmarine: true }))]
+        .sort((a, b) => rank(b) - rank(a));
+}
+
+/**
+ * Search over the site's own mods and submarines. They can only come from here:
+ * the API refuses a Workshop id it has neither for, so a free-text id field
+ * would only produce errors.
  */
 export default function ModPicker({ selectedIds = [], onAdd, disabled = false }) {
     const [query, setQuery] = useState('');
@@ -46,12 +60,15 @@ export default function ModPicker({ selectedIds = [], onAdd, disabled = false })
             setLoading(true);
             setError('');
             try {
-                const response = await searchMods({ q: query, page: 0, size: PAGE_SIZE });
-                if (!cancelled) setResults(response.items);
+                const [mods, boats] = await Promise.all([
+                    searchMods({ q: query, page: 0, size: PAGE_SIZE }),
+                    searchSubmarines({ q: query, page: 0, size: PAGE_SIZE }),
+                ]);
+                if (!cancelled) setResults(merge(mods.items, boats.items));
             } catch (searchError) {
                 if (!cancelled) {
                     setResults([]);
-                    setError(searchError?.message || 'Could not search mods.');
+                    setError(searchError?.message || 'Could not search.');
                 }
             } finally {
                 if (!cancelled) setLoading(false);
@@ -67,14 +84,14 @@ export default function ModPicker({ selectedIds = [], onAdd, disabled = false })
     return (
         <div className="mod-picker">
             <label className="mod-picker-search">
-                <span className="collection-field-label">Find mods</span>
+                <span className="collection-field-label">Find mods and submarines</span>
                 <input
                     type="search"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Search by title…"
                     disabled={disabled}
-                    aria-label="Search mods to add"
+                    aria-label="Search mods and submarines to add"
                 />
             </label>
 
@@ -83,7 +100,7 @@ export default function ModPicker({ selectedIds = [], onAdd, disabled = false })
             {loading && results.length === 0 ? (
                 <p className="collection-note">Searching…</p>
             ) : results.length === 0 ? (
-                <p className="collection-note">No mods match that.</p>
+                <p className="collection-note">Nothing matches that.</p>
             ) : (
                 <ul className="mod-picker-results">
                     {results.map((mod) => {

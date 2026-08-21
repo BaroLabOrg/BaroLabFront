@@ -154,17 +154,6 @@ export default function CollectionPage() {
                         <h1 className="page-title">{collection.title}</h1>
                         <div className="collection-page-meta">
                             <span>{collection.items.length} mods</span>
-                            {/* Лодка не среди модов, но она -- причина, по которой
-                                эта сборка вообще собрана, и назвать её надо первым делом */}
-                            {collection.submarineExternalId && (
-                                <span>
-                                    built for{' '}
-                                    <Link to={`/submarines/${collection.submarineExternalId}`}>
-                                        {collection.submarineName
-                                            || `Submarine #${collection.submarineExternalId}`}
-                                    </Link>
-                                </span>
-                            )}
                             {collection.gameVersion && <span>for {collection.gameVersion}</span>}
                             {collection.status !== 'ACTIVE' && <StatusBadge status={collection.status} />}
                         </div>
