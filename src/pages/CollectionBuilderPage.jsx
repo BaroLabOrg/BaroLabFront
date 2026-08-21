@@ -12,6 +12,7 @@ import useDocumentMeta from '../hooks/useDocumentMeta';
 import CollectionProblems from '../components/collection/CollectionProblems';
 import MissingMods from '../components/collection/MissingMods';
 import ModPicker from '../components/collection/ModPicker';
+import SubmarinePicker from '../components/collection/SubmarinePicker';
 import OrderedModList from '../components/collection/OrderedModList';
 import SelectedMods from '../components/collection/SelectedMods';
 import './CollectionBuilderPage.css';
@@ -47,6 +48,8 @@ export default function CollectionBuilderPage() {
     const [description, setDescription] = useState('');
     const [gameVersion, setGameVersion] = useState('');
     const [mods, setMods] = useState([]);
+    // Лодка -- шапка сборки, не элемент списка: {externalId, title} либо null
+    const [submarine, setSubmarine] = useState(null);
 
     const [analysis, setAnalysis] = useState(null);
     const [analysing, setAnalysing] = useState(false);
@@ -57,6 +60,7 @@ export default function CollectionBuilderPage() {
 
     const workshopIds = useMemo(() => mods.map((mod) => mod.workshopId), [mods]);
     const idsKey = workshopIds.join(',');
+    const boatId = submarine?.externalId ?? null;
 
     useEffect(() => {
         if (!editing) return undefined;
@@ -76,6 +80,10 @@ export default function CollectionBuilderPage() {
                     workshopId: item.workshopId,
                     name: item.name || `Mod #${item.workshopId}`,
                 })));
+                setSubmarine(loaded.submarineExternalId ? {
+                    externalId: loaded.submarineExternalId,
+                    title: loaded.submarineName || `Submarine #${loaded.submarineExternalId}`,
+                } : null);
             } catch (error) {
                 if (!cancelled) setLoadError(error?.message || 'Could not load this collection.');
             } finally {
@@ -92,7 +100,9 @@ export default function CollectionBuilderPage() {
     // is edited. Storing the order stays an explicit action.
     useEffect(() => {
         const ids = idsKey ? idsKey.split(',').map(Number) : [];
-        if (ids.length === 0) {
+        // Лодка без единого мода -- это начало работы, а не пустой случай:
+        // выбрал лодку, увидел, с чем она построена, оттуда и добавляешь
+        if (ids.length === 0 && !boatId) {
             setAnalysis(null);
             setAnalysisError('');
             return undefined;
@@ -103,7 +113,7 @@ export default function CollectionBuilderPage() {
             setAnalysing(true);
             setAnalysisError('');
             try {
-                const result = await analyseCollection(ids);
+                const result = await analyseCollection(ids, boatId);
                 if (!cancelled) setAnalysis(result);
             } catch (error) {
                 if (!cancelled) {
@@ -119,7 +129,7 @@ export default function CollectionBuilderPage() {
             cancelled = true;
             window.clearTimeout(timer);
         };
-    }, [idsKey]);
+    }, [idsKey, boatId]);
 
     const [addingMissingId, setAddingMissingId] = useState(null);
     const [missingErrors, setMissingErrors] = useState({});
@@ -185,14 +195,16 @@ export default function CollectionBuilderPage() {
             setSaveError('Give the collection a title.');
             return;
         }
-        if (workshopIds.length === 0) {
-            setSaveError('Add at least one mod.');
+        if (workshopIds.length === 0 && !boatId) {
+            setSaveError('Add at least one mod, or pick a submarine to build for.');
             return;
         }
 
         setSaving(true);
         try {
-            const payload = { title, description, gameVersion, workshopIds };
+            const payload = {
+                title, description, gameVersion, workshopIds, submarineExternalId: boatId,
+            };
             const saved = editing
                 ? await updateCollection(collection.id, payload)
                 : await createCollection(payload);
@@ -308,6 +320,16 @@ export default function CollectionBuilderPage() {
 
                 <div className="collection-builder-grid">
                     <section className="glass-card collection-panel">
+                        <h2 className="collection-panel-title">Building for</h2>
+                        <SubmarinePicker
+                            selected={submarine}
+                            onPick={setSubmarine}
+                            onClear={() => setSubmarine(null)}
+                            disabled={saving}
+                        />
+                    </section>
+
+                    <section className="glass-card collection-panel">
                         <h2 className="collection-panel-title">Add mods</h2>
                         <ModPicker selectedIds={workshopIds} onAdd={addMod} disabled={saving} />
                     </section>
@@ -350,7 +372,9 @@ export default function CollectionBuilderPage() {
                             onAdd={addMissing}
                             addingId={addingMissingId}
                             errors={missingErrors}
-                            emptyLabel={analysis ? 'Nothing is missing.' : 'Add mods to see what they need.'}
+                            emptyLabel={analysis
+                                ? 'Nothing is missing.'
+                                : 'Add mods or pick a submarine to see what they need.'}
                         />
                     </section>
 

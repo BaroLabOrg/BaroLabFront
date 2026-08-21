@@ -327,6 +327,27 @@
   display: block;
 }
 
+/* Выбранная лодка: одна строка вместо списка -- лодка у сборки одна,
+   и держать ради неё поиск открытым незачем. */
+.submarine-pick {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: rgba(76, 141, 255, 0.08);
+}
+
+.submarine-pick-name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .mod-picker-results {
   display: flex;
   flex-direction: column;
