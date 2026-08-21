@@ -123,26 +123,4 @@ describe('CollectionPage', () => {
         expect(screen.getByText('Collection my-setup was not found')).toBeInTheDocument();
     });
 
-    it('names the boat the collection was built for, and links to it', async () => {
-        // лодка не среди модов, но она -- причина, по которой сборка собрана
-        getCollection.mockResolvedValue({
-            ...COLLECTION,
-            submarineExternalId: 2951705369,
-            submarineName: 'Barsuk 3.1',
-        });
-
-        renderPage();
-
-        const link = await screen.findByRole('link', { name: 'Barsuk 3.1' });
-        expect(link).toHaveAttribute('href', '/submarines/2951705369');
-        // и по-прежнему три мода: лодка счёт не меняет
-        expect(screen.getByText('3 mods')).toBeInTheDocument();
-    });
-
-    it('says nothing about a boat when there is none', async () => {
-        renderPage();
-
-        await screen.findByText('3 mods');
-        expect(screen.queryByText(/built for/i)).not.toBeInTheDocument();
-    });
 });
