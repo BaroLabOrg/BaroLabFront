@@ -1,6 +1,20 @@
-// Falls back to the known-good backend until VITE_API_BASE_URL is set in the
-// server's deployment env — remove the fallback once that's confirmed live.
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://barolab-back.i-lab.ink/';
+// Запасной адрес оставлен только для собранного приложения: снимать его
+// вслепую значит рискнуть продакшеном, если переменная не доехала до сборки.
+//
+// А вот в разработке запасного адреса быть не должно. Без переменной дев-сервер
+// молча ходил на прод, и «локальный бек отдаёт старые данные» выглядело
+// правдой: мы пересобирали контейнер четыре раза, прежде чем поняли, что
+// запросы туда вообще не приходят. Пусть лучше падает сразу и по делу.
+const CONFIGURED_API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+if (import.meta.env.DEV && !CONFIGURED_API_BASE) {
+    throw new Error(
+        'VITE_API_BASE_URL не задан. Создайте BaroLabFront/.env.local со строкой '
+        + 'VITE_API_BASE_URL=http://localhost:8080 и перезапустите dev-сервер — '
+        + 'иначе фронт пойдёт на продакшен, а не на ваш бек.');
+}
+
+export const API_BASE = CONFIGURED_API_BASE || 'https://barolab-back.i-lab.ink/';
 
 export class ApiRequestError extends Error {
     constructor({ message, status, code }) {
