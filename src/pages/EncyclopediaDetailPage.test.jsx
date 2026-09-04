@@ -96,6 +96,58 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.queryByRole('link', { name: 'Edit article' })).not.toBeInTheDocument();
     });
 
+    it('turns imported affliction identifiers into Causes links and flags unresolved values', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            slug: 'weldingtool-2',
+            title: 'Welding Tool',
+            relatedEntities: [
+                {
+                    id: 'burn-id',
+                    slug: 'burn',
+                    title: 'Burn',
+                    relationType: 'CAUSES',
+                    direction: 'OUTGOING',
+                    primaryImageUrl: 'https://cdn.test/burn.png',
+                },
+                {
+                    id: 'explosion-id',
+                    slug: 'explosiondamage',
+                    title: 'Deep tissue injury',
+                    relationType: 'CAUSES',
+                    direction: 'OUTGOING',
+                    primaryImageUrl: 'https://cdn.test/explosion.png',
+                },
+            ],
+            importedProperties: [{
+                propertyKey: 'effect_on_success',
+                propertyValue: JSON.stringify({
+                    causes_afflictions: [
+                        { amount: 3, type_or_identifier: 'burn' },
+                        { amount: 1, type_or_identifier: 'explosiondamage' },
+                        { amount: 2, type_or_identifier: 'unknownpoison' },
+                    ],
+                }),
+                valueType: 'JSON',
+                origin: 'IMPORTED',
+            }],
+        }));
+
+        renderPage('/encyclopedia/weldingtool-2');
+
+        const importedSection = (await screen.findByRole('heading', { name: 'Imported properties' }))
+            .closest('section');
+        const imported = within(importedSection);
+
+        expect(imported.getByRole('link', { name: 'Burn' })).toHaveAttribute('href', '/encyclopedia/burn');
+        expect(imported.getByRole('link', { name: 'Deep tissue injury' })).toHaveAttribute(
+            'href',
+            '/encyclopedia/explosiondamage',
+        );
+        expect(imported.getByText('unknownpoison')).toBeInTheDocument();
+        expect(await imported.findByText('Unresolved reference')).toBeInTheDocument();
+    });
+
     it('shows edit button for admins', async () => {
         authState = { isAdmin: true };
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail());

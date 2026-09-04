@@ -520,6 +520,7 @@ export default function EncyclopediaDetailPage() {
                                                         {humanizeIdentifier(group.name)}
                                                     </p>
                                                     <PropertyFieldList
+                                                        relations={detail.relatedEntities}
                                                         entries={group.items.map((property) => [
                                                             property.propertyKey,
                                                             property.valueType === 'JSON' && property.displayData !== undefined

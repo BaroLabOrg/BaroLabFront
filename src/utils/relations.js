@@ -38,6 +38,42 @@ const RELATION_LABELS = {
 // them again as bare links is noise. The reverse side has no such home.
 const COVERED_BY_CRAFTING_SECTION = new Set(['CRAFTED_FROM', 'DECONSTRUCTS_INTO']);
 
+function normalizeRelationIdentifier(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function squashRelationIdentifier(value) {
+    return normalizeRelationIdentifier(value).replace(/[^a-z0-9]/g, '');
+}
+
+/**
+ * Resolves an imported affliction identifier only against the entity's
+ * outgoing CAUSES relations. Exact slug matches win; a separator-insensitive
+ * fallback is accepted only when it still identifies one unique relation.
+ */
+export function resolveCausedAffliction(identifier, relations) {
+    const normalizedIdentifier = normalizeRelationIdentifier(identifier);
+    if (!normalizedIdentifier || !Array.isArray(relations)) return null;
+
+    const candidates = relations.filter((relation) => (
+        relation?.slug
+        && relation.relationType === 'CAUSES'
+        && relation.direction !== 'INCOMING'
+    ));
+
+    const exactMatches = candidates.filter(
+        (relation) => normalizeRelationIdentifier(relation.slug) === normalizedIdentifier,
+    );
+    if (exactMatches.length === 1) return exactMatches[0];
+    if (exactMatches.length > 1) return null;
+
+    const squashedIdentifier = squashRelationIdentifier(normalizedIdentifier);
+    const squashedMatches = candidates.filter(
+        (relation) => squashRelationIdentifier(relation.slug) === squashedIdentifier,
+    );
+    return squashedMatches.length === 1 ? squashedMatches[0] : null;
+}
+
 export function relationLabel(relationType, direction) {
     const known = RELATION_LABELS[relationType];
     if (known) {
