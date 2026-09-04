@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupRelations, relationLabel } from './relations';
+import { groupRelations, relationLabel, resolveCausedAffliction } from './relations';
 
 function relation(overrides) {
     return {
@@ -92,5 +92,34 @@ describe('groupRelations', () => {
     it('keeps them when there is no crafting section to show them in', () => {
         const groups = groupRelations([relation({ slug: 'rubber', title: 'Rubber' })]);
         expect(groups.map((group) => group.label)).toEqual(['Crafted from']);
+    });
+});
+
+describe('resolveCausedAffliction', () => {
+    const causes = [
+        relation({ slug: 'burn', title: 'Burn', relationType: 'CAUSES' }),
+        relation({ slug: 'explosiondamage', title: 'Deep tissue injury', relationType: 'CAUSES' }),
+        relation({ slug: 'radiation-sickness', title: 'Radiation Sickness', relationType: 'CAUSES' }),
+    ];
+
+    it('resolves an exact raw identifier to its outgoing Causes relation', () => {
+        expect(resolveCausedAffliction('explosiondamage', causes)?.title).toBe('Deep tissue injury');
+    });
+
+    it('accepts a separator-only difference when the result stays unique', () => {
+        expect(resolveCausedAffliction('radiationsickness', causes)?.slug).toBe('radiation-sickness');
+    });
+
+    it('does not resolve incoming, non-Causes, missing, or ambiguous candidates', () => {
+        const unusable = [
+            relation({ slug: 'poison', relationType: 'TREATS' }),
+            relation({ slug: 'poison', relationType: 'CAUSES', direction: 'INCOMING' }),
+            relation({ slug: 'burn-damage', relationType: 'CAUSES' }),
+            relation({ slug: 'burndamage', relationType: 'CAUSES' }),
+        ];
+
+        expect(resolveCausedAffliction('poison', unusable)).toBeNull();
+        expect(resolveCausedAffliction('burn_damage', unusable)).toBeNull();
+        expect(resolveCausedAffliction('unknown', causes)).toBeNull();
     });
 });
