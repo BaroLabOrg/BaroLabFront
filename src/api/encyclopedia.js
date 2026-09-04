@@ -241,6 +241,11 @@ function normalizeRelatedEntity(entity) {
     const relationType = firstDefined(entity.relationType, entity.relation_type);
     const origin = firstDefined(entity.origin);
     const sortOrder = Number(firstDefined(entity.sortOrder, entity.sort_order, 0)) || 0;
+    const entityType = firstDefined(entity.entityType, entity.entity_type);
+    const shortDescription = firstDefined(entity.shortDescription, entity.short_description);
+    const summary = firstDefined(entity.summary);
+    const primaryImage = normalizeImage(firstDefined(entity.primaryImage, entity.primary_image));
+    const primaryImageUrl = resolveMediaUrl(firstDefined(entity.primaryImageUrl, entity.primary_image_url));
     // Older payloads have no direction; everything they carried was outgoing.
     const direction = firstDefined(entity.direction) === 'INCOMING' ? 'INCOMING' : 'OUTGOING';
 
@@ -254,6 +259,15 @@ function normalizeRelatedEntity(entity) {
         origin,
         sortOrder,
         sort_order: sortOrder,
+        entityType,
+        entity_type: entityType,
+        shortDescription,
+        short_description: shortDescription,
+        summary,
+        primaryImage,
+        primary_image: primaryImage,
+        primaryImageUrl,
+        primary_image_url: primaryImageUrl,
         direction,
     };
 }

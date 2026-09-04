@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { humanizeIdentifier } from '../utils/text';
+import EncyclopediaEntityLink from './EncyclopediaEntityLink';
 
 // Common materials are used by hundreds of recipes -- fpgacircuit alone is
 // referenced by 192 items -- so a group starts capped and opens on demand.
@@ -21,9 +20,7 @@ export default function RelationGroup({ group }) {
             <ul className="encyclopedia-relation-list">
                 {visible.map((relation) => (
                     <li key={`${group.key}-${relation.slug}`}>
-                        <Link to={`/encyclopedia/${relation.slug}`}>
-                            {relation.title || humanizeIdentifier(relation.slug)}
-                        </Link>
+                        <EncyclopediaEntityLink relation={relation} />
                     </li>
                 ))}
             </ul>

@@ -70,6 +70,12 @@ async function fetchPreview(reference) {
                 article.primary_image_url,
             ),
             detail: article.entityType || article.entity_type,
+            summary: firstDefined(
+                article.summary,
+                article.shortDescription,
+                article.short_description,
+                'No description is available in the game data.',
+            ),
         };
     }
 

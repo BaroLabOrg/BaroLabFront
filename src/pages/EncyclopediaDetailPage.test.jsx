@@ -1,13 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import EncyclopediaDetailPage from './EncyclopediaDetailPage';
 import * as encyclopediaApi from '../api/encyclopedia';
+import { loadInternalReferencePreview } from '../api/internalReferences';
 
 let authState = { isAdmin: false };
 
 vi.mock('../api/encyclopedia', () => ({
     getEncyclopediaDetail: vi.fn(),
+}));
+
+vi.mock('../api/internalReferences', () => ({
+    loadInternalReferencePreview: vi.fn(),
 }));
 
 vi.mock('../context/AuthContext', () => ({
@@ -62,6 +67,13 @@ describe('EncyclopediaDetailPage', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         authState = { isAdmin: false };
+        loadInternalReferencePreview.mockResolvedValue({
+            kind: 'Encyclopedia',
+            title: 'Husk Egg',
+            imageUrl: 'https://cdn.test/husk-egg.png',
+            detail: 'ITEM',
+            summary: 'A carrier of the husk parasite.',
+        });
     });
 
     it('renders article sections and metadata', async () => {
@@ -298,6 +310,24 @@ describe('EncyclopediaDetailPage', () => {
         );
         // the raw enum name never reaches the page
         expect(screen.queryByText('CRAFTED_FROM')).not.toBeInTheDocument();
+    });
+
+    it('shows a consistent image and description preview for a related entity', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail());
+
+        renderPage();
+
+        const relationLink = await screen.findByRole('link', { name: 'Husk Egg' });
+        fireEvent.focus(relationLink);
+
+        const tooltip = await screen.findByRole('tooltip');
+        expect(within(tooltip).getByText('Husk Egg')).toBeInTheDocument();
+        expect(within(tooltip).getByText('A carrier of the husk parasite.')).toBeInTheDocument();
+        expect(loadInternalReferencePreview).toHaveBeenCalledWith({
+            type: 'encyclopedia',
+            slug: 'husk-egg',
+        });
+        expect(relationLink).toHaveAttribute('aria-describedby', tooltip.id);
     });
 
     it('omits the relations section when there is nothing to link', async () => {
