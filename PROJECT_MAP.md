@@ -64,7 +64,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Admin moderation and Steam operations | `src/pages/AdminPage.jsx` | `SteamSyncTab.jsx`, `SteamAvailabilityTab.jsx`, `src/api/steamSync.js`, `steamAvailability.js`, moderation functions in `api.js`/domain clients | admin Steam status/availability tests and affected domain tests |
 | Internal content previews | `src/api/internalReferences.js` | `components/guides/InternalLinkPicker.jsx`, `EncyclopediaEntityLink.jsx`, `ModEncyclopediaLink.jsx`, related API clients | internal-link and encyclopedia-link tests |
 | Steam content rendering and availability | `SteamDescription.jsx`, `SteamAvailabilityBadge.jsx`, `WorkshopAuthorCard.jsx` | `utils/steamBbcode.js`, relevant mod/submarine APIs | same-named component and utility tests |
-| Quest experience | `src/context/QuestContext.jsx`, quest components under `src/components/quest/` | guarded `/promise` route and `PromisePage.jsx` | add focused tests when quest behavior changes |
+| Quest experience | `src/context/QuestContext.jsx`, quest components under `src/components/quest/` | `questItems.js` owns item lore/clues; `QuestItemArtwork.jsx` renders faces from `public/quest/`; `ItemInspectModal.jsx` owns button-only inspection; guarded `/promise` and `PromisePage.jsx` own the ending, with opt-in ambience in `usePromiseAudio.js`; local `DESIGN.md` records visual rules and `docs/SIGNALIS_DESIGN.md` records reference provenance | `ItemInspectModal.test.jsx`, `PromisePage.test.jsx`, `Pagination.test.jsx` |
 
 ## Route groups
 
@@ -76,7 +76,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 - tools: `/load-order`, authenticated collection list/create/edit, public collection detail by slug;
 - encyclopedia: public list/detail and admin-only create/edit routes;
 - administration: `/admin`, guarded with `adminOnly`;
-- quest: `/promise`, guarded by quest progress rather than authentication.
+- quest: `/promise`, guarded by quest progress rather than authentication; its immersive ending omits the global navigation and quest dialogs.
 
 Whenever a route or guard changes, verify navigation links, direct-load behavior, fallback behavior, and access rules.
 

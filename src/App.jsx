@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { useServerError } from './context/ServerErrorContext';
 import { QuestProvider, useQuest } from './context/QuestContext';
@@ -56,6 +56,7 @@ function RouteFallback() {
 export default function App() {
     const { isAuthenticated } = useAuth();
     const { serverDown } = useServerError();
+    const isQuestEnding = useLocation().pathname.replace(/\/+$/, '') === '/promise';
 
     // If server is completely down, show error page instead of routes
     if (serverDown) {
@@ -68,10 +69,14 @@ export default function App() {
 
     return (
         <QuestProvider>
-            <Navbar />
-            {/* Global quest modals — rendered outside Routes so they persist across navigation */}
-            <ItemInspectModal />
-            <QuestTerminal />
+            {!isQuestEnding && (
+                <>
+                    <Navbar />
+                    {/* Keep global controls out of the immersive ending's keyboard order. */}
+                    <ItemInspectModal />
+                    <QuestTerminal />
+                </>
+            )}
             <Suspense fallback={<RouteFallback />}>
                 <Routes>
                     {/* Secret quest ending — only accessible with all 3 items collected */}

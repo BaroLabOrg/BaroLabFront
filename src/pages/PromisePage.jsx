@@ -1,245 +1,91 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuest } from '../context/QuestContext';
+import usePromiseAudio from '../components/quest/usePromiseAudio';
 import styles from './PromisePage.module.css';
 
-/* ----------------------------------------------------------------
-   Web Audio — vinyl crackle + slow piano notes + deep ambient
-   ---------------------------------------------------------------- */
-function useAmbientAudio() {
-    const ctxRef = useRef(null);
-    const nodesRef = useRef([]);
-    // Separate gain node for the deep ambient layer (started in phase 2)
-    const ambientGainRef = useRef(null);
-
-    const start = () => {
-        try {
-            const AC = window.AudioContext || window.webkitAudioContext;
-            if (!AC) return;
-            const ctx = new AC();
-            ctxRef.current = ctx;
-            const nodes = [];
-
-            // Vinyl crackle
-            const bufSize = ctx.sampleRate * 2;
-            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-            const data = buf.getChannelData(0);
-            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.012;
-            const crackle = ctx.createBufferSource();
-            crackle.buffer = buf; crackle.loop = true;
-            const cf = ctx.createBiquadFilter();
-            cf.type = 'bandpass'; cf.frequency.value = 2800; cf.Q.value = 0.4;
-            const cg = ctx.createGain(); cg.gain.value = 0.13;
-            crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination);
-            crackle.start(); nodes.push(crackle);
-
-            // Sub rumble (terminal phase)
-            const rumble = ctx.createOscillator();
-            const rg = ctx.createGain();
-            rumble.type = 'sine'; rumble.frequency.value = 38; rg.gain.value = 0;
-            rumble.connect(rg); rg.connect(ctx.destination); rumble.start();
-            rg.gain.linearRampToValueAtTime(0.028, ctx.currentTime + 4);
-            nodes.push(rumble);
-
-            // Piano notes — Chopin Raindrop feel
-            [220, 165, 110, 277, 220, 165, 294, 220].forEach((freq, i) => {
-                const t = ctx.currentTime + 6 + i * 4.8;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                const filt = ctx.createBiquadFilter();
-                osc.type = 'sine'; osc.frequency.value = freq;
-                filt.type = 'lowpass'; filt.frequency.value = 700;
-                gain.gain.setValueAtTime(0, t);
-                gain.gain.linearRampToValueAtTime(0.06, t + 0.025);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 3.8);
-                osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
-                osc.start(t); osc.stop(t + 4.2); nodes.push(osc);
-            });
-
-            // ---- Deep ambient layer (starts silent, faded in during phase 2) ----
-            // Two detuned sine oscillators + filtered noise = underwater pressure feel
-            const ambGain = ctx.createGain();
-            ambGain.gain.value = 0; // starts silent
-            ambientGainRef.current = ambGain;
-
-            [28, 31.5].forEach((freq) => {
-                const osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                osc.connect(ambGain);
-                osc.start();
-                nodes.push(osc);
-            });
-
-            // Filtered noise for "radio static / pressure" texture
-            const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
-            const nd = noiseBuf.getChannelData(0);
-            for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * 0.3;
-            const noiseSrc = ctx.createBufferSource();
-            noiseSrc.buffer = noiseBuf; noiseSrc.loop = true;
-            const noiseFilter = ctx.createBiquadFilter();
-            noiseFilter.type = 'lowpass'; noiseFilter.frequency.value = 180;
-            noiseSrc.connect(noiseFilter); noiseFilter.connect(ambGain);
-            noiseSrc.start(); nodes.push(noiseSrc);
-
-            ambGain.connect(ctx.destination);
-            nodesRef.current = nodes;
-        } catch { /* silent */ }
-    };
-
-    // Call this when phase transitions to 2 — fades ambient in over 3s
-    const startAmbient = () => {
-        try {
-            const ctx = ctxRef.current;
-            const ag = ambientGainRef.current;
-            if (!ctx || !ag) return;
-            ag.gain.cancelScheduledValues(ctx.currentTime);
-            ag.gain.setValueAtTime(0, ctx.currentTime);
-            ag.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 3);
-        } catch { /* silent */ }
-    };
-
-    const stop = () => {
-        try {
-            nodesRef.current.forEach((n) => { try { n.stop(); } catch {} });
-            nodesRef.current = [];
-            ambientGainRef.current = null;
-            if (ctxRef.current) { ctxRef.current.close(); ctxRef.current = null; }
-        } catch {}
-    };
-
-    return { start, startAmbient, stop };
-}
-
-/* ----------------------------------------------------------------
-   LSTR BIOS log lines
-   cls: 'ok' | 'warn' | 'fault' | 'fatal'
-   ---------------------------------------------------------------- */
-const LOG_LINES = [
-    { text: '> AEON BIOS v1.2.4 .......................... [ OK ]',       delay: 300,  cls: 'ok'    },
-    { text: '> LSTR-512 INITIALIZATION ................... [ OK ]',       delay: 1100, cls: 'ok'    },
-    { text: '> MOTOR CORTEX CALIBRATION .................. [ OK ]',       delay: 1900, cls: 'ok'    },
-    { text: '> GESTALT MEMORY SUPPRESSION ................ [ OK ]',       delay: 2700, cls: 'ok'    },
-    { text: '> SYNCHRONICITY LINK ........................ [ DEGRADED ]',  delay: 3500, cls: 'fault' },
-    { text: '> WARNING: UNKNOWN SIGNAL DETECTED',                         delay: 4400, cls: 'warn'  },
-    { text: '> BIORESONANCE LEVEL: CRITICAL',                             delay: 5100, cls: 'fault' },
-    { text: '> FATAL ERROR AT 0x00A4F92...',                              delay: 5900, cls: 'fatal' },
+const BOOT_LINES = [
+    ['AEON / LSTR-512', 'INITIALISIERUNG'],
+    ['GESTALT MEMORY', 'FRAGMENTIERT'],
+    ['SIGNAL / 240.0', 'EMPFANGEN'],
+    ['SYNCHRONIZITÄT', 'FEHLGESCHLAGEN'],
 ];
 
-/*
-   Phases:
-   0 — log printing
-   1 — text glitch (skew + chromatic aberration, ~1s)
-   2 — final screen (REMEMBER OUR PROMISE + lore + button)
-*/
 export default function PromisePage() {
     const navigate = useNavigate();
-    const { resetQuest } = useQuest();
-    const audio = useAmbientAudio();
-
-    const [visibleLines, setVisibleLines] = useState([]);
-    const [showCursor, setShowCursor] = useState(true);
-    const [phase, setPhase] = useState(0);
-    const [hoverWake, setHoverWake] = useState(false);
+    const { resetQuest, closeTerminal } = useQuest();
+    const [phase, setPhase] = useState('boot');
+    const [lines, setLines] = useState(1);
+    const [leaving, setLeaving] = useState(false);
+    const exitTimer = useRef(null);
+    const title = useRef(null);
+    const audio = usePromiseAudio();
 
     useEffect(() => {
-        audio.start();
+        closeTerminal();
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) { setPhase('promise'); return; }
+        const timers = [
+            setTimeout(() => setLines(2), 700),
+            setTimeout(() => setLines(3), 1400),
+            setTimeout(() => setLines(4), 2100),
+            setTimeout(() => setPhase('signal'), 3000),
+            setTimeout(() => setPhase('promise'), 4300),
+        ];
+        return () => timers.forEach(clearTimeout);
+    }, [closeTerminal]);
 
-        // Schedule each log line
-        const timers = LOG_LINES.map(({ text, delay, cls }) =>
-            setTimeout(() => setVisibleLines(prev => [...prev, { text, cls }]), delay)
-        );
+    useEffect(() => {
+        if (phase === 'promise') title.current?.focus({ preventScroll: true });
+    }, [phase]);
 
-        // Hide cursor when last line appears
-        const hideCursorTimer = setTimeout(() => setShowCursor(false), 6600);
+    useEffect(() => () => clearTimeout(exitTimer.current), []);
 
-        // Start glitch phase after fatal error line
-        const glitchTimer = setTimeout(() => setPhase(1), 6700);
-
-        // Transition to final calm screen + start deep ambient fade-in
-        const finalTimer = setTimeout(() => {
-            setPhase(2);
-            audio.startAmbient();
-        }, 8000);
-
-        return () => {
-            [...timers, hideCursorTimer, glitchTimer, finalTimer].forEach(clearTimeout);
-            audio.stop();
-        };
-    }, []);
-
-    const handleWake = useCallback(() => {
-        audio.stop();
-        resetQuest();
-        navigate('/');
-    }, [audio, resetQuest, navigate]);
+    const wake = () => {
+        if (leaving) return;
+        setLeaving(true);
+        const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        exitTimer.current = setTimeout(() => { resetQuest(); navigate('/'); }, reduceMotion ? 0 : 900);
+    };
 
     return (
-        <div className={styles.page}>
-            {/* CRT overlays — always visible */}
+        <main className={`${styles.page} ${leaving ? styles.leaving : ''}`}>
+            <div className={`${styles.scene} ${phase === 'promise' ? styles.sceneVisible : ''}`} aria-hidden="true">
+                <img src="/quest/red-gate.png" alt="" fetchPriority="high" />
+                <div className={styles.sceneShade} />
+            </div>
             <div className={styles.scanlines} aria-hidden="true" />
-            <div className={styles.vignette} aria-hidden="true" />
+            <header className={styles.topBar}>
+                <span>LSTR–512</span>
+                <span className={styles.signalState}>{phase === 'boot' ? 'СИНХРОНИЗАЦИЯ' : 'СИГНАЛ ПОТЕРЯН'}</span>
+                <button onClick={audio.toggle} aria-pressed={audio.enabled} disabled={!audio.available} aria-label="Фоновый звук">
+                    {audio.available ? `ЗВУК: ${audio.enabled ? 'ВКЛ' : 'ВЫКЛ'}` : 'ЗВУК НЕДОСТУПЕН'}
+                </button>
+            </header>
 
-            {/* ---- Phases 0 & 1: Boot log ---- */}
-            {phase < 2 && (
-                <div
-                    className={`${styles.logSection} ${phase === 1 ? styles.logGlitch : ''}`}
-                    aria-live="polite"
-                >
-                    {visibleLines.map((line, i) => {
-                        const isLast = i === visibleLines.length - 1;
-                        // In glitch phase replace last (fatal) line with error message
-                        const text = (phase === 1 && isLast)
-                            ? '[ SYSTEM FATAL ERROR — SYNCHRONICITY LOST ]'
-                            : line.text;
-                        const cls = (phase === 1 && isLast) ? 'fatal' : line.cls;
-                        return (
-                            <span
-                                key={i}
-                                className={`${styles.logLine} ${cls ? styles[cls] : ''}`}
-                                style={{ animationDelay: '0ms' }}
-                            >
-                                {text}
-                            </span>
-                        );
-                    })}
-                    {showCursor && phase === 0 && (
-                        <span className={styles.cursor} aria-hidden="true" />
-                    )}
+            {phase === 'boot' && <section className={styles.boot} aria-label="Загрузка терминала">
+                <div className={styles.bootMark}>LSTR</div>
+                <div className={styles.bootLog} role="log" aria-live="polite">
+                    {BOOT_LINES.slice(0, lines).map(([name, status], index) => <p key={name}><span>{name}</span><span className={index === 3 ? styles.fault : ''}>{status}</span></p>)}
                 </div>
-            )}
+                <span className={styles.cursor} aria-hidden="true" />
+            </section>}
 
-            {/* ---- Phase 2: Final lore screen ---- */}
-            {phase === 2 && (
-                <div className={styles.finalSection}>
-                    <h1 className={styles.promiseText}>
-                        <span>REMEMBER</span>
-                        <span>OUR PROMISE</span>
-                    </h1>
+            {phase === 'signal' && <div className={styles.interruption} role="status"><span>ACHTUNG</span><p>Помни наше обещание.</p></div>}
 
-                    <p className={styles.loreText}>
-                        Синхронизация завершена. Космическая пустота{' '}<br />
-                        сменилась сокрушительным давлением глубин.{' '}<br />
-                        Мы падали так долго...
-                    </p>
-
-                    <p className={styles.quoteText}>
-                        «Великие бездны тайно вырыты там, где хватило бы{' '}<br />
-                        и земных пор, и существа научились ходить,{' '}<br />
-                        хотя должны были только ползать.»
-                    </p>
-
-                    <button
-                        className={styles.wakeBtn}
-                        onClick={handleWake}
-                        onMouseEnter={() => setHoverWake(true)}
-                        onMouseLeave={() => setHoverWake(false)}
-                        aria-label="Wake up and return to main page"
-                    >
-                        {hoverWake ? '[ ERWACHE ]' : '[ WAKE UP ]'}
-                    </button>
+            {phase === 'promise' && <section className={styles.finalSection} aria-label="Обещание">
+                <div className={styles.message}>
+                    <h1 ref={title} tabIndex={-1} className={styles.promiseText}><span>REMEMBER</span><span>OUR</span><span>PROMISE.</span></h1>
+                    <p className={styles.german}>VERGISS UNSER VERSPRECHEN NICHT.</p>
+                    <div className={styles.memory}>
+                        <p>Я помню, зачем я здесь.</p>
+                        <p>За этими вратами ты всё ещё ждёшь.<br />Сколько бы раз я ни забывала.</p>
+                        <p className={styles.lastLine}>Я вернусь за тобой.</p>
+                    </div>
+                    <button className={styles.wakeBtn} onClick={wake} disabled={leaving} aria-label="Wake up and return to main page"><span className={styles.arrow} aria-hidden="true">▸</span>{leaving ? 'ПРОБУЖДЕНИЕ' : 'ПРОСНУТЬСЯ'}<span className={styles.wakeTranslation}>ERWACHE</span></button>
                 </div>
-            )}
-        </div>
+            </section>}
+            <footer className={styles.bottomBar}><span>PENROSE / 512</span><span>END OF TRANSMISSION</span><span>240.0 MHz</span></footer>
+        </main>
     );
 }
