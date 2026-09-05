@@ -1,0 +1,32 @@
+.artwork { width: 100%; perspective: 1000px; }
+.object { position: relative; width: 100%; transform-style: preserve-3d; transition: transform 650ms cubic-bezier(.22, 1, .36, 1); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.face img { display: block; width: 100%; height: 100%; object-fit: fill; image-rendering: pixelated; user-select: none; }
+.back { transform: rotateY(180deg); }
+.card { max-width: 400px; }
+.card .object { aspect-ratio: 1.56; transform: rotateX(7deg) rotateY(-10deg); }
+.card .flipped { transform: rotateX(7deg) rotateY(170deg); }
+.card .face { border: 1px solid #5c5145; }
+.pixelFace { display: block; width: 100%; height: 100%; image-rendering: pixelated; background-size: 200% 100%; }
+.book { width: 58%; max-width: 250px; }
+.book .object { aspect-ratio: .63; transform: rotateX(4deg) rotateY(-17deg); }
+.book .flipped { transform: rotateX(4deg) rotateY(163deg); }
+.book .front { transform: translateZ(10px); }
+.book .back { transform: rotateY(180deg) translateZ(10px); }
+.spine { position: absolute; left: -10px; top: 0; width: 20px; height: 100%; background: #231c17; color: #a9883b; border: 1px solid #51422c; transform: rotateY(-90deg); writing-mode: vertical-rl; text-align: center; letter-spacing: .6em; font: 13px/18px serif; }
+.bookBack { height: 100%; box-sizing: border-box; background: #171414; border: 3px double #5c4931; box-shadow: inset 8px 0 15px #060606; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 28px; padding: 10px; }
+.bookWriting { font: italic clamp(13px, 1.5vw, 19px)/1.9 'Courier New', monospace; color: #c1ac77; transform: rotate(-5deg); white-space: nowrap; }
+.bookPromise { color: #a4754a; font: 10px/1.7 'Courier New', monospace; letter-spacing: .18em; text-align: center; }
+.radio { max-width: 480px; }
+.radio .object { aspect-ratio: 1; }
+.radio .flipped { transform: rotateY(180deg); }
+.thumbnail { max-width: 100%; width: 100%; perspective: none; }
+.thumbnail .object { transform: none; }
+.thumbnail.book { width: 45%; }
+.thumbnail .front { transform: none; }
+.thumbnail .back, .thumbnail .spine { display: none; }
+@media (max-width: 760px) {
+    .book:not(.thumbnail) { width: 142px; }
+    .radio:not(.thumbnail) { max-width: 250px; }
+}
+@media (prefers-reduced-motion: reduce) { .object { transition: none; } }

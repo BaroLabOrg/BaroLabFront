@@ -86,7 +86,7 @@ export default function QuestTerminal() {
                 {/* Title bar */}
                 <div className={styles.titleBar}>
                     <span className={styles.titleText}>
-                        SYNCHRONICITY TERMINAL // ПРОТОКОЛ АКТИВАЦИИ
+                        SYNCHRONICITY TERMINAL // ACTIVATION PROTOCOL
                     </span>
                     {!submitting && (
                         <button className={styles.btnClose} onClick={closeTerminal} aria-label="Close terminal">
@@ -108,16 +108,16 @@ export default function QuestTerminal() {
                     <hr className={styles.divider} />
 
                     <p className={styles.prompt}>
-                        Введите коды, найденные на предметах.{' '}
-                        <span className={styles.promptHighlight}>Протокол</span> и{' '}
-                        <span className={styles.promptHighlight}>Частоту</span>.
+                        Enter the codes found on the items:{' '}
+                        <span className={styles.promptHighlight}>Protocol</span> and{' '}
+                        <span className={styles.promptHighlight}>Frequency</span>.
                     </p>
 
                     {/* Input form */}
                     <form className={styles.fields} onSubmit={handleSubmit}>
                         <div className={styles.fieldRow}>
                             <label className={styles.fieldLabel} htmlFor="q-protocol">
-                                PROTOKOLL №:
+                                PROTOKOLL NR.:
                             </label>
                             <input
                                 id="q-protocol"
@@ -152,14 +152,14 @@ export default function QuestTerminal() {
 
                         {status === 'error' && (
                             <div className={styles.statusError} role="alert">
-                                [SYNCHRONICITY FAILED] — НЕВЕРНЫЕ КОДЫ. ПОВТОРИТЕ.
+                                [SYNCHRONICITY FAILED] — INVALID CODES. TRY AGAIN.
                             </div>
                         )}
 
                         {status === 'success' && (
                             <div className={styles.statusSuccess} role="status">
-                                [ACHTUNG: ПРОТОКОЛ ВЫПОЛНЕН]<br />
-                                SYNCHRONICITY ESTABLISHED — ПЕРЕНАПРАВЛЕНИЕ...
+                                [ACHTUNG: PROTOCOL COMPLETE]<br />
+                                SYNCHRONICITY ESTABLISHED — SIGNAL TRANSFER...
                             </div>
                         )}
 
@@ -169,7 +169,7 @@ export default function QuestTerminal() {
                                 className={styles.btnSubmit}
                                 disabled={!protocol.trim() || !freq.trim()}
                             >
-                                [СИНХРОНИЗИРОВАТЬ]
+                                [SYNCHRONIZE]
                             </button>
                         )}
                     </form>
@@ -182,18 +182,18 @@ export default function QuestTerminal() {
                                 onClick={() => setShowHint((v) => !v)}
                                 aria-expanded={showHint}
                             >
-                                {showHint ? '[ СКРЫТЬ ПОДСКАЗКУ ]' : '[ ЗАБЫЛ КОД? ]'}
+                                {showHint ? '[ HIDE HINT ]' : '[ FORGOT THE CODES? ]'}
                             </button>
                             {showHint && (
                                 <div className={styles.hintBox} role="note">
                                     <span className={styles.hintLine}>
-                                        {'>'} Коды записаны на оборотной стороне предметов.
+                                        {'>'} The codes are written on the reverse of the items.
                                     </span>
                                     <span className={styles.hintLine}>
-                                        {'>'} Осмотри предметы в инвентаре — нажми на слот ◈
+                                        {'>'} Select an inventory slot to inspect an item.
                                     </span>
                                     <span className={styles.hintLine}>
-                                        {'>'} Переверни предмет и прочитай данные.
+                                        {'>'} Use FLIP ITEM to read the reverse.
                                     </span>
                                     <span className={`${styles.hintLine} ${styles.hintSpoiler}`}>
                                         {'>'} PROTOKOLL: <span className={styles.spoilerText}>512</span>
@@ -213,9 +213,9 @@ export default function QuestTerminal() {
                         <button
                             className={`${styles.btnReset} ${confirmReset ? styles.btnResetConfirm : ''}`}
                             onClick={handleReset}
-                            title="Сбросить прогресс квеста"
+                            title="Reset quest progress"
                         >
-                            {confirmReset ? '[ПОДТВЕРДИТЬ СБРОС]' : '[СБРОС]'}
+                            {confirmReset ? '[CONFIRM RESET]' : '[RESET]'}
                         </button>
                     )}
                 </div>

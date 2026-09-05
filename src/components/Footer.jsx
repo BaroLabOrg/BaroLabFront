@@ -218,8 +218,16 @@ export default function Footer({ totalMods }) {
                     <span
                         className={`footer-manifest-stat${stage === 2 ? ` ${footerQuestStyles.versionClickable}` : ''}${versionGlitching ? ` ${footerQuestStyles.versionGlitching}` : ''}`}
                         onClick={handleVersionClick}
-                        title={stage === 2 && versionGlitching ? 'АНОМАЛИЯ ОБНАРУЖЕНА' : undefined}
-                        aria-label="Build version"
+                        role={stage === 2 ? 'button' : undefined}
+                        tabIndex={stage === 2 ? 0 : undefined}
+                        onKeyDown={event => {
+                            if (stage === 2 && (event.key === 'Enter' || event.key === ' ')) {
+                                event.preventDefault();
+                                handleVersionClick();
+                            }
+                        }}
+                        title={stage === 2 ? 'Administrator access: open archive record' : undefined}
+                        aria-label={stage === 2 ? 'Open archive record' : 'Build version'}
                     >
                         BUILD: {versionGlitching ? 'v5.1.2' : 'v1.0.4'}
                     </span>

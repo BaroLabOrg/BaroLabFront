@@ -12,6 +12,7 @@
     align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s ease-out;
+    padding: 20px 12px;
 }
 
 @keyframes fadeIn {
@@ -20,16 +21,16 @@
 }
 
 .terminal {
-    width: min(520px, 95vw);
+    width: min(640px, 100%);
+    max-height: calc(100dvh - 40px);
     background: #000;
     border: 1px solid #ff0000;
-    box-shadow:
-        0 0 60px rgba(255, 0, 0, 0.3),
-        0 0 120px rgba(255, 0, 0, 0.1),
-        inset 0 0 40px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
     font-family: 'Courier New', Courier, monospace;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
+    scrollbar-color: #a14c48 #000;
+    color-scheme: dark;
     animation: terminalBoot 0.5s ease-out;
 }
 
@@ -42,8 +43,8 @@
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.18) 2px,
-        rgba(0, 0, 0, 0.18) 4px
+        rgba(0, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 4px
     );
     pointer-events: none;
     z-index: 20;
@@ -54,7 +55,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+    background: radial-gradient(ellipse at center, transparent 75%, rgba(0,0,0,0.15) 100%);
     pointer-events: none;
     z-index: 21;
 }
@@ -70,28 +71,31 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 7px 14px;
+    padding: 12px 20px;
+    gap: 16px;
     border-bottom: 1px solid rgba(255, 0, 0, 0.6);
     background: rgba(255, 0, 0, 0.08);
 }
 
 .titleText {
-    font-size: 10px;
-    color: #ff0000;
-    letter-spacing: 0.2em;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #ff7770;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 .btnClose {
     background: none;
     border: 1px solid rgba(255, 0, 0, 0.4);
-    color: rgba(255, 0, 0, 0.6);
+    color: #ff8d86;
     font-family: 'Courier New', Courier, monospace;
     font-size: 10px;
     padding: 2px 8px;
+    min-height: 44px;
     cursor: pointer;
     letter-spacing: 0.1em;
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .btnClose:hover {
@@ -101,15 +105,15 @@
 
 /* ---- Body ---- */
 .body {
-    padding: 20px 20px 16px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 24px;
 }
 
 .bootLines {
-    font-size: 10px;
-    color: rgba(255, 0, 0, 0.4);
+    font-size: 12px;
+    color: #d3928e;
     letter-spacing: 0.06em;
     line-height: 1.8;
 }
@@ -136,21 +140,21 @@
 }
 
 .prompt {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    color: #ded0ce;
     letter-spacing: 0.06em;
     line-height: 1.6;
 }
 
 .promptHighlight {
-    color: #ff0000;
+    color: #ff7770;
 }
 
 /* ---- Input fields ---- */
 .fields {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
 }
 
 .fieldRow {
@@ -160,8 +164,8 @@
 }
 
 .fieldLabel {
-    font-size: 10px;
-    color: rgba(255, 0, 0, 0.6);
+    font-size: 12px;
+    color: #ff8d86;
     letter-spacing: 0.1em;
     white-space: nowrap;
     min-width: 120px;
@@ -169,14 +173,17 @@
 
 .fieldInput {
     flex: 1;
+    min-width: 0;
+    min-height: 48px;
     background: #050505;
     border: 1px solid rgba(255, 0, 0, 0.35);
-    color: #ff0000;
+    color: #ff8d86;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
+    font-size: 18px;
     padding: 6px 10px;
     letter-spacing: 0.1em;
     outline: none;
+    caret-color: #ff8d86;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -186,13 +193,13 @@
 }
 
 .fieldInput::placeholder {
-    color: rgba(255, 0, 0, 0.2);
+    color: #ae817e;
 }
 
 /* ---- Status messages ---- */
 .statusError {
     font-size: 11px;
-    color: #ff0000;
+    color: #ff8d86;
     letter-spacing: 0.1em;
     padding: 8px 12px;
     border: 1px solid rgba(255, 0, 0, 0.4);
@@ -202,7 +209,7 @@
 
 .statusSuccess {
     font-size: 11px;
-    color: #ff0000;
+    color: #ff8d86;
     letter-spacing: 0.1em;
     padding: 8px 12px;
     border: 1px solid #ff0000;
@@ -227,14 +234,15 @@
 .btnSubmit {
     background: none;
     border: 1px solid rgba(255, 0, 0, 0.6);
-    color: #ff0000;
+    color: #ff8d86;
     font-family: 'Courier New', Courier, monospace;
     font-size: 12px;
     padding: 8px 20px;
+    min-height: 48px;
     cursor: pointer;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    transition: all 0.15s;
+    transition: background-color 0.15s, box-shadow 0.15s;
     align-self: flex-end;
 }
 
@@ -276,18 +284,19 @@
 .btnHint {
     background: none;
     border: none;
-    color: rgba(255, 0, 0, 0.35);
+    color: #d3928e;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.12em;
     cursor: pointer;
     padding: 0;
+    min-height: 44px;
     text-align: left;
     transition: color 0.15s;
 }
 
 .btnHint:hover {
-    color: rgba(255, 0, 0, 0.7);
+    color: #ff8d86;
 }
 
 .hintBox {
@@ -302,15 +311,15 @@
 
 .hintLine {
     display: block;
-    font-size: 9px;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    color: #cab3b0;
     letter-spacing: 0.06em;
     line-height: 1.7;
 }
 
 .hintSpoiler {
     margin-top: 4px;
-    color: rgba(255, 0, 0, 0.4);
+    color: #d3928e;
 }
 
 /* Spoiler text — blurred until hover */
@@ -328,12 +337,14 @@
 /* ---- Status bar ---- */
 .statusBar {
     border-top: 1px solid rgba(255, 0, 0, 0.15);
-    padding: 4px 14px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 8px;
-    color: rgba(255, 255, 255, 0.15);
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 10px;
+    color: #b7a3a2;
     letter-spacing: 0.08em;
 }
 
@@ -341,20 +352,41 @@
 .btnReset {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.12);
+    color: #b7a3a2;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 8px;
+    font-size: 10px;
     letter-spacing: 0.08em;
     cursor: pointer;
     padding: 0;
+    min-height: 44px;
     transition: color 0.15s;
 }
 
 .btnReset:hover {
-    color: rgba(255, 0, 0, 0.5);
+    color: #ff8d86;
 }
 
 .btnResetConfirm {
-    color: #ff0000;
+    color: #ff8d86;
     animation: blink 0.6s step-end infinite;
+}
+
+.terminal :is(button, input):focus-visible {
+    outline: 2px solid #f4e3dd;
+    outline-offset: 3px;
+}
+
+.terminal ::selection { color: #000; background: #ff8d86; }
+
+@media (max-width: 600px) {
+    .body { padding: 24px 20px; }
+    .fieldRow { flex-direction: column; align-items: stretch; gap: 8px; }
+    .fieldInput { width: 100%; box-sizing: border-box; }
+    .btnSubmit { align-self: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .overlay, .terminal, .bootLine, .cursor, .statusError, .statusSuccess,
+    .hintBox, .btnResetConfirm { animation: none; }
+    .terminal :is(button, input, span) { transition: none; }
 }

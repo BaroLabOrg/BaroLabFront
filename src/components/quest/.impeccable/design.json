@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-05T00:00:00Z",
+  "title": "Design System: Signalis quest inspection and promise",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "book-rear-depth",
+        "value": "inset 8px 0 15px #060606",
+        "purpose": "Physical rear cover shading only."
+      },
+      {
+        "name": "selected-inventory",
+        "value": "inset 0 0 0 1px #e5e0d0",
+        "purpose": "Selected inventory outline."
+      }
+    ],
+    "motion": [
+      {
+        "name": "object-flip",
+        "value": "transform 650ms cubic-bezier(.22, 1, .36, 1)",
+        "purpose": "Button-triggered physical rotation; removed for reduced motion."
+      },
+      {
+        "name": "gate-reveal",
+        "value": "opacity 1800ms ease-out",
+        "purpose": "Gate scene reveal; removed for reduced motion."
+      },
+      {
+        "name": "message-reveal",
+        "value": "1600ms ease-out",
+        "purpose": "Opacity and 8px upward entrance; removed for reduced motion."
+      },
+      {
+        "name": "wake-fade",
+        "value": "opacity 850ms ease-in",
+        "purpose": "Black exit overlay before the 900ms reset; reduced motion exits immediately."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stacked-quest",
+        "value": "760px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Flip button",
+      "kind": "button",
+      "refersTo": "flip-button",
+      "description": "The sole control for changing the inspected face.",
+      "html": "<button class=\"ds-flip\" aria-pressed=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 9a8 8 0 0 1 14-3l2 3M20 3v6h-6M20 15a8 8 0 0 1-14 3l-2-3M4 21v-6h6\"/></svg>ПЕРЕВЕРНУТЬ</button>",
+      "css": ".ds-flip{font-family:'Courier New',Courier,monospace;border-radius:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:10px 16px;border:1px solid #8c8b80;background:#0b0b0b;color:#dfdccf;font-size:11px;letter-spacing:.06em;transition:color 160ms,background-color 160ms}.ds-flip svg{width:18px;height:18px}.ds-flip:hover{background:#d5d4c9;color:#0a0a0a}.ds-flip:focus-visible{outline:2px solid #f3ead9;outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-flip{transition:none}}"
+    },
+    {
+      "name": "Close control",
+      "kind": "button",
+      "description": "Quiet dialog dismissal with a desktop keyboard hint.",
+      "html": "<button class=\"ds-close\">ЗАКРЫТЬ <kbd>ESC</kbd></button>",
+      "css": ".ds-close{font-family:'Courier New',Courier,monospace;border-radius:0;cursor:pointer;display:flex;align-items:center;gap:16px;min-height:44px;color:#dedacf;background:transparent;border:0;font-size:11px}.ds-close kbd{border:1px solid #74736b;padding:4px 6px;font:inherit;color:#a5a299}.ds-close:hover{color:#ff7272}.ds-close:focus-visible{outline:2px solid #f3ead9;outline-offset:4px}"
+    },
+    {
+      "name": "Sound control",
+      "kind": "button",
+      "description": "Opt-in ambience control; the actual page exposes pressed and unavailable states.",
+      "html": "<button class=\"ds-sound\" aria-pressed=\"false\">ЗВУК: ВЫКЛ</button>",
+      "css": ".ds-sound{font-family:'Courier New',Courier,monospace;border-radius:0;cursor:pointer;padding:0;min-height:44px;background:transparent;border:0;color:#b3aaa4;font-size:10px;letter-spacing:.08em}.ds-sound:hover{color:#fff1dc}.ds-sound:focus-visible{outline:2px solid #efe8d7;outline-offset:5px}"
+    },
+    {
+      "name": "Wake action",
+      "kind": "button",
+      "description": "Ruled exit row; activation resets the local quest and returns home.",
+      "html": "<button class=\"ds-wake\"><span class=\"ds-arrow\" aria-hidden=\"true\">▸</span>ПРОСНУТЬСЯ<span class=\"ds-translation\">ERWACHE</span></button>",
+      "css": ".ds-wake{font-family:'Courier New',Courier,monospace;border-radius:0;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:52px;width:100%;max-width:360px;padding:12px 0;background:transparent;border:0;border-top:1px solid #7c4848;border-bottom:1px solid #7c4848;color:#eae4d4;font-size:13px;font-weight:bold;letter-spacing:.12em;text-align:left;transition:background-color 200ms}.ds-arrow{color:#f34b56;font-size:22px}.ds-translation{margin-left:auto;font-size:10px;font-weight:normal;color:#b9a3a0;letter-spacing:.06em}.ds-wake:hover:not(:disabled){background:#a11d2c}.ds-wake:hover .ds-arrow{color:#fff}.ds-wake:hover .ds-translation{color:#f4d9d1}.ds-wake:disabled{cursor:default}.ds-wake:focus-visible{outline:2px solid #efe8d7;outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-wake{transition:none}}"
+    },
+    {
+      "name": "Item title band",
+      "kind": "custom",
+      "refersTo": "item-title",
+      "description": "Bone title band separates the object name from the monospaced description.",
+      "html": "<h2 class=\"ds-item-title\">РАДИОПРИЁМНИК</h2>",
+      "css": ".ds-item-title{margin:0;padding:14px 28px;color:#080808;background:#d5d4c9;font:bold clamp(18px,2vw,25px)/1.25 'Arial Narrow',Arial,sans-serif;letter-spacing:-.02em;text-transform:uppercase}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tangible objects, then the red gate",
+    "overview": "This guide applies only to `QuestItemArtwork`, `ItemInspectModal`, and `src/pages/PromisePage`, including their local styles and ambience. It is not the visual system for the rest of BaroLab, the terminal, or other quest overlays. The user-supplied Signalis imagery determines the objects and gate; the interface uses spare black system panels, bone-white bands, and restrained red emphasis.\n\nThe final implementation is the maintenance reference. Asset provenance and the original direction contract live in [SIGNALIS_DESIGN.md](../../../docs/SIGNALIS_DESIGN.md); keep generation provenance there. No product positioning is implied by this scoped guide.",
+    "keyCharacteristics": [
+      "Recognisable pixelated objects on a black inspection stage.",
+      "Square system frames, monospaced reading text, and condensed uppercase titles.",
+      "Physical rotation initiated by a button; a gate scene with readable text and one exit action."
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** keep this visual system scoped to item inspection and the promise ending.",
+      "**Do** preserve the supplied asset appearance and provenance.",
+      "**Do** keep reverse clues readable in text and preserve the chain: radio → sector 404 → pass → home BUILD archive → book → protocol 512 / frequency 240.0. The opening broadcast numbers in the radio description are separate from its destination label.",
+      "**Do** retain keyboard access, visible control focus, reduced motion, and vertical scrolling."
+    ],
+    "donts": [
+      "**Don't** add pointer-driven rotation or flipping.",
+      "**Don't** replace the object imagery with generic cards, icons, or unrelated illustrations.",
+      "**Don't** add continuous flashing, automatic audio, or site navigation over the ending.",
+      "**Don't** apply these local colors, frames, or typography to the rest of the frontend."
+    ]
+  }
+}

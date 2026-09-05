@@ -112,5 +112,19 @@ describe('Pagination', () => {
 
         expect(screen.getByRole('dialog', { name: 'Anomaly detected' })).toBeInTheDocument();
         expect(onPageChange).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'DISMISS' })).toHaveFocus();
+        await user.tab({ shift: true });
+        expect(screen.getByRole('button', { name: 'TRACE SIGNAL' })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole('button', { name: 'DISMISS' })).toHaveFocus();
+        await user.keyboard('{Escape}');
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(backButton).toHaveFocus();
+        expect(localStorage.getItem('signalis_quest_stage')).toBeNull();
+
+        await user.click(backButton);
+        await user.click(screen.getByRole('button', { name: 'TRACE SIGNAL' }));
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(localStorage.getItem('signalis_quest_stage')).toBe('1');
     });
 });
