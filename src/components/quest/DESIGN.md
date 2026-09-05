@@ -82,7 +82,7 @@ Inspection ink and muted ink sit on the inspection surface. Bone panels carry da
 
 ## Typography
 
-The frontmatter records the desktop title and body roles. Monospaced text handles descriptions, small technical labels, buttons, and status strips. Sans-serif uppercase type handles the item name, LSTR mark, and ending headline. Preserve the established Russian narration, German system fragments, and English promise text.
+The frontmatter records the desktop title and body roles. Monospaced text handles descriptions, small technical labels, buttons, and status strips. Sans-serif uppercase type handles the item name, LSTR mark, and ending headline. Quest narration and controls use English; retain German system fragments and the original lettering inside artwork.
 
 On narrow screens, the promise title uses `clamp(58px, 13vw, 86px)` and the ending narrative steps down to (13px). Inspection descriptions retain their body size. Small metadata must remain secondary; clues also appear in readable text outside the artwork.
 
@@ -112,7 +112,7 @@ The generated pass also uses a two-face atlas. Pass and radio textures and rever
 - **Dialog:** focus starts on close, stays among enabled controls, and returns when dismissed. Escape, close, and backdrop dismissal remain available. Reverse descriptions are announced politely; do not make clues available only as tiny raster text.
 - **Promise sequence:** brief boot output leads to a single interruption and then the gate. The final title receives focus. Reduced motion skips straight to the final scene and removes transitions. Do not add a persistent flashing or glitch loop.
 - **Sound control:** explicit opt-in with a pressed state. The local synthesized ambience suspends when toggled off, closes on unmount, and exposes an unavailable state if audio cannot start. No autoplay.
-- **Wake action:** a full-width ruled row with red arrow, Russian action, and small German translation. Activation disables repeated input, fades out, resets the existing local quest, and returns home. Reduced motion removes the exit delay.
+- **Wake action:** a full-width ruled row with red arrow, English action, and small German translation. Activation disables repeated input, fades out, resets the existing local quest, and returns home. Reduced motion removes the exit delay.
 
 ## Do's and Don'ts
 

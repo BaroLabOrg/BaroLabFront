@@ -57,13 +57,13 @@ export default function PromisePage() {
             <div className={styles.scanlines} aria-hidden="true" />
             <header className={styles.topBar}>
                 <span>LSTR–512</span>
-                <span className={styles.signalState}>{phase === 'boot' ? 'СИНХРОНИЗАЦИЯ' : 'СИГНАЛ ПОТЕРЯН'}</span>
-                <button onClick={audio.toggle} aria-pressed={audio.enabled} disabled={!audio.available} aria-label="Фоновый звук">
-                    {audio.available ? `ЗВУК: ${audio.enabled ? 'ВКЛ' : 'ВЫКЛ'}` : 'ЗВУК НЕДОСТУПЕН'}
+                <span className={styles.signalState}>{phase === 'boot' ? 'SYNCHRONIZING' : 'SIGNAL LOST'}</span>
+                <button onClick={audio.toggle} aria-pressed={audio.enabled} disabled={!audio.available} aria-label="Ambient sound">
+                    {audio.available ? `SOUND: ${audio.enabled ? 'ON' : 'OFF'}` : 'SOUND UNAVAILABLE'}
                 </button>
             </header>
 
-            {phase === 'boot' && <section className={styles.boot} aria-label="Загрузка терминала">
+            {phase === 'boot' && <section className={styles.boot} aria-label="Terminal boot sequence">
                 <div className={styles.bootMark}>LSTR</div>
                 <div className={styles.bootLog} role="log" aria-live="polite">
                     {BOOT_LINES.slice(0, lines).map(([name, status], index) => <p key={name}><span>{name}</span><span className={index === 3 ? styles.fault : ''}>{status}</span></p>)}
@@ -71,21 +71,21 @@ export default function PromisePage() {
                 <span className={styles.cursor} aria-hidden="true" />
             </section>}
 
-            {phase === 'signal' && <div className={styles.interruption} role="status"><span>ACHTUNG</span><p>Помни наше обещание.</p></div>}
+            {phase === 'signal' && <div className={styles.interruption} role="status"><span>ACHTUNG</span><p>Remember our promise.</p></div>}
 
-            {phase === 'promise' && <section className={styles.finalSection} aria-label="Обещание">
+            {phase === 'promise' && <section className={styles.finalSection} aria-label="The promise">
                 <div className={styles.message}>
                     <h1 ref={title} tabIndex={-1} className={styles.promiseText}><span>REMEMBER</span><span>OUR</span><span>PROMISE.</span></h1>
                     <p className={styles.german}>VERGISS UNSER VERSPRECHEN NICHT.</p>
                     <div className={styles.memory}>
-                        <p>Я помню, зачем я здесь.</p>
-                        <p>За этими вратами ты всё ещё ждёшь.<br />Сколько бы раз я ни забывала.</p>
-                        <p className={styles.lastLine}>Я вернусь за тобой.</p>
+                        <p>I remember why I am here.</p>
+                        <p>Beyond these gates, you are still waiting.<br />No matter how many times I forget.</p>
+                        <p className={styles.lastLine}>I will come back for you.</p>
                     </div>
-                    <button className={styles.wakeBtn} onClick={wake} disabled={leaving} aria-label="Wake up and return to main page"><span className={styles.arrow} aria-hidden="true">▸</span>{leaving ? 'ПРОБУЖДЕНИЕ' : 'ПРОСНУТЬСЯ'}<span className={styles.wakeTranslation}>ERWACHE</span></button>
+                    <button className={styles.wakeBtn} onClick={wake} disabled={leaving} aria-label="Wake up and return to main page"><span className={styles.arrow} aria-hidden="true">▸</span>{leaving ? 'WAKING UP' : 'WAKE UP'}<span className={styles.wakeTranslation}>ERWACHE</span></button>
                     <p className={styles.artCredit}>
-                        Арт «The Red Gate Redraw»<br />
-                        <a href="https://www.reddit.com/r/signalis/comments/1je1oyr/the_red_gate_redraw/" target="_blank" rel="noopener noreferrer">Автор и оригинал на Reddit <span aria-hidden="true">↗</span></a>
+                        Artwork: The Red Gate Redraw<br />
+                        <a href="https://www.reddit.com/r/signalis/comments/1je1oyr/the_red_gate_redraw/" target="_blank" rel="noopener noreferrer">Artist and original post on Reddit <span aria-hidden="true">↗</span></a>
                     </p>
                 </div>
             </section>}

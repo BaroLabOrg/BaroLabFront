@@ -18,7 +18,7 @@ describe('Item inspection', () => {
         const user = userEvent.setup();
         quest.inspectingItem = 3;
         const { rerender } = render(<ItemInspectModal />);
-        const flip = screen.getByRole('button', { name: 'Перевернуть предмет' });
+        const flip = screen.getByRole('button', { name: 'Flip item' });
 
         await user.click(flip);
         expect(flip).toHaveAttribute('aria-pressed', 'true');
@@ -32,7 +32,7 @@ describe('Item inspection', () => {
 
         quest.inspectingItem = 1;
         rerender(<ItemInspectModal />);
-        expect(screen.getByRole('button', { name: 'Перевернуть предмет' })).toHaveAttribute('aria-pressed', 'false');
+        expect(screen.getByRole('button', { name: 'Flip item' })).toHaveAttribute('aria-pressed', 'false');
         expect(screen.queryByText('Protokoll: 512 Frequenz: 240.0', { selector: 'p' }))
             .not.toBeInTheDocument();
     });
@@ -42,7 +42,7 @@ describe('Item inspection', () => {
         quest.inspectingItem = 3;
         render(<ItemInspectModal />);
         const viewer = screen.getByTestId('item-viewer');
-        const flip = screen.getByRole('button', { name: 'Перевернуть предмет' });
+        const flip = screen.getByRole('button', { name: 'Flip item' });
         fireEvent.mouseMove(viewer, { clientX: 999, clientY: 100 });
         await user.click(viewer);
         expect(flip).toHaveAttribute('aria-pressed', 'false');
@@ -60,10 +60,10 @@ describe('Item inspection', () => {
         render(<ItemInspectModal />);
         const close = screen.getByRole('button', { name: 'Close' });
         expect(close).toHaveFocus();
-        expect(screen.getAllByRole('button', { name: 'Предмет не найден' })).toHaveLength(2);
-        screen.getAllByRole('button', { name: 'Предмет не найден' }).forEach(button => expect(button).toBeDisabled());
+        expect(screen.getAllByRole('button', { name: 'Item not found' })).toHaveLength(2);
+        screen.getAllByRole('button', { name: 'Item not found' }).forEach(button => expect(button).toBeDisabled());
         await user.tab({ shift: true });
-        expect(screen.getByRole('button', { name: 'Осмотреть: ПРОПУСК АДМИНИСТРАТОРА' })).toHaveFocus();
+        expect(screen.getByRole('button', { name: 'Inspect: ADMINISTRATOR’S PASS' })).toHaveFocus();
         await user.tab();
         expect(close).toHaveFocus();
         await user.keyboard('{Escape}');

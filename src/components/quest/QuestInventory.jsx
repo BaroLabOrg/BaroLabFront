@@ -43,7 +43,7 @@ export default function QuestInventory() {
         <div
             className={`${styles.inventory} ${isReady ? styles.inventoryReady : ''}`}
             onClick={handleWidgetClick}
-            title={isReady ? 'Нажмите INV для активации терминала / слот — осмотреть предмет' : 'Инвентарь'}
+            title={isReady ? 'Select INV to open the terminal / select a slot to inspect an item' : 'Inventory'}
             role={isReady ? 'button' : undefined}
             tabIndex={isReady ? 0 : -1}
             onKeyDown={(e) => e.key === 'Enter' && isReady && !confirmReset && openTerminal()}
@@ -57,7 +57,7 @@ export default function QuestInventory() {
                         key={i}
                         className={`${styles.slot} ${filled ? styles.slotFilled : ''}`}
                         onClick={(e) => handleSlotClick(e, i)}
-                        title={filled ? `Предмет ${i + 1} — осмотреть` : '[ пусто ]'}
+                        title={filled ? `Inspect item ${i + 1}` : '[ empty ]'}
                         role={filled ? 'button' : undefined}
                         tabIndex={filled ? 0 : -1}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSlotClick(e, i); }}
@@ -72,7 +72,7 @@ export default function QuestInventory() {
             <button
                 className={`${styles.btnReset} ${confirmReset ? styles.btnResetConfirm : ''}`}
                 onClick={handleResetClick}
-                title={confirmReset ? 'Нажмите ещё раз для подтверждения сброса' : 'Сбросить прогресс квеста'}
+                title={confirmReset ? 'Select again to confirm reset' : 'Reset quest progress'}
                 aria-label="Reset quest"
             >
                 {confirmReset ? '✕?' : '✕'}

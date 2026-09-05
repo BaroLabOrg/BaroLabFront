@@ -74,7 +74,7 @@ export default function NotFoundPage() {
                                         onClick={handleEtherClick}
                                         aria-label="Check ether frequency"
                                     >
-                                        ~Проверить частоту эфира~
+                                        ~Check the signal frequency~
                                     </button>
                                 </div>
                             )}

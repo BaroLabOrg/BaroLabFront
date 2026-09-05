@@ -1,20 +1,20 @@
 export const QUEST_ITEMS = {
     1: {
-        name: 'ПРОПУСК АДМИНИСТРАТОРА', shortName: 'ПРОПУСК', designation: 'ADLR-S2301', type: 'card',
-        description: 'Служебный пропуск администрации комплекса «Зирпински».\n\nНа фотографии — незнакомое лицо. Почему мне кажется, что я уже видела его?\n\nМагнитная полоса ещё цела.',
-        backDescription: 'На обороте, под магнитной полосой, кто-то выцарапал номер сектора.\n\nТакого сектора нет на плане комплекса.',
-        clue: 'СЕКТОР 404', hint: 'Ищи там, где данных больше нет.', condition: 'МАГНИТНАЯ КАРТА / S-23',
+        name: 'ADMINISTRATOR’S PASS', shortName: 'PASS', designation: 'ADLR-S2301', type: 'card',
+        description: 'An administration pass for the Sierpinski facility.\n\nAn unfamiliar face in the photograph. Why do I feel I have seen him before?\n\nThe magnetic stripe is still intact.',
+        backDescription: 'Someone has scratched a sector number below the magnetic stripe.\n\nThere is no such sector on the facility map.',
+        clue: 'SEKTOR 404', hint: 'Look where the data is missing.', condition: 'MAGNETIC CARD / S-23',
     },
     2: {
-        name: 'РАДИОПРИЁМНИК', shortName: 'РАДИО', designation: 'SATELLIT / ORBITAL', type: 'radio',
-        description: 'Старый многодиапазонный приёмник. Тяжёлый корпус всё ещё тёплый.\n\nЗа ровным шипением помех слышится голос. Он повторяет одни и те же слова.\n\n«Правило шести».',
-        backDescription: 'На задней панели осталась сервисная пометка.\n\nСигнал идёт снизу. Из самого основания системы.',
-        clue: 'FOOTER / BUILD VERSION', hint: 'Проверь версию сборки внизу главной страницы.', condition: 'ПРИЁМ СИГНАЛА / НЕСТАБИЛЕН',
+        name: 'RADIO RECEIVER', shortName: 'RADIO', designation: 'SATELLIT / ORBITAL', type: 'radio',
+        description: 'An old multiband receiver. Its heavy casing is still warm.\n\nA voice beneath the static repeats the same words.\n\n“The rule of six.”',
+        backDescription: 'A service note remains on the rear panel.\n\nThe signal is coming from below. From the very foundation of the system.',
+        clue: 'FOOTER / BUILD VERSION', hint: 'Check the build version at the bottom of the home page.', condition: 'SIGNAL RECEPTION / UNSTABLE',
     },
     3: {
-        name: 'КОРОЛЬ В ЖЁЛТОМ', shortName: 'КНИГА', designation: '黄衣ノ王', type: 'book',
-        description: 'Книга в чёрном переплёте. На обложке — фигура в жёлтых одеждах.\n\nБумага пахнет пылью и чем-то сладким. Некоторые строки подчёркнуты, но я не помню, чтобы читала их.\n\nЯ не должна была открывать эту книгу.',
-        backDescription: 'На задней стороне переплёта — две строки, написанные от руки.\n\nПочерк кажется знакомым.',
-        clue: 'Protokoll: 512\nFrequenz: 240.0', hint: 'REMEMBER OUR PROMISE', condition: 'ПЕЧАТНОЕ ИЗДАНИЕ / АВТОР НЕИЗВЕСТЕН',
+        name: 'THE KING IN YELLOW', shortName: 'BOOK', designation: 'THE KING IN YELLOW', type: 'book',
+        description: 'A book bound in black. A figure in yellow robes stands on the cover.\n\nThe paper smells of dust and something sweet. Some lines are underlined, but I do not remember reading them.\n\nI should not have opened this book.',
+        backDescription: 'Two handwritten lines on the back cover.\n\nThe handwriting seems familiar.',
+        clue: 'Protokoll: 512\nFrequenz: 240.0', hint: 'REMEMBER OUR PROMISE', condition: 'PRINTED VOLUME / AUTHOR UNKNOWN',
     },
 };

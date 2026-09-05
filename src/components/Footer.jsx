@@ -218,7 +218,7 @@ export default function Footer({ totalMods }) {
                     <span
                         className={`footer-manifest-stat${stage === 2 ? ` ${footerQuestStyles.versionClickable}` : ''}${versionGlitching ? ` ${footerQuestStyles.versionGlitching}` : ''}`}
                         onClick={handleVersionClick}
-                        title={stage === 2 && versionGlitching ? 'АНОМАЛИЯ ОБНАРУЖЕНА' : undefined}
+                        title={stage === 2 && versionGlitching ? 'ANOMALY DETECTED' : undefined}
                         aria-label="Build version"
                     >
                         BUILD: {versionGlitching ? 'v5.1.2' : 'v1.0.4'}

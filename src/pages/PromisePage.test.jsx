@@ -24,7 +24,7 @@ describe('Promise ending', () => {
     it('closes the terminal, plays the sequence, and resets only when waking', () => {
         renderEnding();
         expect(quest.closeTerminal).toHaveBeenCalledOnce();
-        expect(screen.getByRole('region', { name: 'Загрузка терминала' })).toBeInTheDocument();
+        expect(screen.getByRole('region', { name: 'Terminal boot sequence' })).toBeInTheDocument();
         act(() => vi.advanceTimersByTime(3000));
         expect(screen.getByRole('status')).toHaveTextContent('ACHTUNG');
         act(() => vi.advanceTimersByTime(1300));
@@ -51,10 +51,10 @@ describe('Promise ending', () => {
         vi.stubGlobal('AudioContext', undefined);
         vi.stubGlobal('webkitAudioContext', undefined);
         renderEnding();
-        const audio = screen.getByRole('button', { name: 'Фоновый звук' });
+        const audio = screen.getByRole('button', { name: 'Ambient sound' });
         expect(audio).toHaveAttribute('aria-pressed', 'false');
         fireEvent.click(audio);
         expect(audio).toBeDisabled();
-        expect(audio).toHaveTextContent('ЗВУК НЕДОСТУПЕН');
+        expect(audio).toHaveTextContent('SOUND UNAVAILABLE');
     });
 });

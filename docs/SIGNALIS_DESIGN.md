@@ -2,6 +2,8 @@
 
 Scope: the local browser quest, item inspection and `/promise`. The rest of BaroLab keeps its existing design. The user supplied six image references and explicitly requested close visual fidelity, revised item descriptions and button-only flipping.
 
+Quest UI and narrative copy use English, retaining German system phrases and the lettering within the artwork. `QuestOnboarding` shares the inspector's black/bone frame, LSTR header and square controls; its `ACHTUNG` notice offers `DISMISS` or `TRACE SIGNAL`. It describes an unidentified transmission without exposing pagination implementation details. Copy uses semantic paragraphs rather than escaped line breaks.
+
 ## Direction contract
 
 THESIS: inspect tangible, recognisable Signalis objects, then enter the red gate scene.
