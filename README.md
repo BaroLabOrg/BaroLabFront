@@ -141,3 +141,10 @@ src/
   pages/        # Route-level pages
   test/         # Test setup
 ```
+
+### Repository Documentation
+
+- `AGENTS.md` — navigation and documentation-maintenance rules for coding agents
+- `PROJECT_MAP.md` — compact feature-to-file map for focused repository work
+- `GUIDE_INSTRUCTIONS.md` — guide editor and Markdown behavior reference
+- `DEPLOY_ENV.md` — deployment environment notes
