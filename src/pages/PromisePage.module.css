@@ -9,10 +9,12 @@
     position: fixed;
     inset: 0;
     background: #000;
-    overflow: hidden;
+    overflow-y: auto;
     font-family: 'VT323', 'Courier New', Courier, monospace;
     z-index: 10000;
     cursor: crosshair;
+    color-scheme: dark;
+    scrollbar-color: #974b43 #000;
 }
 
 /* ---- CRT scanlines ---- */
@@ -25,8 +27,8 @@
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 0, 0, 0.22) 2px,
-        rgba(0, 0, 0, 0.22) 4px
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
     );
 }
 
@@ -38,8 +40,8 @@
     pointer-events: none;
     background: radial-gradient(
         ellipse at center,
-        transparent 50%,
-        rgba(0, 0, 0, 0.8) 100%
+        transparent 65%,
+        rgba(0, 0, 0, 0.45) 100%
     );
 }
 
@@ -63,17 +65,18 @@
     color: #b83000;
     letter-spacing: 0.03em;
     line-height: 1.75;
-    white-space: pre;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
     overflow: hidden;
     max-width: 100%;
     width: 0;
     animation: typeLine 0.55s steps(50, end) forwards;
 }
 
-.logLine.ok     { color: #cc4400; }
-.logLine.warn   { color: #dd6600; }
-.logLine.fault  { color: #ff2200; }
-.logLine.fatal  { color: #ff0000; }
+.logLine.ok     { color: #db9471; }
+.logLine.warn   { color: #ffa16e; }
+.logLine.fault  { color: #ff7566; }
+.logLine.fatal  { color: #ff6262; }
 
 @keyframes typeLine {
     from { width: 0; }
@@ -131,15 +134,16 @@
    FINAL SECTION — center lore text + button
    ================================================================ */
 .finalSection {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    min-height: 100dvh;
+    box-sizing: border-box;
     z-index: 20;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 28px;
-    padding: 0 5vw;
+    gap: 24px;
+    padding: 64px 24px;
     text-align: center;
     animation: sectionFadeIn 2s ease-out both;
 }
@@ -151,35 +155,40 @@
 
 /* Main promise phrase */
 .promiseText {
-    font-size: clamp(18px, 3.5vw, 42px);
-    color: #fff;
-    letter-spacing: 0.35em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: clamp(32px, 6vw, 76px);
+    font-weight: 400;
+    color: #f0e4db;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    line-height: 1.3;
+    line-height: 1.1;
     font-family: 'VT323', 'Courier New', monospace;
 }
 
 /* Lore sub-text */
 .loreText {
-    font-size: clamp(12px, 1.3vw, 16px);
-    color: rgba(180, 30, 0, 0.75);
-    letter-spacing: 0.06em;
+    font-size: clamp(13px, 1.3vw, 16px);
+    color: #df9387;
+    letter-spacing: 0.02em;
     line-height: 1.9;
     max-width: 520px;
     font-family: 'Courier New', Courier, monospace;
-    margin-bottom: 20px;
+    margin: 0;
 }
 
 /* Lovecraft / Signalis quote */
 .quoteText {
-    font-size: clamp(11px, 1.1vw, 14px);
-    color: rgba(160, 160, 160, 0.55);
-    letter-spacing: 0.04em;
+    font-size: clamp(12px, 1.1vw, 14px);
+    color: #b5a3a0;
+    letter-spacing: 0.01em;
     line-height: 1.85;
     max-width: 480px;
     font-family: 'Courier New', Courier, monospace;
     font-style: italic;
-    margin-bottom: 8px;
+    margin: 0;
     opacity: 0;
     animation: sectionFadeIn 2s ease-out 0.8s both;
 }
@@ -187,22 +196,38 @@
 /* Wake button */
 .wakeBtn {
     background: none;
-    border: 1px solid rgba(180, 30, 0, 0.5);
-    color: rgba(180, 30, 0, 0.7);
+    border: 1px solid #a34b42;
+    color: #f0a094;
     font-family: 'VT323', 'Courier New', monospace;
     font-size: clamp(16px, 2vw, 24px);
     padding: 10px 42px;
     cursor: pointer;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    transition: all 0.3s;
+    min-height: 48px;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
     margin-top: 12px;
     animation: sectionFadeIn 2s ease-out 1.2s both;
 }
 
 .wakeBtn:hover {
-    border-color: rgba(255, 60, 0, 0.9);
-    color: #ff3300;
-    box-shadow: 0 0 18px rgba(255, 30, 0, 0.2);
-    letter-spacing: 0.28em;
+    border-color: #ff8d7d;
+    color: #ffe2d8;
+    background-color: #32130f;
+}
+
+.wakeBtn:focus-visible { outline: 2px solid #ffe2d8; outline-offset: 6px; }
+.page ::selection { color: #000; background: #f0a094; }
+
+@media (max-width: 600px) {
+    .finalSection { padding: 40px 20px; gap: 24px; }
+    .loreText br, .quoteText br { display: none; }
+    .logSection { padding: 32px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logLine { animation: none; width: 100%; }
+    .logGlitch, .cursor, .finalSection, .quoteText, .wakeBtn { animation: none; }
+    .quoteText { opacity: 1; }
+    .wakeBtn { transition: none; }
 }

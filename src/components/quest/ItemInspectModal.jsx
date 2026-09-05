@@ -188,13 +188,19 @@ export default function ItemInspectModal() {
     const viewerRef = useRef(null);
     const [rotateX, setRotateX] = useState(0);
     const [isGlitch, setIsGlitch] = useState(false);
+    const [flipped, setFlipped] = useState(false);
 
-    const showBack = Math.abs(rotateX) > 0.5;
+    const showBack = flipped || Math.abs(rotateX) > 0.5;
     const scaleX = 1 - Math.abs(rotateX) * 0.35;
     const skewDeg = rotateX * 25;
 
     const item = ITEMS[inspectingItem];
     const typedDesc = useTypewriter(item?.desc || '', 16, !!inspectingItem);
+
+    useEffect(() => {
+        setFlipped(false);
+        setRotateX(0);
+    }, [inspectingItem]);
 
     const handleMouseMove = useCallback((e) => {
         if (!viewerRef.current) return;
@@ -249,10 +255,10 @@ export default function ItemInspectModal() {
                         ref={viewerRef}
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
-                        aria-hidden="true"
                     >
                         {/* Front */}
                         <div
+                            aria-hidden="true"
                             className={`${styles.itemImage} ${isGlitch ? styles.glitch : ''}`}
                             style={{
                                 transform: `scaleX(${showBack ? -scaleX : scaleX}) skewY(${skewDeg * 0.1}deg)`,
@@ -264,6 +270,7 @@ export default function ItemInspectModal() {
                         </div>
                         {/* Back */}
                         <div
+                            aria-hidden="true"
                             className={styles.itemImage}
                             style={{
                                 position: 'absolute',
@@ -274,8 +281,18 @@ export default function ItemInspectModal() {
                         >
                             <BackSideContent item={item} />
                         </div>
-                        <span className={styles.viewerHint}>
-                            {showBack ? '[ RÜCKSEITE ]' : '← DREHEN →'}
+                        <button
+                            type="button"
+                            className={styles.viewerHint}
+                            aria-label="Перевернуть предмет"
+                            aria-pressed={flipped}
+                            onClick={() => { setFlipped(value => !value); setRotateX(0); }}
+                            onMouseMove={e => e.stopPropagation()}
+                        >
+                            {flipped ? '[ ЛИЦЕВАЯ СТОРОНА ]' : '[ ПЕРЕВЕРНУТЬ ]'}
+                        </button>
+                        <span className={styles.accessibleBack} aria-live="polite">
+                            {showBack ? `${item.backText}. ${item.backSub}` : ''}
                         </span>
                     </div>
 

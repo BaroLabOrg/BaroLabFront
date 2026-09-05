@@ -212,19 +212,20 @@ export default function PromisePage() {
             {/* ---- Phase 2: Final lore screen ---- */}
             {phase === 2 && (
                 <div className={styles.finalSection}>
-                    <div className={styles.promiseText}>
-                        R E M E M B E R &nbsp; O U R &nbsp; P R O M I S E
-                    </div>
+                    <h1 className={styles.promiseText}>
+                        <span>REMEMBER</span>
+                        <span>OUR PROMISE</span>
+                    </h1>
 
                     <p className={styles.loreText}>
-                        Синхронизация завершена. Космическая пустота<br />
-                        сменилась сокрушительным давлением глубин.<br />
+                        Синхронизация завершена. Космическая пустота{' '}<br />
+                        сменилась сокрушительным давлением глубин.{' '}<br />
                         Мы падали так долго...
                     </p>
 
                     <p className={styles.quoteText}>
-                        «Великие бездны тайно вырыты там, где хватило бы<br />
-                        и земных пор, и существа научились ходить,<br />
+                        «Великие бездны тайно вырыты там, где хватило бы{' '}<br />
+                        и земных пор, и существа научились ходить,{' '}<br />
                         хотя должны были только ползать.»
                     </p>
 
