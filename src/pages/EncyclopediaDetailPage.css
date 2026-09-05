@@ -689,25 +689,148 @@
   font-size: 0.82rem;
 }
 
+.encyclopedia-crafting-ingredient-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .encyclopedia-crafting-ingredient-item {
-  align-items: center;
+  display: flex;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
 
-.encyclopedia-crafting-ingredient-text {
-  color: var(--text-primary);
-}
-
-.encyclopedia-crafting-chip {
+.encyclopedia-crafting-reference {
   display: inline-flex;
+  max-width: 100%;
+  min-height: 32px;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: rgba(17, 21, 30, 0.72);
+}
+
+.encyclopedia-crafting-reference > .encyclopedia-entity-link {
+  display: inline-flex;
+  min-width: 0;
   align-items: center;
-  min-height: 24px;
-  padding: 2px 8px;
-  border: 1px solid rgba(159, 180, 207, 0.32);
-  border-radius: 999px;
+  gap: 7px;
+  padding: 3px 9px 3px 4px;
+  color: #c8cdd8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.encyclopedia-crafting-reference > .encyclopedia-entity-link:hover,
+.encyclopedia-crafting-reference > .encyclopedia-entity-link:focus-visible {
+  background: var(--accent-dim);
+  color: var(--accent);
+  outline: none;
+}
+
+.encyclopedia-crafting-amount {
+  display: inline-flex;
+  min-width: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border-left: 1px solid rgba(159, 180, 207, 0.18);
   color: #9fb4cf;
+  background: rgba(159, 180, 207, 0.055);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.encyclopedia-crafting-reference-static {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 9px 4px 7px;
+}
+
+.encyclopedia-crafting-reference-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  color: #8fa2ba;
+}
+
+.encyclopedia-crafting-reference-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.35;
+}
+
+.encyclopedia-crafting-reference-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.15;
+}
+
+.encyclopedia-crafting-reference-title {
+  overflow-wrap: anywhere;
+  color: #c8cdd8;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.encyclopedia-crafting-reference-kind {
+  margin-top: 2px;
+  color: #708098;
+  font-family: var(--font-heading);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.encyclopedia-crafting-reference.is-unresolved {
+  border-style: dashed;
+  border-color: rgba(207, 157, 83, 0.48);
+  background: rgba(111, 72, 25, 0.1);
+}
+
+.encyclopedia-crafting-reference.is-unresolved .encyclopedia-crafting-reference-icon,
+.encyclopedia-crafting-reference.is-unresolved .encyclopedia-crafting-reference-kind {
+  color: #c9954f;
+}
+
+.encyclopedia-crafting-reference.is-unresolved .encyclopedia-crafting-reference-title {
+  color: #d7c6a7;
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.encyclopedia-crafting-conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 0.66rem;
-  font-variant-numeric: tabular-nums;
 }
 
 .encyclopedia-armament-meta {
@@ -1015,6 +1138,11 @@
 
   .encyclopedia-armament-grid {
     grid-template-columns: 1fr;
+  }
+
+  .encyclopedia-crafting-ingredient-list {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .encyclopedia-infobox-item,
