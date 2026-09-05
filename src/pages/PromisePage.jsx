@@ -83,6 +83,10 @@ export default function PromisePage() {
                         <p className={styles.lastLine}>Я вернусь за тобой.</p>
                     </div>
                     <button className={styles.wakeBtn} onClick={wake} disabled={leaving} aria-label="Wake up and return to main page"><span className={styles.arrow} aria-hidden="true">▸</span>{leaving ? 'ПРОБУЖДЕНИЕ' : 'ПРОСНУТЬСЯ'}<span className={styles.wakeTranslation}>ERWACHE</span></button>
+                    <p className={styles.artCredit}>
+                        Арт «The Red Gate Redraw»<br />
+                        <a href="https://www.reddit.com/r/signalis/comments/1je1oyr/the_red_gate_redraw/" target="_blank" rel="noopener noreferrer">Автор и оригинал на Reddit <span aria-hidden="true">↗</span></a>
+                    </p>
                 </div>
             </section>}
             <footer className={styles.bottomBar}><span>PENROSE / 512</span><span>END OF TRANSMISSION</span><span>240.0 MHz</span></footer>

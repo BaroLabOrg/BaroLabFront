@@ -32,7 +32,7 @@ The images were provided by the user as Signalis reference artwork; they are not
 | Asset in `public/quest/` | Source |
 |---|---|
 | `king-in-yellow.png` | User image 1, `codex-clipboard-557c9139-03da-4109-881b-3f87e4ffdd3f.png`; image 2 informed physical book thickness |
-| `red-gate.png` | User image 4, `codex-clipboard-7c3b2d8e-36a9-4203-bac9-411f280665fb.png` |
+| `red-gate.png` | User image 4, `codex-clipboard-7c3b2d8e-36a9-4203-bac9-411f280665fb.png`; user identified the source as [The Red Gate Redraw on Reddit](https://www.reddit.com/r/signalis/comments/1je1oyr/the_red_gate_redraw/). The ending visibly links to this original artist's post. |
 | `adler-pass-front.png` | User image 5, `codex-clipboard-8285ff38-d1b4-4f87-a287-0bd98f5b2f66.png` |
 | `adler-pass-back.png` | User image 6, `codex-clipboard-93d2e461-61df-42e0-b7f8-ff026554fe44.png` |
 | `radio-sides.png` | Built-in ImageGen edit using user image 3, `codex-clipboard-2365296f-c2af-4f84-a8c7-2e8edf2f6adb.png`; front reference, generated matching rear |

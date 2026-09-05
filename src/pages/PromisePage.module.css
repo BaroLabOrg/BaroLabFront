@@ -30,6 +30,10 @@
 .wakeBtn:hover .arrow { color: #fff; }
 .wakeTranslation { margin-left: auto; font-size: 10px; font-weight: normal; color: #b9a3a0; letter-spacing: .06em; }
 .wakeBtn:hover .wakeTranslation { color: #f4d9d1; }
+.artCredit { margin: 24px 0 0; color: #b9a3a0; font-size: 11px; line-height: 1.8; }
+.artCredit a { display: inline-block; padding: 4px 0; color: #d7c7c1; text-decoration: underline; text-underline-offset: 3px; }
+.artCredit a:hover { color: #fff1dc; }
+.artCredit a:focus-visible { outline: 2px solid #efe8d7; outline-offset: 4px; }
 .boot { min-height: calc(100dvh - 88px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; width: min(780px, 100%); margin: auto; padding: 40px; }
 .bootMark { color: #ddd8ce; font: bold 80px/1 'Rajdhani', sans-serif; letter-spacing: -.04em; margin-bottom: 48px; }
 .bootLog { width: 100%; min-height: 170px; font-size: 13px; color: #aca79e; }
