@@ -102,6 +102,8 @@ Panels are flat, with thin borders and tonal separation. Depth belongs to the ob
 
 Use square corners for the scoped controls and panels. Preserve each object's silhouette and pixelated rendering: landscape pass, tall black book, wide analogue receiver. The receiver sprite sheet has two equal cells, selected as distinct front and rear faces. Do not crop or redraw the supplied book illustration to imitate its spine.
 
+The generated pass also uses a two-face atlas. Pass and radio textures and reverse markings are drawn once into fixed 192×123 and 224×224 canvas buffers, then enlarged without smoothing. Do not scale these buffers with device pixel ratio: their visible pixel grid is intentional. Keep the book's existing artwork and rendering unchanged.
+
 ## Components
 
 - **Item artwork:** separate physical faces rotate on the Y axis. The book alone adds a spine. Thumbnails remain front-facing and hide reverse surfaces and spine. Artwork is decorative for assistive technology; descriptions and clues carry the readable meaning.

@@ -7,7 +7,7 @@
 .card .object { aspect-ratio: 1.56; transform: rotateX(7deg) rotateY(-10deg); }
 .card .flipped { transform: rotateX(7deg) rotateY(170deg); }
 .card .face { border: 1px solid #5c5145; }
-.cardWriting { position: absolute; left: 22%; top: 59%; color: #301f16; font: bold clamp(12px, 2vw, 21px)/1.2 'Courier New', monospace; transform: rotate(-5deg); }
+.pixelFace { display: block; width: 100%; height: 100%; image-rendering: pixelated; background-size: 200% 100%; }
 .book { width: 58%; max-width: 250px; }
 .book .object { aspect-ratio: .63; transform: rotateX(4deg) rotateY(-17deg); }
 .book .flipped { transform: rotateX(4deg) rotateY(163deg); }
@@ -20,9 +20,6 @@
 .radio { max-width: 480px; }
 .radio .object { aspect-ratio: 1; }
 .radio .flipped { transform: rotateY(180deg); }
-.radioFront, .radioBack { display: block; width: 100%; height: 100%; background-image: url('/quest/radio-sides.png'); background-size: 200% 100%; image-rendering: pixelated; }
-.radioBack { background-position: 100% 0; }
-.radioWriting { position: absolute; left: 17%; top: 49%; padding: 5px 8px; background: #aca389; color: #181810; transform: rotate(-4deg); font: bold clamp(8px, 1vw, 12px)/1.5 'Courier New', monospace; }
 .thumbnail { max-width: 100%; width: 100%; perspective: none; }
 .thumbnail .object { transform: none; }
 .thumbnail.book { width: 45%; }
