@@ -15,7 +15,7 @@ export default function NotFoundPage() {
         }
     };
 
-    const handleEtherClick = () => {
+    const handleRecoverPass = () => {
         if (stage === 1) {
             setStage(2);
             openInspect(2);
@@ -65,16 +65,17 @@ export default function NotFoundPage() {
                                 <span className="not-found-log-level not-found-log-level--info">INFO</span>
                                 <span className="not-found-log-text">Manual navigation required</span>
                             </div>
-                            {/* Quest Stage 2 trigger — only visible when stage === 1 */}
+                            {/* The receiver's location leads to the administrator's pass. */}
                             {stage === 1 && (
-                                <div className="not-found-log-line">
+                                <div className={`not-found-log-line ${notFoundQuestStyles.recovery}`}>
+                                    <span className="not-found-log-text">SIGNAL TRACE COMPLETE / IDENTITY RECORD FOUND</span>
                                     <button
                                         type="button"
-                                        className={notFoundQuestStyles.etherLink}
-                                        onClick={handleEtherClick}
-                                        aria-label="Check ether frequency"
+                                        className={notFoundQuestStyles.recoverPass}
+                                        onClick={handleRecoverPass}
+                                        aria-label="Recover administrator's pass"
                                     >
-                                        ~Check the signal frequency~
+                                        RECOVER THE PASS
                                     </button>
                                 </div>
                             )}

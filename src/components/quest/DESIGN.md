@@ -120,7 +120,7 @@ The generated pass also uses a two-face atlas. Pass and radio textures and rever
 
 - **Do** keep this visual system scoped to item inspection and the promise ending.
 - **Do** preserve the supplied asset appearance and provenance.
-- **Do** keep reverse clues readable in text and preserve the chain: sector 404, footer build version, protocol 512 / frequency 240.0.
+- **Do** keep reverse clues readable in text and preserve the chain: radio → sector 404 → pass → home BUILD archive → book → protocol 512 / frequency 240.0. The opening broadcast numbers in the radio description are separate from its destination label.
 - **Do** retain keyboard access, visible control focus, reduced motion, and vertical scrolling.
 
 ### Don't:

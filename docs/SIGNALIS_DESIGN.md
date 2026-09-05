@@ -20,7 +20,9 @@ FINISH: verify desktop/mobile, keyboard, reduced motion, clue access, wake/reset
 
 ## Behaviour and implementation
 
-- `questItems.js` owns names, descriptions and the unchanged clue chain: sector 404, footer build version, protocol 512 / frequency 240.0.
+- `questItems.js` owns the discovery order and clues: radio → sector 404 → administrator's pass → HOME / BUILD archive record → book → protocol 512 / frequency 240.0. The radio is recovered when tracing the initial signal; the pass is recovered on the missing-page screen and authorizes the home footer archive. The book gives the final terminal values. Reverse markings in `QuestItemArtwork.jsx` must match these clues.
+- The radio describes the opening SIGNALIS broadcast: `39486 60170 24326 01064`, each group repeated twice. The opening digits are corroborated by [the ending guide's comparison to the opening room](https://www.gamenguides.com/how-to-get-all-endings-in-signalis) and [this intro transcription](https://www.reddit.com/r/signalis/comments/1ej42sx/). These are atmospheric source material, not a cipher for 404; the destination is explicitly written on the radio's service label.
+- Existing saved stages remain completed-discovery counts. Stage 1 now exposes the radio and continues at 404; stage 2 exposes both radio and pass and continues at the archive. No progress reset, storage-key change, or backend migration is needed.
 - `QuestItemArtwork.jsx` uses separate physical faces. The book spine is a CSS surface; the user-supplied cover illustration is retained intact.
 - The pass and radio render through fixed low-resolution canvas buffers (192×123 and 224×224), enlarged with nearest-neighbour CSS sampling, including their reverse clue markings. The generated pass atlas has presentation margins cropped at render time. The book and gate are deliberately excluded from this pixel rendering pass at the user's request.
 - `ItemInspectModal.jsx` changes face only through its flip button; selecting another item starts on the front. Only collected items can be selected. Escape closes and keyboard focus stays in the dialog.

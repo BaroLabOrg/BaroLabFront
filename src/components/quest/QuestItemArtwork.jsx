@@ -28,8 +28,9 @@ function PixelFace({ type, back = false }) {
                 context.translate(width * .22, height * .64);
                 context.rotate(-5 * Math.PI / 180);
                 context.fillStyle = '#301f16';
-                context.font = 'bold 10px "Courier New", monospace';
-                context.fillText('SEKTOR 404', 0, 0);
+                context.font = 'bold 8px "Courier New", monospace';
+                context.fillText('ARCHIV', 0, -5);
+                context.fillText('HOME / BUILD', 0, 6);
             } else {
                 context.translate(width * .17, height * .49);
                 context.rotate(-4 * Math.PI / 180);
@@ -38,7 +39,7 @@ function PixelFace({ type, back = false }) {
                 context.fillStyle = '#181810';
                 context.font = 'bold 6px "Courier New", monospace';
                 context.fillText('SIGNALQUELLE', 4, 9);
-                context.fillText('FOOTER / BUILD', 4, 17);
+                context.fillText('SEKTOR 404', 4, 17);
             }
             context.restore();
         };

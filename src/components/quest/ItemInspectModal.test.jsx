@@ -63,7 +63,7 @@ describe('Item inspection', () => {
         expect(screen.getAllByRole('button', { name: 'Item not found' })).toHaveLength(2);
         screen.getAllByRole('button', { name: 'Item not found' }).forEach(button => expect(button).toBeDisabled());
         await user.tab({ shift: true });
-        expect(screen.getByRole('button', { name: 'Inspect: ADMINISTRATOR’S PASS' })).toHaveFocus();
+        expect(screen.getByRole('button', { name: 'Inspect: RADIO RECEIVER' })).toHaveFocus();
         await user.tab();
         expect(close).toHaveFocus();
         await user.keyboard('{Escape}');
