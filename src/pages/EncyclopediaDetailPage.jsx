@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { getEncyclopediaDetail } from '../api/encyclopedia';
 import { useAuth } from '../context/AuthContext';
 import EventActionTree from '../components/EventActionTree';
+import EncyclopediaEntityLink from '../components/EncyclopediaEntityLink';
 import { PropertyFieldList } from '../components/PropertyValue';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
 import RelationGroup from '../components/RelationGroup';
@@ -75,6 +76,81 @@ function ingredientLabel(ingredient) {
         || humanizeIdentifier(ingredient?.itemIdentifier)
         || humanizeIdentifier(ingredient?.itemTag)
         || 'Unknown ingredient';
+}
+
+function CraftingReferenceIcon({ unresolved = false }) {
+    return (
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            {unresolved ? (
+                <>
+                    <path d="M7.4 12.6 5.8 14.2a2.7 2.7 0 0 1-3.8-3.8l2.8-2.8a2.7 2.7 0 0 1 3.8 0" />
+                    <path d="m12.6 7.4 1.6-1.6a2.7 2.7 0 1 1 3.8 3.8l-2.8 2.8a2.7 2.7 0 0 1-3.8 0" />
+                    <path d="m7.2 12.8 5.6-5.6M5.7 4.3l10 11.4" />
+                </>
+            ) : (
+                <>
+                    <path d="M3.2 5.2h13.6v4.2H3.2zM5.2 9.4h9.6v5.4H5.2z" />
+                    <path d="M7.2 12.1h5.6" />
+                </>
+            )}
+        </svg>
+    );
+}
+
+function CraftingIngredient({ ingredient }) {
+    const label = ingredientLabel(ingredient);
+    const isLinkable = Boolean(ingredient.slug && ingredient.isLinkable);
+    const isTag = Boolean(!isLinkable && ingredient.itemTag);
+    const relation = isLinkable
+        ? {
+            slug: ingredient.slug,
+            title: label,
+            summary: ingredient.description,
+        }
+        : null;
+
+    return (
+        <li className="encyclopedia-crafting-ingredient-item">
+            <span
+                className={`encyclopedia-crafting-reference${isTag ? ' is-tag' : ''}${!isLinkable && !isTag ? ' is-unresolved' : ''}`}
+            >
+                {relation ? (
+                    <EncyclopediaEntityLink relation={relation} />
+                ) : (
+                    <span
+                        className="encyclopedia-crafting-reference-static"
+                        title={isTag
+                            ? 'This recipe accepts any item with this tag.'
+                            : 'No encyclopedia entry is available for this ingredient.'}
+                    >
+                        <span className="encyclopedia-crafting-reference-icon">
+                            <CraftingReferenceIcon unresolved={!isTag} />
+                        </span>
+                        <span className="encyclopedia-crafting-reference-copy">
+                            <span className="encyclopedia-crafting-reference-title">{label}</span>
+                            <span className="encyclopedia-crafting-reference-kind">
+                                {isTag ? 'Item tag' : 'Unresolved reference'}
+                            </span>
+                        </span>
+                    </span>
+                )}
+                {ingredient.amount && (
+                    <span
+                        className="encyclopedia-crafting-amount"
+                        aria-label={`Amount ${ingredient.amount}`}
+                    >
+                        ×{ingredient.amount}
+                    </span>
+                )}
+            </span>
+            {(ingredient.minCondition || ingredient.useCondition) && (
+                <span className="encyclopedia-crafting-conditions">
+                    {ingredient.minCondition && <small>min condition: {ingredient.minCondition}</small>}
+                    {ingredient.useCondition && <small>use condition: {ingredient.useCondition}</small>}
+                </span>
+            )}
+        </li>
+    );
 }
 
 function SectionTitle({ children }) {
@@ -376,33 +452,12 @@ export default function EncyclopediaDetailPage() {
                                             )}
 
                                             {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
-                                                <ul className="encyclopedia-compact-list">
+                                                <ul className="encyclopedia-crafting-ingredient-list">
                                                     {recipe.ingredients.map((ingredient, ingredientIndex) => (
-                                                        <li
+                                                        <CraftingIngredient
+                                                            ingredient={ingredient}
                                                             key={`${ingredient.itemIdentifier || ingredient.itemTag || 'ingredient'}-${ingredientIndex}`}
-                                                            className="encyclopedia-crafting-ingredient-item"
-                                                        >
-                                                            {ingredient.slug && ingredient.isLinkable ? (
-                                                                <Link to={`/encyclopedia/${ingredient.slug}`}>
-                                                                    {ingredientLabel(ingredient)}
-                                                                </Link>
-                                                            ) : (
-                                                                <span className="encyclopedia-crafting-ingredient-text">
-                                                                    {ingredientLabel(ingredient)}
-                                                                </span>
-                                                            )}
-                                                            {ingredient.amount && (
-                                                                <span className="encyclopedia-crafting-chip">
-                                                                    x{ingredient.amount}
-                                                                </span>
-                                                            )}
-                                                            {ingredient.minCondition && (
-                                                                <small>min condition: {ingredient.minCondition}</small>
-                                                            )}
-                                                            {ingredient.useCondition && (
-                                                                <small>use condition: {ingredient.useCondition}</small>
-                                                            )}
-                                                        </li>
+                                                        />
                                                     ))}
                                                 </ul>
                                             ) : (

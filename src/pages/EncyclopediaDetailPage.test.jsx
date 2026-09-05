@@ -200,6 +200,13 @@ describe('EncyclopediaDetailPage', () => {
     });
 
     it('renders the crafting section only when a recipe is present, regardless of entity type', async () => {
+        loadInternalReferencePreview.mockResolvedValueOnce({
+            kind: 'Encyclopedia',
+            title: 'Organic Fiber',
+            imageUrl: 'https://cdn.test/organic-fiber.png',
+            detail: 'ITEM',
+            summary: 'A bundle of strong organic fibers.',
+        });
         vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
             entityType: 'ITEM',
             slug: 'bandage',
@@ -233,11 +240,21 @@ describe('EncyclopediaDetailPage', () => {
         });
 
         expect(screen.getByRole('heading', { name: 'Crafting' })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: 'Organic Fiber' })).toHaveAttribute(
+        const ingredientLink = screen.getByRole('link', { name: 'Organic Fiber' });
+        expect(ingredientLink).toHaveAttribute(
             'href',
             '/encyclopedia/organic-fiber',
         );
-        expect(screen.getByText('x1')).toBeInTheDocument();
+        expect(ingredientLink.querySelector('.encyclopedia-entity-link-image')).not.toBeNull();
+        expect(screen.getByLabelText('Amount 1')).toHaveTextContent('×1');
+
+        fireEvent.focus(ingredientLink);
+        const tooltip = await screen.findByRole('tooltip');
+        expect(within(tooltip).getByText('A bundle of strong organic fibers.')).toBeInTheDocument();
+        expect(loadInternalReferencePreview).toHaveBeenCalledWith({
+            type: 'encyclopedia',
+            slug: 'organic-fiber',
+        });
     });
 
     it('renders ingredient as plain text when slug is missing', async () => {
@@ -273,6 +290,33 @@ describe('EncyclopediaDetailPage', () => {
         const ingredientText = screen.getByText('Organic Fiber');
         expect(ingredientText).toBeInTheDocument();
         expect(ingredientText.closest('a')).toBeNull();
+        expect(screen.getByText('Unresolved reference')).toBeInTheDocument();
+    });
+
+    it('labels an ingredient tag as a group instead of inventing an entity link', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'ITEM',
+            crafting: {
+                hasRecipe: true,
+                recipes: [{
+                    recipeType: 'FABRICATE',
+                    ingredients: [{
+                        itemTag: 'metal',
+                        amount: '2',
+                        slug: null,
+                        isLinkable: false,
+                    }],
+                }],
+            },
+        }));
+
+        renderPage();
+
+        await screen.findByRole('heading', { name: 'Crafting' });
+        expect(screen.getByText('Metal')).toBeInTheDocument();
+        expect(screen.getByText('Item tag')).toBeInTheDocument();
+        expect(screen.queryByText('Unresolved reference')).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Metal' })).not.toBeInTheDocument();
     });
 
     it('omits the crafting section entirely when there is no recipe', async () => {
