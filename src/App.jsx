@@ -38,6 +38,7 @@ const EncyclopediaListPage = lazy(() => import('./pages/EncyclopediaListPage'));
 const EncyclopediaDetailPage = lazy(() => import('./pages/EncyclopediaDetailPage'));
 const EncyclopediaEditorPage = lazy(() => import('./pages/EncyclopediaEditorPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const StyleguidePage = lazy(() => import('./pages/StyleguidePage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ForbiddenPage = lazy(() => import('./pages/ForbiddenPage'));
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'));
@@ -237,6 +238,9 @@ export default function App() {
 
                     {/* About */}
                     <Route path="/about" element={<AboutPage />} />
+
+                    {/* Design system — live reference, not linked in the nav */}
+                    <Route path="/styleguide" element={<StyleguidePage />} />
 
                     {/* Error pages — for preview/testing */}
                     <Route path="/403" element={<ForbiddenPage />} />
