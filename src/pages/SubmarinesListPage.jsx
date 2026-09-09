@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as tagsApi from '../api/tags';
 import * as submarinesApi from '../api/submarines';
+import PageEmblem from '../components/PageEmblem';
 import Pagination from '../components/Pagination';
 import SubmarineCard from '../components/SubmarineCard';
 import TagChips from '../components/TagChips';
@@ -576,12 +577,7 @@ export default function SubmarinesListPage() {
             <div className="container submarines-page">
                 <header className="submarines-header-box">
                     <div className="submarines-header-main">
-                        <div className="submarines-header-icon" aria-hidden="true">
-                            <svg viewBox="0 0 32 20" focusable="false">
-                                <path d="M3 10c3-5 8-7 17-7 5 0 8 2 10 7-2 5-5 7-10 7-9 0-14-2-17-7Z" />
-                                <path d="M13 3V1h6v2M5 10H1M22 6l5-3M22 14l5 3" />
-                            </svg>
-                        </div>
+                        <PageEmblem glyph="submarines" className="submarines-header-emblem" />
                         <div>
                             <h1 className="submarines-title">{guideTargetMode ? 'Choose a submarine for your guide' : 'Submarines'}</h1>
                             <p className="submarines-subtitle">

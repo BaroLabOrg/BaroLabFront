@@ -1,0 +1,141 @@
+/* PageEmblem — Tactical Rust HUD tile for page-header/title sections.
+   Chamfered tile, amber corner bracket, ambient scan-sweep, pulsing status
+   dot. Theme it from the consuming page with --emblem-accent (and, if needed,
+   --emblem-bg / --emblem-line / --emblem-glow). */
+
+.page-emblem {
+    --_accent: var(--emblem-accent, var(--orange));
+    --_line: var(--emblem-line, color-mix(in srgb, var(--_accent) 44%, transparent));
+    --_bg: var(--emblem-bg, color-mix(in srgb, var(--_accent) 11%, var(--inset)));
+    --_glow: var(--emblem-glow, color-mix(in srgb, var(--_accent) 26%, transparent));
+    --emblem-size: 58px;
+
+    position: relative;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: var(--emblem-size);
+    height: var(--emblem-size);
+    overflow: hidden;
+    color: var(--_accent);
+    background:
+        radial-gradient(circle at 30% 24%, var(--_glow), transparent 70%),
+        var(--_bg);
+    box-shadow: inset 0 0 0 1px var(--_line);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    transition: box-shadow var(--transition-base), background var(--transition-base);
+}
+
+.page-emblem-icon {
+    width: 50%;
+    height: 50%;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform-origin: center;
+    animation: emblem-float 6s ease-in-out infinite;
+}
+
+.page-emblem-glyph {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+/* Amber corner bracket — matches .bracket--tl and the homepage card marks */
+.page-emblem-bracket {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 9px;
+    height: 9px;
+    border-top: 2px solid var(--amber);
+    border-left: 2px solid var(--amber);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Ambient scan-sweep — thin accent band travels down the tile */
+.page-emblem-scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -46%;
+    height: 42%;
+    background: linear-gradient(180deg, transparent, var(--_line), transparent);
+    pointer-events: none;
+    animation: emblem-scan 5.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Status dot — "index online", green regardless of section accent */
+.page-emblem-dot {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: statusPulse 2s ease-in-out infinite;
+    z-index: 2;
+}
+
+/* Hover — brighten the frame and let the glyph run its thematic motion,
+   mirroring the homepage "Choose your depth" cards. */
+.page-emblem:hover {
+    box-shadow: inset 0 0 0 1px var(--_accent), 0 0 12px -3px var(--_glow);
+}
+
+.page-emblem:hover .page-emblem-glyph--mods {
+    animation: emblem-gear 9s linear infinite;
+}
+
+.page-emblem:hover .page-emblem-glyph--submarines {
+    animation: emblem-cruise 3s ease-in-out infinite;
+}
+
+.page-emblem:hover .page-emblem-glyph--guides {
+    animation: emblem-riffle 2.6s ease-in-out infinite;
+}
+
+@keyframes emblem-float {
+    0%, 100% { transform: translateY(-1px); }
+    50% { transform: translateY(1.5px); }
+}
+
+@keyframes emblem-scan {
+    0% { transform: translateY(0); opacity: 0; }
+    12% { opacity: 0.55; }
+    80% { opacity: 0.55; }
+    100% { transform: translateY(360%); opacity: 0; }
+}
+
+@keyframes emblem-gear {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes emblem-cruise {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    50% { transform: translate(-2px, 1.5px) rotate(-5deg); }
+}
+
+@keyframes emblem-riffle {
+    0%, 100% { transform: rotate(0) skewY(0); }
+    50% { transform: rotate(-3deg) skewY(-2deg); }
+}
+
+@media (max-width: 760px) {
+    .page-emblem {
+        --emblem-size: 46px;
+    }
+
+    .page-emblem-bracket {
+        top: 4px;
+        left: 4px;
+        width: 7px;
+        height: 7px;
+    }
+}

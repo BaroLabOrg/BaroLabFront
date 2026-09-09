@@ -109,7 +109,7 @@ For an API change, trace backend controller/DTO/security/service and frontend cl
 ## Styling and UI behavior
 
 - The design system is "Tactical Rust": rust/amber/green palette on near-black, Orbitron/Rajdhani/JetBrains Mono/Inter type, chamfered corners (`clip-path`, never `border-radius` except 50% circles), corner brackets, hazard strips, terminal panels. `src/index.css` `:root` holds the authoritative tokens plus `.chamfer-*`, `.btn*`, `.chip*`, `.log-tag*` primitives; `/styleguide` renders them live.
-- `src/index.css` also keeps a "legacy aliases" block that re-points the old token names (`--accent`, `--bg-card`, `--radius-md`, …) at the new palette, so pages not yet migrated to Tactical Rust still render on-brand. Migrated so far: global primitives, `Navbar`, `Footer`, `HomePage` + `HeroCarousel`/`HomeModCard`/`SubmarineCard`. Other feature CSS still uses aliases.
+- `src/index.css` also keeps a "legacy aliases" block that re-points the old token names (`--accent`, `--bg-card`, `--radius-md`, …) at the new palette, so pages not yet migrated to Tactical Rust still render on-brand. Migrated so far: global primitives, `Navbar`, `Footer`, `HomePage` + `HeroCarousel`/`HomeModCard`/`SubmarineCard`, and the `ModsListPage`/`SubmarinesListPage`/`GuidesListPage` header emblems (shared `src/components/PageEmblem.jsx`, themed per page via `--emblem-accent`). Other feature CSS still uses aliases.
 - Preserve keyboard access, focus visibility (chamfered controls use an inset ring so `clip-path` can't hide it), reduced-motion behavior, loading/empty/error states, responsive layouts, and semantic labels.
 - UI/UX work must follow the workspace `impeccable` skill instruction; broad redesign is out of scope unless explicitly requested.
 

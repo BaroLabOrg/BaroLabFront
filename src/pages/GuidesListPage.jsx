@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { mapPaginationError } from '../api/api';
 import * as guideApi from '../api/modGuides';
 import { useAuth } from '../context/AuthContext';
+import PageEmblem from '../components/PageEmblem';
 import Pagination from '../components/Pagination';
 import useDocumentMeta from '../hooks/useDocumentMeta';
 import './GuidesListPage.css';
@@ -87,7 +88,7 @@ export default function GuidesListPage() {
             <main className="container guides-page">
                 <header className="guides-masthead">
                     <div className="guides-masthead-copy">
-                        <div className="guides-manual-mark"><ManualIcon /></div>
+                        <PageEmblem glyph="guides" className="guides-manual-mark" />
                         <div>
                             <h1>Community field manuals</h1>
                             <p>Practical knowledge for crews: systems, survival, modding and everything between.</p>

@@ -28,7 +28,7 @@
   bottom: -1px;
   width: min(34vw, 360px);
   height: 1px;
-  background: var(--accent-blue);
+  background: var(--deep-blue);
   content: '';
 }
 
@@ -39,25 +39,8 @@
   min-width: 0;
 }
 
-.submarines-header-icon {
-  display: grid;
-  flex: 0 0 auto;
-  width: 62px;
-  height: 52px;
-  place-items: center;
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.44);
-  background: rgba(59, 130, 246, 0.08);
-}
-
-.submarines-header-icon svg {
-  width: 34px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.35;
+.submarines-header-emblem {
+  --emblem-accent: var(--deep-blue);
 }
 
 .submarines-title {
@@ -307,9 +290,8 @@
     gap: 14px;
   }
 
-  .submarines-header-icon {
-    width: 48px;
-    height: 42px;
+  .submarines-header-emblem {
+    --emblem-size: 44px;
   }
 
   .submarines-title {
