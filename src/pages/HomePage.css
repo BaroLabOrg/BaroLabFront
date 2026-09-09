@@ -396,36 +396,99 @@
 .home-cat-card--submarines:hover .home-cat-topline .home-arrow-icon { color: var(--deep-blue); }
 .home-cat-card--guides:hover .home-cat-topline .home-arrow-icon { color: var(--green); }
 
-.home-cat-icon {
-    display: inline-flex;
-    margin-top: 18px;
+/* ── Emblem — large thematic watermark, sits behind the copy ────────────── */
+.home-cat-emblem {
+    position: absolute;
+    z-index: 0;
+    display: block;
+    opacity: 0.13;
+    pointer-events: none;
+    transition: opacity var(--transition-slow);
 }
 
-.home-cat-icon svg {
-    width: 30px;
-    height: 30px;
+.home-cat-emblem svg {
+    display: block;
+    width: 100%;
+    height: 100%;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.5;
+    stroke-width: 1.4;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transform-origin: center;
 }
 
-.home-cat-card--mods .home-cat-icon {
-    margin-top: 0;
+.home-cat-card:hover .home-cat-emblem {
+    opacity: 0.24;
+}
+
+.home-cat-card--mods .home-cat-emblem {
+    top: 34px;
+    right: 32px;
+    width: 150px;
+    height: 150px;
     color: var(--orange);
 }
 
-.home-cat-card--mods .home-cat-icon svg {
-    width: 42px;
-    height: 42px;
+.home-cat-card--submarines .home-cat-emblem,
+.home-cat-card--guides .home-cat-emblem {
+    top: 50%;
+    right: 16px;
+    width: 96px;
+    height: 96px;
+    transform: translateY(-50%);
 }
 
-.home-cat-card--submarines .home-cat-icon { color: var(--deep-blue); }
-.home-cat-card--guides .home-cat-icon { color: var(--amber); }
+.home-cat-card--submarines .home-cat-emblem { color: var(--deep-blue); }
+.home-cat-card--guides .home-cat-emblem { color: var(--amber); }
+
+/* Thematic hover motion — run only while the card is hovered */
+@keyframes cat-gear-spin { to { transform: rotate(360deg); } }
+
+@keyframes cat-sub-cruise {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    50% { transform: translate(-7px, 4px) rotate(-5deg); }
+}
+
+@keyframes cat-manual-riffle {
+    0%, 100% { transform: rotate(0) skewY(0); }
+    50% { transform: rotate(-3deg) skewY(-2deg); }
+}
+
+@keyframes cat-sonar {
+    0% { transform: scale(0.45); opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0; }
+}
+
+.home-cat-card--mods:hover .home-cat-emblem svg {
+    animation: cat-gear-spin 9s linear infinite;
+}
+
+.home-cat-card--submarines:hover .home-cat-emblem svg {
+    animation: cat-sub-cruise 3s ease-in-out infinite;
+}
+
+.home-cat-card--guides:hover .home-cat-emblem svg {
+    animation: cat-manual-riffle 2.6s ease-in-out infinite;
+}
+
+.home-cat-card--submarines .home-cat-emblem::after {
+    content: '';
+    position: absolute;
+    inset: 14%;
+    border: 1px solid var(--deep-blue);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.home-cat-card--submarines:hover .home-cat-emblem::after {
+    animation: cat-sonar 2.4s ease-out infinite;
+}
 
 .home-cat-title {
-    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
     font-family: var(--font-head);
     font-size: clamp(1.35rem, 2.2vw, 1.7rem);
     font-weight: 700;
@@ -485,6 +548,12 @@
 /* ── Card sections ───────────────────────────────────────────────────────── */
 .home-section {
     padding: 56px 0 4px;
+}
+
+/* Last section before the footer (System logs) — keep the terminal clear
+   of the footer's hazard strip */
+.home-section:last-of-type {
+    padding-bottom: 72px;
 }
 
 .home-section-head {
@@ -573,7 +642,7 @@
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-body {
     justify-content: center;
     gap: 5px;
-    padding: 12px 14px;
+    padding: 12px 44px 12px 14px;
 }
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-desc,
@@ -583,6 +652,32 @@
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-footer {
     margin-top: 0;
+}
+
+/* Rail items: the "open" arrow sits centred on the right edge */
+.home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-go {
+    top: 50%;
+    bottom: auto;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+}
+
+.home-card-grid--trending .home-mod-card:not(:first-child):hover .home-mod-card-go {
+    transform: translateY(-50%) translateX(3px);
+}
+
+/* Feature card: larger arrow, bottom-right, footer clears it */
+.home-card-grid--trending .home-mod-card:first-child .home-mod-card-go {
+    width: 30px;
+    height: 30px;
+    right: 14px;
+    bottom: 14px;
+}
+
+.home-card-grid--trending .home-mod-card:first-child .home-mod-card-footer {
+    padding-right: 48px;
 }
 
 /* ── Shipyard — 2 columns of horizontal vessel cards ───────────────────── */
@@ -806,17 +901,20 @@
         margin-bottom: 0;
     }
 
-    .home-cat-card--mods .home-cat-icon {
-        margin-top: 18px;
-    }
-
-    .home-cat-card--mods .home-cat-icon svg {
-        width: 34px;
-        height: 34px;
-    }
-
     .home-cat-card--mods .home-cat-title {
         font-size: clamp(1.9rem, 8vw, 2.4rem);
+    }
+
+    .home-cat-card--mods .home-cat-emblem,
+    .home-cat-card--submarines .home-cat-emblem,
+    .home-cat-card--guides .home-cat-emblem {
+        top: auto;
+        bottom: 14px;
+        right: 14px;
+        width: 70px;
+        height: 70px;
+        opacity: 0.1;
+        transform: none;
     }
 
     .home-section {

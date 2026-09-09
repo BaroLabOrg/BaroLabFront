@@ -33,6 +33,9 @@ export default function HomeModCard({ mod }) {
 
     return (
         <Link to={`/mod/${externalId}`} className="home-mod-card glass-card">
+            <span className="home-mod-card-go" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+            </span>
             <ImageWithFallback
                 className="home-mod-card-img"
                 src={mainImage}

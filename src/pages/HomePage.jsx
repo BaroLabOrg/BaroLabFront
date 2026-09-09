@@ -27,26 +27,34 @@ function SearchIcon() {
     );
 }
 
+/* Emblems — large, thematic, sit behind the copy as a watermark.
+   mods: a reactor / fabricator gear · submarines: a hull silhouette ·
+   guides: an open field manual. */
 const CATEGORY_ICONS = {
     mods: (
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M15.6 5.4a3.7 3.7 0 0 0-4.9 4.9l-6 6a2.1 2.1 0 1 0 3 3l6-6a3.7 3.7 0 0 0 4.9-4.9l-2.6 2.6-2.1-.5-.5-2.1 2.2-2.5Z" />
+            <circle cx="12" cy="12" r="3.1" />
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </svg>
     ),
     submarines: (
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <ellipse cx="11" cy="13" rx="8.5" ry="4" />
-            <path d="M2.5 13H1M20.5 13H23M11 9V5.5h3.5M19.5 11l1.5-1.5M19.5 15l1.5 1.5" />
-            <circle cx="8" cy="13" r=".6" />
-            <circle cx="11.5" cy="13" r=".6" />
-            <circle cx="15" cy="13" r=".6" />
+            <ellipse cx="11" cy="13" rx="8.4" ry="3.8" />
+            <path d="M9 9.4V6.3h3.6v3" />
+            <path d="M10.9 6.3V3.9h1.9" />
+            <path d="M19.4 13H22M22 13l1.4-1.6M22 13l1.4 1.6" />
+            <path d="M1.1 13h1.4" />
+            <circle cx="7.6" cy="13" r=".85" />
+            <circle cx="11" cy="13" r=".85" />
+            <circle cx="14.4" cy="13" r=".85" />
         </svg>
     ),
     guides: (
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M5 4.6A1.6 1.6 0 0 1 6.6 3H19v14.4H6.6A1.6 1.6 0 0 0 5 19V4.6Z" />
-            <path d="M19 17.4H6.6A1.6 1.6 0 0 0 5 19a1.6 1.6 0 0 0 1.6 1.6H19" />
-            <path d="M8.5 7.4h7M8.5 10.8h7" />
+            <path d="M12 6.6C10 5 7.2 4.5 4 5.2v13c3.2-.7 6-.2 8 1.4 2-1.6 4.8-2.1 8-1.4v-13c-3.2-.7-6-.2-8 1.4Z" />
+            <path d="M12 6.6v13" />
+            <path d="M6.4 9.3h3M6.4 12h3M15 9.3h3M15 12h3" />
         </svg>
     ),
 };
@@ -224,12 +232,12 @@ export default function HomePage() {
                     {CATEGORY_CARDS.map((cat) => (
                         <Link key={cat.key} to={cat.to} className={`home-cat-card home-cat-card--${cat.key}`}>
                             <span className={`home-cat-bg home-cat-bg--${cat.key}`} aria-hidden="true" />
+                            <span className="home-cat-emblem" aria-hidden="true">{CATEGORY_ICONS[cat.key]}</span>
                             <span className="home-cat-body">
                                 <span className="home-cat-topline">
                                     <span className="home-cat-bracket">{cat.bracket}</span>
                                     <ArrowIcon />
                                 </span>
-                                <span className="home-cat-icon" aria-hidden="true">{CATEGORY_ICONS[cat.key]}</span>
                                 <span className="home-cat-title">{cat.title}</span>
                                 <span className="home-cat-desc">{cat.desc}</span>
                                 <span className="home-cat-tags">

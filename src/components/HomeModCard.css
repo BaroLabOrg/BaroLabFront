@@ -43,6 +43,42 @@
     box-shadow: inset 0 0 0 2px var(--green);
 }
 
+/* "Open this" affordance — signals the row is navigable */
+.home-mod-card-go {
+    position: absolute;
+    z-index: 3;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    color: var(--text-secondary);
+    background: rgba(11, 9, 6, 0.55);
+    box-shadow: inset 0 0 0 1px var(--border-vector);
+    transition: color var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast), background var(--transition-fast);
+    pointer-events: none;
+}
+
+.home-mod-card-go svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-mod-card:hover .home-mod-card-go {
+    color: var(--orange);
+    background: rgba(11, 9, 6, 0.82);
+    box-shadow: inset 0 0 0 1px var(--orange);
+    transform: translateX(3px);
+}
+
 .home-mod-card-img {
     width: 100%;
     aspect-ratio: 16 / 10;
