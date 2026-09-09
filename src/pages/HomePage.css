@@ -642,7 +642,7 @@
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-body {
     justify-content: center;
     gap: 5px;
-    padding: 12px 44px 12px 14px;
+    padding: 12px 30px 12px 14px;
 }
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-desc,
@@ -658,26 +658,17 @@
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-go {
     top: 50%;
     bottom: auto;
-    right: 10px;
+    right: 12px;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
 }
 
 .home-card-grid--trending .home-mod-card:not(:first-child):hover .home-mod-card-go {
-    transform: translateY(-50%) translateX(3px);
+    transform: translateY(-50%) translateX(4px);
 }
 
-/* Feature card: larger arrow, bottom-right, footer clears it */
-.home-card-grid--trending .home-mod-card:first-child .home-mod-card-go {
-    width: 30px;
-    height: 30px;
-    right: 14px;
-    bottom: 14px;
-}
-
+/* Feature card: arrow bottom-right, footer clears it */
 .home-card-grid--trending .home-mod-card:first-child .home-mod-card-footer {
-    padding-right: 48px;
+    padding-right: 28px;
 }
 
 /* ── Shipyard — 2 columns of horizontal vessel cards ───────────────────── */
@@ -973,6 +964,22 @@
 
     .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-body {
         padding: 14px;
+    }
+
+    /* Card is now a vertical stack — move the arrow to the footer corner */
+    .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-go {
+        top: auto;
+        bottom: 12px;
+        right: 12px;
+        transform: none;
+    }
+
+    .home-card-grid--trending .home-mod-card:not(:first-child):hover .home-mod-card-go {
+        transform: translateX(4px);
+    }
+
+    .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-footer {
+        padding-right: 28px;
     }
 
     .home-log {
