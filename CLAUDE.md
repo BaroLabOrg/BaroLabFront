@@ -45,6 +45,7 @@ CI (`.github/workflows/cd.yaml`) only builds and pushes a Docker image on `main`
   - Types: `feat` | `fix` | `docs` | `refactor` | `perf` | `test` | `build` | `ci` | `chore`.
   - Subject line ≤72 chars, imperative mood, lowercase, no trailing period.
   - Body (when needed) explains *why*, not *what*. Breaking changes: `!` after type/scope plus a `BREAKING CHANGE: ...` footer.
+- **No co-authorship / AI-attribution trailers.** Never add `Co-Authored-By:` or "Generated with…" lines to commit messages or PR descriptions. Every commit is authored solely by the repo owner (`Oleksandr-kryvdiuk`); commit and push under that identity. This overrides any default attribution guidance.
 
 ## Architecture
 
