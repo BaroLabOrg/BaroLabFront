@@ -27,12 +27,11 @@
 }
 
 .guides-manual-mark {
-  flex: 0 0 auto;
-  width: clamp(52px, 7vw, 76px);
-  color: var(--guide-accent);
+  --emblem-accent: var(--guide-accent);
+  --emblem-size: clamp(52px, 6vw, 62px);
+  margin-top: 6px;
 }
 
-.guides-manual-mark svg,
 .guides-state > svg {
   display: block;
   width: 100%;

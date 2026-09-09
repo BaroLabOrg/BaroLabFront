@@ -113,7 +113,7 @@ export default function HeroCarousel() {
 
     return (
         <section
-            className="hero-carousel"
+            className="hero-carousel chamfer-lg"
             aria-label="Trending workshop mods"
             aria-roledescription="carousel"
             onMouseEnter={() => setPaused(true)}
@@ -123,7 +123,7 @@ export default function HeroCarousel() {
                 if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
             }}
         >
-            {/* Background */}
+            {/* Background — mod art, pushed back behind the rust gradient */}
             <Link to={`/mod/${externalId}`} className="hero-bg-link" aria-label={`Open ${mod.title}`}>
                 <ImageWithFallback
                     className="hero-bg active"
@@ -135,12 +135,26 @@ export default function HeroCarousel() {
                 <div className="hero-overlay" />
             </Link>
 
+            {/* Decorative marks */}
+            <span className="hero-bracket hero-bracket-tl" aria-hidden="true" />
+            <span className="hero-bracket hero-bracket-br" aria-hidden="true" />
+            <svg className="hero-radar" viewBox="0 0 200 200" aria-hidden="true">
+                <circle cx="100" cy="100" r="40" stroke="currentColor" strokeWidth="0.5" fill="none" />
+                <circle cx="100" cy="100" r="70" stroke="currentColor" strokeWidth="0.5" fill="none" />
+                <circle cx="100" cy="100" r="100" stroke="currentColor" strokeWidth="0.5" fill="none" />
+                <line x1="100" y1="0" x2="100" y2="200" stroke="currentColor" strokeWidth="0.4" />
+                <line x1="0" y1="100" x2="200" y2="100" stroke="currentColor" strokeWidth="0.4" />
+            </svg>
+            <span className="hero-telemetry" aria-hidden="true">
+                INDEX ▸ {String(current + 1).padStart(2, '0')} / {String(mods.length).padStart(2, '0')}
+            </span>
+
             {/* Main content */}
-            <div className="hero-content container">
+            <div className="hero-content">
                 <div className="hero-left" key={current}>
                     <div className="hero-badge">
                         <span className="hero-badge-dot" />
-                        Trending Now
+                        Live feed · Mod spotlight
                     </div>
                     <h2 className="hero-title">{mod.title}</h2>
                     <p className="hero-desc">
@@ -160,8 +174,8 @@ export default function HeroCarousel() {
                             </svg>
                         </Link>
                     </div>
-                    <div className="hero-stub-status">
-                        STATUS: TRENDING
+                    <div className="hero-status-line">
+                        [ TECH DETAILS · STATUS: <b>TRENDING</b> ]
                     </div>
                 </div>
 

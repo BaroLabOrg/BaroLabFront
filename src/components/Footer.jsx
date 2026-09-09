@@ -187,7 +187,12 @@ export default function Footer({ totalMods }) {
                 <div className="footer-col">
                     <h4 className="footer-col-title">External Comms</h4>
                     <button className="footer-link footer-link-ext" onClick={() => openBox('Discord')}>
-                        <span className="footer-ext-icon">💬</span> Discord
+                        <span className="footer-ext-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M19.3 5.3A17.6 17.6 0 0 0 15 4l-.2.4a16.4 16.4 0 0 1 3.8 1.2 15.2 15.2 0 0 0-13.2 0A16.4 16.4 0 0 1 9.2 4.4L9 4a17.6 17.6 0 0 0-4.3 1.3A18.4 18.4 0 0 0 1.5 17.9a17.7 17.7 0 0 0 5.4 2.7l1-1.7a11.5 11.5 0 0 1-1.8-.9l.4-.3a13 13 0 0 0 11 0l.4.3a11.5 11.5 0 0 1-1.8.9l1 1.7a17.7 17.7 0 0 0 5.4-2.7A18.4 18.4 0 0 0 19.3 5.3ZM8.6 15c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 2 1 1.9 2.2S9.6 15 8.6 15Zm6.8 0c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 2 1 1.9 2.2-.8 2.2-1.9 2.2Z" />
+                            </svg>
+                        </span>
+                        Discord
                     </button>
                     <a
                         className="footer-link footer-link-ext"
@@ -195,13 +200,24 @@ export default function Footer({ totalMods }) {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <span className="footer-ext-icon">🐙</span> GitHub
+                        <span className="footer-ext-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M12 1a11 11 0 0 0-3.5 21.4c.6.1.8-.2.8-.5v-2c-3 .7-3.7-1.4-3.7-1.4-.5-1.3-1.2-1.6-1.2-1.6-1-.7 0-.7 0-.7 1.1.1 1.7 1.1 1.7 1.1 1 1.7 2.6 1.2 3.2.9 0-.7.4-1.2.7-1.5-2.4-.3-5-1.2-5-5.4 0-1.2.5-2.2 1.1-3 0-.3-.4-1.4.1-2.9 0 0 1-.3 3 1.1a10.6 10.6 0 0 1 5.4 0c2-1.4 3-1.1 3-1.1.6 1.5.2 2.6.1 2.9.7.8 1.1 1.8 1.1 3 0 4.2-2.6 5.1-5 5.4.4.3.8 1 .8 2v3c0 .3.2.6.8.5A11 11 0 0 0 12 1Z" />
+                            </svg>
+                        </span>
+                        GitHub
                     </a>
                     <button className="footer-link footer-link-ext footer-wip" onClick={() => openBox('Contact Admin')}>
                         › Contact Admin
                     </button>
                     <button className="footer-link footer-link-ext footer-wip" onClick={() => openBox('Official Email')}>
-                        <span className="footer-ext-icon">✉</span> Official Email
+                        <span className="footer-ext-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                                <rect x="3" y="5" width="18" height="14" rx="1" />
+                                <path d="m3.5 7 8.5 6 8.5-6" />
+                            </svg>
+                        </span>
+                        Official Email
                     </button>
                 </div>
             </div>

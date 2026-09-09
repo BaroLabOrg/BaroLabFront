@@ -304,7 +304,9 @@ describe('ModsListPage search flow', () => {
     it('resets filters and clears URL params', async () => {
         const user = userEvent.setup();
         modsApi.searchMods
-            .mockResolvedValueOnce(paged([buildMod(301, 'Submarine Hardcore')], { page: 1 }))
+            .mockResolvedValueOnce(paged([buildMod(301, 'Submarine Hardcore')], {
+                page: 1, total: 13, total_pages: 2, has_previous: true,
+            }))
             .mockResolvedValueOnce(paged([buildMod(100, 'Base Mod')], { page: 0 }));
 
         renderModsPage('/mods?q=submarine&tags=realism,hardcore&page=1');

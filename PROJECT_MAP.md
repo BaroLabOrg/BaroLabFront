@@ -23,7 +23,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Base HTTP/error/pagination behavior | `src/api/api.js` |
 | Authentication/session | `src/context/AuthContext.jsx`, `src/components/ProtectedRoute.jsx` |
 | Global backend-down handling | `src/context/ServerErrorContext.jsx` |
-| Global design tokens/base styles | `src/index.css` |
+| Design-system tokens, primitives, chamfer/chip/button classes | `src/index.css` (+ live reference at `/styleguide`, `src/pages/StyleguidePage.jsx`) |
 | Domain API clients | `src/api/` |
 | Route-level screens | `src/pages/` |
 | Shared/domain UI | `src/components/` |
@@ -53,7 +53,8 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Bootstrap, routing, navigation, layout | `src/main.jsx`, `src/App.jsx`, `src/components/Navbar.jsx`, `Footer.jsx` | matching CSS, `src/hooks/useDocumentMeta.js` | component tests where present; route page tests |
 | Login, signup, roles, protected routes | `src/context/AuthContext.jsx`, `src/components/ProtectedRoute.jsx`, `src/pages/LoginPage.jsx`, `SignUpPage.jsx` | auth functions in `src/api/api.js`; backend auth/security sources | Add/inspect auth and route tests near the changed code |
 | Global server errors and error pages | `src/context/ServerErrorContext.jsx`, `src/pages/ServerErrorPage.jsx` | `ForbiddenPage.jsx`, `NotFoundPage.jsx`, base `request()` in `src/api/api.js` | relevant component/page tests |
-| Home and public presentation | `src/pages/HomePage.jsx` | `HomeModCard.jsx`, `HomeSubCard.jsx`, `HeroCarousel.jsx`, `AboutPage.jsx`, metadata/static public files | page/component tests where present |
+| Home and public presentation | `src/pages/HomePage.jsx` | `HeroCarousel.jsx` (mod spotlight), `HomeModCard.jsx`, `SubmarineCard.jsx`, `Footer.jsx`, `AboutPage.jsx`, metadata/static public files | page/component tests where present |
+| Design-system reference page | `src/pages/StyleguidePage.jsx` | `src/index.css` tokens/classes it mirrors; `Navbar`/`Footer` for the shared shell | no dedicated test (static reference) |
 | Mods, comments, tags, Steam transition | `src/pages/ModsListPage.jsx`, `ModPage.jsx`, `TagsPage.jsx` | `src/api/mods.js`, `tags.js`, `tagErrorMapper.js`, shared comment/mod/tag components | `ModsListPage.test.jsx`, `ModPage.test.jsx`, `TagsPage.test.jsx` and component tests |
 | Submarines | `src/pages/SubmarinesListPage.jsx`, `SubmarinePage.jsx` | `src/api/submarines.js`, `SubmarineCard.jsx`, `SubmarineGallery.jsx`, Steam/author/relation components | submarine page tests plus affected component tests |
 | Universal and mod-specific guides | `src/pages/GuidesListPage.jsx`, `GuidePage.jsx`, `GuideCreatePage.jsx`, `GuideEditorPage.jsx`, legacy `ModGuidePage.jsx`/`ModGuideEditor.jsx` | `src/api/modGuides.js`, `internalReferences.js`, `components/guides/`, `utils/internalGuideLinks.js`; read `GUIDE_INSTRUCTIONS.md` | guide page/editor and `components/guides/` tests |
@@ -70,7 +71,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 
 `src/App.jsx` is authoritative. Current groups are:
 
-- public home/auth/info/errors: `/`, `/login`, `/sign-up`, `/about`, `/403`, `/500`, fallback `*`;
+- public home/auth/info/errors: `/`, `/login`, `/sign-up`, `/about`, `/styleguide` (design-system reference, unlinked), `/403`, `/500`, fallback `*`;
 - content: `/mods`, `/mod/:externalId`, `/submarines`, `/submarines/:externalId`, `/tags`;
 - guides: `/guides`, `/guides/:guideId`, authenticated create/edit routes, plus legacy mod-targeted guide routes;
 - tools: `/load-order`, authenticated collection list/create/edit, public collection detail by slug;
@@ -107,9 +108,9 @@ For an API change, trace backend controller/DTO/security/service and frontend cl
 
 ## Styling and UI behavior
 
-- Global tokens and reusable primitives start in `src/index.css`; feature styles usually sit beside their JSX.
-- The established identity uses dark underwater tones, glass-like surfaces, shared button/card/status patterns, and responsive page-level CSS.
-- Preserve keyboard access, focus visibility, reduced-motion behavior where relevant, loading/empty/error states, responsive layouts, and semantic labels.
+- The design system is "Tactical Rust": rust/amber/green palette on near-black, Orbitron/Rajdhani/JetBrains Mono/Inter type, chamfered corners (`clip-path`, never `border-radius` except 50% circles), corner brackets, hazard strips, terminal panels. `src/index.css` `:root` holds the authoritative tokens plus `.chamfer-*`, `.btn*`, `.chip*`, `.log-tag*` primitives; `/styleguide` renders them live.
+- `src/index.css` also keeps a "legacy aliases" block that re-points the old token names (`--accent`, `--bg-card`, `--radius-md`, …) at the new palette, so pages not yet migrated to Tactical Rust still render on-brand. Migrated so far: global primitives, `Navbar`, `Footer`, `HomePage` + `HeroCarousel`/`HomeModCard`/`SubmarineCard`, and the `ModsListPage`/`SubmarinesListPage`/`GuidesListPage` header emblems (shared `src/components/PageEmblem.jsx`, themed per page via `--emblem-accent`). Other feature CSS still uses aliases.
+- Preserve keyboard access, focus visibility (chamfered controls use an inset ring so `clip-path` can't hide it), reduced-motion behavior, loading/empty/error states, responsive layouts, and semantic labels.
 - UI/UX work must follow the workspace `impeccable` skill instruction; broad redesign is out of scope unless explicitly requested.
 
 ## Configuration and verification

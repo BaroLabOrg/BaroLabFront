@@ -4,6 +4,7 @@ import { mapPaginationError } from '../api/api';
 import * as modsApi from '../api/mods';
 import * as tagsApi from '../api/tags';
 import ModCard from '../components/ModCard';
+import PageEmblem from '../components/PageEmblem';
 import Pagination from '../components/Pagination';
 import TagChips from '../components/TagChips';
 import useDocumentMeta from '../hooks/useDocumentMeta';
@@ -291,11 +292,7 @@ export default function ModsListPage() {
             <div className="container">
                 <header className="mods-header-box">
                     <div className="mods-header-main">
-                        <div className="mods-header-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" focusable="false">
-                                <path d="M8 4h8M6 8h12M5 12h14M7 16h10M9 20h6" />
-                            </svg>
-                        </div>
+                        <PageEmblem glyph="mods" className="mods-header-emblem" />
                         <div>
                             <h1 className="mods-title">{guideTargetMode ? 'Choose a mod for your guide' : 'Mods Library'}</h1>
                             <p className="mods-subtitle">

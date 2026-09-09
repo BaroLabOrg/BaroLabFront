@@ -38,24 +38,8 @@
   min-width: 0;
 }
 
-.mods-header-icon {
-  display: grid;
-  flex: 0 0 auto;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  color: var(--accent);
-  border: 1px solid rgba(249, 115, 22, 0.42);
-  background: rgba(249, 115, 22, 0.08);
-}
-
-.mods-header-icon svg {
-  width: 27px;
-  height: 27px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 1.5;
+.mods-header-emblem {
+  --emblem-accent: var(--orange);
 }
 
 .mods-title {
@@ -268,9 +252,8 @@
     gap: 14px;
   }
 
-  .mods-header-icon {
-    width: 42px;
-    height: 42px;
+  .mods-header-emblem {
+    --emblem-size: 44px;
   }
 
   .mods-title {
