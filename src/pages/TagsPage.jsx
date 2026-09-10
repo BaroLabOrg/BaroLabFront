@@ -12,12 +12,21 @@ const DIRECTION_VALUES = ['asc', 'desc'];
 const PAGE_SIZE_VALUES = [10, 20, 50, 100];
 
 const TAG_CATEGORIES = [
-    { value: 'SECURITY', label: '🔴 Security / Combat', color: '#e74c3c' },
-    { value: 'LIFE', label: '🟢 Life / Medical', color: '#2ecc71' },
-    { value: 'ENGINEERING', label: '🔵 Engineering / Tech', color: '#3498db' },
-    { value: 'META', label: '🟠 Meta / System', color: '#e67e22' },
-    { value: 'INFO', label: '⚪ Info / Specs', color: '#95a5a6' },
+    { value: 'SECURITY', label: 'Security / Combat', tone: 'security' },
+    { value: 'LIFE', label: 'Life / Medical', tone: 'life' },
+    { value: 'ENGINEERING', label: 'Engineering / Tech', tone: 'engineering' },
+    { value: 'META', label: 'Meta / System', tone: 'meta' },
+    { value: 'INFO', label: 'Info / Specs', tone: 'info' },
 ];
+
+function UsesIcon() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3 3 7.5 12 12l9-4.5L12 3Z" />
+            <path d="M3 12l9 4.5L21 12M3 16.5 12 21l9-4.5" />
+        </svg>
+    );
+}
 
 function normalizeSortBy(value) {
     return SORT_BY_VALUES.includes(value) ? value : 'name';
@@ -57,9 +66,9 @@ function getCategoryLabel(categoryValue) {
     return cat ? cat.label : categoryValue;
 }
 
-function getCategoryColor(categoryValue) {
+function getCategoryTone(categoryValue) {
     const cat = TAG_CATEGORIES.find(c => c.value === categoryValue);
-    return cat ? cat.color : '#95a5a6';
+    return cat ? cat.tone : 'info';
 }
 
 export default function TagsPage() {
@@ -199,14 +208,14 @@ export default function TagsPage() {
     return (
         <div className="page">
             <div className="container tags-page">
-                <section className="tags-header-box glass-card shine">
+                <section className="tags-header-box">
                     <h1 className="tags-title">Tag Catalog</h1>
                     <p className="tags-subtitle">
                         Global system tags. Creating a tag does not attach it to mods. Total: {totalTags}
                     </p>
                 </section>
 
-                <section className="tags-controls glass-card">
+                <section className="tags-controls">
                     <div className="tags-sort-controls">
                         <label className="tags-control-group">
                             <span>Sorting</span>
@@ -284,32 +293,34 @@ export default function TagsPage() {
                     <section className="tags-grid">
                         {tags.map((tag) => {
                             const usageCount = tag.usageCount ?? tag.usage_count;
-                            const category = tag.category ?? tag.category;
+                            const category = tag.category ?? tag.categoryValue;
                             const isVanilla = tag.isVanilla ?? tag.is_vanilla ?? false;
+                            const dateLabel = formatTagDate(tag);
 
                             return (
-                                <article key={tag.id || tag.slug} className="tag-item-card glass-card">
-                                    <div className="tag-item-header">
-                                        <h3>{tag.name}</h3>
+                                <article
+                                    key={tag.id || tag.slug}
+                                    className="tag-row"
+                                    data-tone={getCategoryTone(category)}
+                                >
+                                    <span className="tag-row-dot" aria-hidden="true" />
+                                    <h3 className="tag-row-name">{tag.name}</h3>
+                                    <span className="tag-row-slug">slug: {tag.slug}</span>
+                                    {isVanilla && <span className="tag-row-vanilla">Vanilla</span>}
+                                    <span className="tag-row-meta">
                                         {category && (
-                                            <span
-                                                className="tag-category-badge"
-                                                style={{ color: getCategoryColor(category) }}
-                                            >
-                                                {getCategoryLabel(category)}
+                                            <span className="tag-row-cat">{getCategoryLabel(category)}</span>
+                                        )}
+                                        {usageCount !== null && usageCount !== undefined && (
+                                            <span className="tag-row-uses" title="Usage count">
+                                                <UsesIcon />
+                                                {Number(usageCount).toLocaleString('en-US')}
                                             </span>
                                         )}
-                                    </div>
-                                    <p className="tag-slug">slug: {tag.slug}</p>
-                                    {isVanilla && (
-                                        <p className="tag-vanilla-badge">Ⓥ Vanilla</p>
-                                    )}
-                                    {usageCount !== null && usageCount !== undefined && (
-                                        <p className="tag-usage">Usage count: {usageCount}</p>
-                                    )}
-                                    {formatTagDate(tag) && (
-                                        <p className="tag-date">Created: {formatTagDate(tag)}</p>
-                                    )}
+                                        {dateLabel && (
+                                            <span className="tag-row-date" title="Created">{dateLabel}</span>
+                                        )}
+                                    </span>
                                 </article>
                             );
                         })}
