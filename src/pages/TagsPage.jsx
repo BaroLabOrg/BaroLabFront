@@ -314,7 +314,9 @@ export default function TagsPage() {
                                         {usageCount !== null && usageCount !== undefined && (
                                             <span className="tag-row-uses" title="Usage count">
                                                 <UsesIcon />
-                                                {Number(usageCount).toLocaleString('en-US')}
+                                                {Number.isFinite(Number(usageCount))
+                                                    ? Number(usageCount).toLocaleString('en-US')
+                                                    : usageCount}
                                             </span>
                                         )}
                                         {dateLabel && (
