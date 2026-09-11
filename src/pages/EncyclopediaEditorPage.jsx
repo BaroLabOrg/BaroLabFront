@@ -19,6 +19,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import ImageWithFallback from '../components/ImageWithFallback';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './EncyclopediaEditorPage.css';
 
 function buildEmptyInfoboxField(sortOrder = 0) {
@@ -65,6 +66,12 @@ function formatDate(value) {
 
 export default function EncyclopediaEditorPage() {
     const { id } = useParams();
+    useDocumentMeta({
+        title: id ? 'Edit encyclopedia entry | BaroLab' : 'Create encyclopedia entry | BaroLab',
+        description: 'BaroLab encyclopedia editor.',
+        noIndex: true,
+    });
+
     const navigate = useNavigate();
     const { isAdmin } = useAuth();
     const isCreateMode = !id;

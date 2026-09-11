@@ -262,7 +262,7 @@
     margin-bottom: 28px;
 }
 
-.home-choose-intro h2 {
+.home-choose-intro :is(h1, h2) {
     margin: 0;
     font-family: var(--font-head);
     font-size: clamp(2.4rem, 5.4vw, 4rem);

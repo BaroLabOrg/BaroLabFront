@@ -31,8 +31,9 @@ function getErrorTitle(status, code) {
 
 export default function LoadOrderPage() {
     useDocumentMeta({
-        title: 'Load Order — BaroLab',
+        title: 'Barotrauma Mod Load Order Tool | BaroLab',
         description: 'Manage Barotrauma mod load order and resolve conflicts with the BaroLab load order tool.',
+        canonicalPath: '/load-order',
     });
 
     const [requestText, setRequestText] = useState(INITIAL_REQUEST_TEXT);

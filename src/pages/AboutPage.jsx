@@ -4,8 +4,9 @@ import './AboutPage.css';
 
 export default function AboutPage() {
     useDocumentMeta({
-        title: 'About — BaroLab',
+        title: 'About BaroLab — Barotrauma Community Project',
         description: 'Learn about BaroLab, an independent community platform for Barotrauma players, modders and submarine creators.',
+        canonicalPath: '/about',
     });
 
     return (

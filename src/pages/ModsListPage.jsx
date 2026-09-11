@@ -47,8 +47,9 @@ function getTagFilterValue(tag) {
 
 export default function ModsListPage() {
     useDocumentMeta({
-        title: 'Mods — BaroLab',
+        title: 'Barotrauma Mods | BaroLab',
         description: 'Browse and discover Barotrauma mods. Find custom weapons, overhauls, creatures and more on BaroLab.',
+        canonicalPath: '/mods',
     });
 
     const [searchParams, setSearchParams] = useSearchParams();

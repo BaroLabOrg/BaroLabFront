@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuest } from '../context/QuestContext';
 import BaroLabIcon from './BaroLabIcon';
 import './Footer.css';
@@ -173,6 +174,9 @@ export default function Footer({ totalMods }) {
 
                 <div className="footer-col">
                     <h4 className="footer-col-title">Legal &amp; Compliance</h4>
+                    <Link className="footer-link" to="/about">
+                        › About BaroLab
+                    </Link>
                     <button className="footer-link" onClick={() => openBox('Terms of Service')}>
                         › Terms of Service
                     </button>
@@ -225,6 +229,10 @@ export default function Footer({ totalMods }) {
             <div className="footer-manifest container">
                 <div className="footer-manifest-left">
                     <span className="footer-manifest-title">Station Manifest</span>
+                    <span className="footer-manifest-line">
+                        BaroLab is an unofficial fan-made project and is not affiliated with or endorsed by
+                        FakeFish, Undertow Games or Daedalic Entertainment.
+                    </span>
                     <span className="footer-manifest-line">back: [crew]</span>
                     <span className="footer-manifest-line">back: [crew]</span>
                     <span className="footer-manifest-line">front: [crew]</span>

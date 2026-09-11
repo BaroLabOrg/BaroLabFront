@@ -183,8 +183,9 @@ function formatDate(value) {
 
 export default function SubmarinesListPage() {
     useDocumentMeta({
-        title: 'Submarines — BaroLab',
+        title: 'Barotrauma Submarines | BaroLab',
         description: 'Explore custom Barotrauma submarines. Find vessels by class, tier, crew size and technical specs on BaroLab.',
+        canonicalPath: '/submarines',
     });
 
     const [searchParams, setSearchParams] = useSearchParams();

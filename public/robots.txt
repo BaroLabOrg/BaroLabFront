@@ -18,3 +18,6 @@ Allow: /
 
 # Note: update Sitemap URL if the domain changes
 Sitemap: https://barolab.org/sitemap.xml
+# Dynamic public mods, submarines, guides and encyclopedia entries.
+# Cross-host submission is authorized here because the API owns live data.
+Sitemap: https://api.barolab.org/sitemap.xml

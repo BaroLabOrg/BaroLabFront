@@ -37,8 +37,9 @@ function formatGuideDate(value) {
 
 export default function GuidesListPage() {
     useDocumentMeta({
-        title: 'Guides — BaroLab',
+        title: 'Barotrauma Guides | BaroLab',
         description: 'Read Barotrauma community guides on engineering, wiring, medical procedures, modding and more on BaroLab.',
+        canonicalPath: '/guides',
     });
 
     const { isAuthenticated } = useAuth();

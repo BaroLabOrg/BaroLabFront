@@ -1,9 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuest } from '../context/QuestContext';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './NotFoundPage.css';
 import notFoundQuestStyles from './NotFoundPage.quest.module.css';
 
 export default function NotFoundPage() {
+    useDocumentMeta({
+        title: 'Page not found | BaroLab',
+        description: 'The requested BaroLab page could not be found.',
+        noIndex: true,
+    });
+
     const navigate = useNavigate();
     const { stage, setStage, openInspect } = useQuest();
 

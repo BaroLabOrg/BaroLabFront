@@ -104,8 +104,9 @@ const SEARCH_CATEGORIES = [
 
 export default function HomePage() {
     useDocumentMeta({
-        title: 'BaroLab — Barotrauma Mods, Submarines, Guides and Game Data',
-        description: 'Explore Barotrauma mods, submarines, guides, tags, load order information and encyclopedia entries on BaroLab.',
+        title: 'BaroLab — Barotrauma Database, Mods & Tools',
+        description: 'Explore Barotrauma game data, items, creatures, crafting, mods, submarines, guides and load-order tools on BaroLab.',
+        canonicalPath: '/',
     });
 
     const [stats, setStats] = useState({ mods: null, submarines: null, guides: null });
@@ -153,13 +154,16 @@ export default function HomePage() {
 
     return (
         <div className="home-page">
-            {/* SEO: visually hidden heading for crawlers */}
-            <h1 className="visually-hidden">
-                BaroLab — Barotrauma Mods, Submarines and Guides. Discover Barotrauma mods, custom submarines, community guides, tags, load order information and encyclopedia entries. Built for Barotrauma players, modders, submarine creators and server owners.
-            </h1>
-
             {/* Hero */}
             <div className="home-hero container">
+                <header className="home-choose-intro">
+                    <h1>BaroLab</h1>
+                    <p>
+                        <strong>Barotrauma Database, Mods &amp; Tools.</strong>{' '}
+                        Explore structured game data, crafting relationships, community mods,
+                        custom submarines and practical tools from an independent, unofficial project.
+                    </p>
+                </header>
                 <HeroCarousel />
             </div>
 

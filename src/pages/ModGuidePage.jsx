@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { getModGuideById } from '../api/modGuides';
 import { getMod } from '../api/mods';
 import GuideMarkdown from '../components/guides/GuideMarkdown';
+import useDocumentMeta from '../hooks/useDocumentMeta';
+import { breadcrumbStructuredData, plainTextExcerpt } from '../seo/siteMetadata';
 import './ModGuidePage.css';
 
 export default function ModGuidePage() {
@@ -13,6 +15,23 @@ export default function ModGuidePage() {
     const [mod, setMod] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const metaDescription = plainTextExcerpt(guide?.description)
+        || `Read a Barotrauma mod guide${mod?.title ? ` for ${mod.title}` : ''} on BaroLab.`;
+    useDocumentMeta({
+        title: guide
+            ? `${guide.title} — Barotrauma Guide | BaroLab`
+            : `${mod?.title || 'Mod'} Guide — BaroLab`,
+        description: metaDescription,
+        canonicalPath: guide ? `/guides/${guideId}` : `/mod/${id}/guides/${guideId}`,
+        type: 'article',
+        noIndex: Boolean(error || (!loading && !guide)),
+        structuredData: guide ? breadcrumbStructuredData([
+            { name: 'BaroLab', path: '/' },
+            { name: 'Barotrauma Guides', path: '/guides' },
+            { name: guide.title, path: `/guides/${guideId}` },
+        ]) : undefined,
+    });
 
     useEffect(() => {
         async function fetchData() {

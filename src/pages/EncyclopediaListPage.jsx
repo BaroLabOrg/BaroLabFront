@@ -72,8 +72,9 @@ function setParam(params, key, value) {
 
 export default function EncyclopediaListPage() {
     useDocumentMeta({
-        title: 'Encyclopedia — BaroLab',
+        title: 'Barotrauma Encyclopedia & Game Data | BaroLab',
         description: 'Search the Barotrauma encyclopedia — vanilla and mod items, creatures, afflictions and more.',
+        canonicalPath: '/encyclopedia',
     });
 
     const [searchParams, setSearchParams] = useSearchParams();

@@ -1,7 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ErrorPage.css';
 
 export default function ServerErrorPage() {
+    useDocumentMeta({
+        title: 'Service unavailable | BaroLab',
+        description: 'BaroLab is temporarily unavailable.',
+        noIndex: true,
+    });
+
     const navigate = useNavigate();
 
     const handleRetry = () => {

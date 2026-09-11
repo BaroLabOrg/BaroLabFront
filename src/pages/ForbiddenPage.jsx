@@ -1,7 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ErrorPage.css';
 
 export default function ForbiddenPage() {
+    useDocumentMeta({
+        title: 'Access denied | BaroLab',
+        description: 'This BaroLab page requires different access.',
+        noIndex: true,
+    });
+
     const navigate = useNavigate();
 
     const handleGoBack = () => {

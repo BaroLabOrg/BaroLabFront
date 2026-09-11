@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import SteamSyncTab from './SteamSyncTab';
 import SteamAvailabilityTab from './SteamAvailabilityTab';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './AdminPage.css';
 
 const ROLES = ['USER', 'SUPERUSER', 'ADMIN', 'SUPER_ADMIN'];
@@ -18,6 +19,12 @@ const CONTENT_STATUS_OPTIONS = ['ALL', 'ACTIVE', 'BLOCKED'];
 const STEAM_STATUS_OPTIONS = ['ALL', 'AVAILABLE', 'UNAVAILABLE', 'UNKNOWN', 'NOT_TRACKED'];
 
 export default function AdminPage() {
+    useDocumentMeta({
+        title: 'Administration | BaroLab',
+        description: 'BaroLab administration tools.',
+        noIndex: true,
+    });
+
     const { isAdmin, isSuperAdmin } = useAuth();
     const [activeTab, setActiveTab] = useState(isSuperAdmin ? 'users' : 'mods');
 

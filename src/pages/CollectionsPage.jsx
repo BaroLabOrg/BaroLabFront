@@ -23,6 +23,7 @@ export default function CollectionsPage() {
     useDocumentMeta({
         title: 'My collections — BaroLab',
         description: 'Barotrauma mod collections you built, with their load order and conflicts.',
+        noIndex: true,
     });
 
     const [collections, setCollections] = useState([]);

@@ -11,6 +11,8 @@ import GuidesSection from '../components/GuidesSection';
 import CommentsSection from '../components/CommentsSection';
 import ImageGallery from '../components/ImageGallery';
 import SteamDescription from '../components/SteamDescription';
+import useDocumentMeta from '../hooks/useDocumentMeta';
+import { breadcrumbStructuredData, plainTextExcerpt } from '../seo/siteMetadata';
 import './ModPage.css';
 
 export default function ModPage() {
@@ -20,6 +22,21 @@ export default function ModPage() {
     const [mod, setMod] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const metaDescription = plainTextExcerpt(mod?.description)
+        || 'View this Barotrauma mod, its Workshop details, dependencies, tags and related content on BaroLab.';
+    useDocumentMeta({
+        title: mod ? `${mod.title} — Barotrauma Mod | BaroLab` : 'Barotrauma Mod | BaroLab',
+        description: metaDescription,
+        canonicalPath: `/mod/${externalId}`,
+        image: mod?.mainImage || mod?.main_image,
+        noIndex: Boolean(error && !mod),
+        structuredData: mod ? breadcrumbStructuredData([
+            { name: 'BaroLab', path: '/' },
+            { name: 'Barotrauma Mods', path: '/mods' },
+            { name: mod.title, path: `/mod/${externalId}` },
+        ]) : undefined,
+    });
 
     useEffect(() => {
         loadMod();
