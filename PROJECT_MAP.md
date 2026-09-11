@@ -1,6 +1,6 @@
 # BaroLab frontend project map
 
-Compact navigation index for agents and developers. Verified against the source tree on **2026-09-05**.
+Compact navigation index for agents and developers. Verified against the source tree on **2026-09-11**.
 
 Use this file to find the right starting points, then verify behavior in the relevant code and tests. For an exact inventory, run `rg --files`; this map intentionally does not duplicate every JSX, CSS, or test file.
 
@@ -24,6 +24,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Authentication/session | `src/context/AuthContext.jsx`, `src/components/ProtectedRoute.jsx` |
 | Global backend-down handling | `src/context/ServerErrorContext.jsx` |
 | Design-system tokens, primitives, chamfer/chip/button classes | `src/index.css` (+ live reference at `/styleguide`, `src/pages/StyleguidePage.jsx`) |
+| SEO defaults and route metadata | `index.html`, `src/hooks/useDocumentMeta.js`, `src/seo/siteMetadata.js`, `public/robots.txt`, `public/sitemap.xml` |
 | Domain API clients | `src/api/` |
 | Route-level screens | `src/pages/` |
 | Shared/domain UI | `src/components/` |
@@ -42,6 +43,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | `src/context/` | Auth, server availability, and quest state providers |
 | `src/hooks/` | Reusable React hooks such as document metadata |
 | `src/pages/` | Lazy-loaded route screens, page-local styles, and page tests |
+| `src/seo/` | Canonical site URLs, social-image defaults, excerpts and structured-data helpers |
 | `src/utils/` | Steam BBCode, guide links, relation/property display, search, and text helpers |
 | `public/` | Static icon and crawler/SEO files |
 | `docs/` | Focused plans or design notes; not automatically required context |
@@ -54,6 +56,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Login, signup, roles, protected routes | `src/context/AuthContext.jsx`, `src/components/ProtectedRoute.jsx`, `src/pages/LoginPage.jsx`, `SignUpPage.jsx` | auth functions in `src/api/api.js`; backend auth/security sources | Add/inspect auth and route tests near the changed code |
 | Global server errors and error pages | `src/context/ServerErrorContext.jsx`, `src/pages/ServerErrorPage.jsx` | `ForbiddenPage.jsx`, `NotFoundPage.jsx`, base `request()` in `src/api/api.js` | relevant component/page tests |
 | Home and public presentation | `src/pages/HomePage.jsx` | `HeroCarousel.jsx` (mod spotlight), `HomeModCard.jsx`, `SubmarineCard.jsx`, `Footer.jsx`, `AboutPage.jsx`, metadata/static public files | page/component tests where present |
+| Search/social metadata and crawl discovery | `index.html`, `src/hooks/useDocumentMeta.js`, `src/seo/siteMetadata.js` | public detail/list pages, `public/robots.txt`, static sitemap, backend `/sitemap.xml` | `src/hooks/useDocumentMeta.test.jsx` plus affected page tests |
 | Design-system reference page | `src/pages/StyleguidePage.jsx` | `src/index.css` tokens/classes it mirrors; `Navbar`/`Footer` for the shared shell | no dedicated test (static reference) |
 | Mods, comments, tags, Steam transition | `src/pages/ModsListPage.jsx`, `ModPage.jsx`, `TagsPage.jsx` | `src/api/mods.js`, `tags.js`, `tagErrorMapper.js`, shared comment/mod/tag components | `ModsListPage.test.jsx`, `ModPage.test.jsx`, `TagsPage.test.jsx` and component tests |
 | Submarines | `src/pages/SubmarinesListPage.jsx`, `SubmarinePage.jsx` | `src/api/submarines.js`, `SubmarineCard.jsx`, `SubmarineGallery.jsx`, Steam/author/relation components | submarine page tests plus affected component tests |
@@ -103,6 +106,7 @@ Whenever a route or guard changes, verify navigation links, direct-load behavior
 | `src/api/modCollections.js` | collection controllers and `service/collection/` |
 | `src/api/loadOrder.js` | `loadorder/` bounded context |
 | `src/api/steamSync.js`, `steamAvailability.js` | corresponding admin controllers and `service/steam/` |
+| `public/robots.txt`, `public/sitemap.xml` | `SitemapController.java`, `service/seo/SitemapService.java` |
 
 For an API change, trace backend controller/DTO/security/service and frontend client/normalizer/consumer together. Update both project maps if the routing information or cross-repository contract changes.
 

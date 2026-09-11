@@ -9,6 +9,8 @@ import ContentGlyph from '../components/ContentGlyph';
 import WorkshopAuthorCard from '../components/WorkshopAuthorCard';
 import SteamDescription from '../components/SteamDescription';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import useDocumentMeta from '../hooks/useDocumentMeta';
+import { breadcrumbStructuredData, plainTextExcerpt } from '../seo/siteMetadata';
 import './SubmarinePage.css';
 
 const TAGS_PAGE_SIZE = 100;
@@ -195,6 +197,23 @@ export default function SubmarinePage() {
     const [subscribeError, setSubscribeError] = useState('');
     const [mods, setMods] = useState({
         loading: true, error: '', known: false, required: [], used: [],
+    });
+
+    const metaDescription = plainTextExcerpt(submarine?.description)
+        || 'Explore this Barotrauma submarine, including its class, crew guidance, technical specifications and Workshop details.';
+    useDocumentMeta({
+        title: submarine
+            ? `${submarine.title} — Barotrauma Submarine | BaroLab`
+            : 'Barotrauma Submarine | BaroLab',
+        description: metaDescription,
+        canonicalPath: `/submarines/${externalId}`,
+        image: submarine?.mainImage || submarine?.main_image,
+        noIndex: Boolean(error && !submarine),
+        structuredData: submarine ? breadcrumbStructuredData([
+            { name: 'BaroLab', path: '/' },
+            { name: 'Barotrauma Submarines', path: '/submarines' },
+            { name: submarine.title, path: `/submarines/${externalId}` },
+        ]) : undefined,
     });
 
     useEffect(() => {

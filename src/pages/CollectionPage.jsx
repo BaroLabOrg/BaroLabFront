@@ -43,9 +43,13 @@ export default function CollectionPage() {
     const [showXml, setShowXml] = useState(false);
 
     useDocumentMeta({
-        title: collection ? `${collection.title} — BaroLab` : 'Collection — BaroLab',
+        title: collection
+            ? `${collection.title} — Barotrauma Mod Collection | BaroLab`
+            : 'Barotrauma Mod Collection | BaroLab',
         description: collection?.description
             || 'A Barotrauma mod collection with the load order the game needs.',
+        canonicalPath: `/collections/${slug}`,
+        noIndex: Boolean(error && !collection),
     });
 
     useEffect(() => {

@@ -6,6 +6,7 @@ import { getMod } from '../api/mods';
 import GuideMarkdown from '../components/guides/GuideMarkdown';
 import InternalLinkPicker from '../components/guides/InternalLinkPicker';
 import { escapeMarkdownLinkLabel } from '../utils/internalGuideLinks';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ModGuideEditor.css';
 import './ModGuidePage.css'; // Reuse markdown styles for preview
 
@@ -14,6 +15,12 @@ export default function ModGuideEditor() {
     const navigate = useNavigate();
 
     const isEditMode = !!guideId;
+
+    useDocumentMeta({
+        title: isEditMode ? 'Edit mod guide | BaroLab' : 'Create mod guide | BaroLab',
+        description: 'Write and preview a Barotrauma mod guide on BaroLab.',
+        noIndex: true,
+    });
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');

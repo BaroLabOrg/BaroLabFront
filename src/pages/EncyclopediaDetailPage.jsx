@@ -13,6 +13,8 @@ import ImageWithFallback from '../components/ImageWithFallback';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { groupRelations } from '../utils/relations';
 import { humanizeIdentifier } from '../utils/text';
+import useDocumentMeta from '../hooks/useDocumentMeta';
+import { breadcrumbStructuredData, plainTextExcerpt } from '../seo/siteMetadata';
 import './EncyclopediaDetailPage.css';
 
 function ensureDetailCollections(detail) {
@@ -199,6 +201,24 @@ export default function EncyclopediaDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showRawProperties, setShowRawProperties] = useState(false);
+
+    const entityTypeLabel = humanizeIdentifier(detail?.entityType || 'Encyclopedia Entry');
+    const metaDescription = plainTextExcerpt(detail?.summary || detail?.shortDescription)
+        || `Explore ${detail?.title || 'this entry'} and related structured Barotrauma game data on BaroLab.`;
+    useDocumentMeta({
+        title: detail
+            ? `${detail.title} — Barotrauma ${entityTypeLabel} | BaroLab`
+            : 'Barotrauma Encyclopedia Entry | BaroLab',
+        description: metaDescription,
+        canonicalPath: `/encyclopedia/${encodeURIComponent(slug)}`,
+        image: detail?.primaryImage?.publicUrl,
+        noIndex: Boolean(error && !detail),
+        structuredData: detail ? breadcrumbStructuredData([
+            { name: 'BaroLab', path: '/' },
+            { name: 'Barotrauma Encyclopedia', path: '/encyclopedia' },
+            { name: detail.title, path: `/encyclopedia/${slug}` },
+        ]) : undefined,
+    });
 
     useEffect(() => {
         let cancelled = false;

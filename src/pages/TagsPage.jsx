@@ -64,8 +64,9 @@ function getCategoryColor(categoryValue) {
 
 export default function TagsPage() {
     useDocumentMeta({
-        title: 'Tags — BaroLab',
+        title: 'Barotrauma Mod & Submarine Tags | BaroLab',
         description: 'Browse categorization tags for Barotrauma mods and submarines on BaroLab.',
+        canonicalPath: '/tags',
     });
 
     const [searchParams, setSearchParams] = useSearchParams();

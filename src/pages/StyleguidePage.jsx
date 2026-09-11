@@ -118,6 +118,8 @@ export default function StyleguidePage() {
     useDocumentMeta({
         title: 'Design System — BaroLab',
         description: 'Live reference for the BaroLab "Tactical Rust" design system: tokens, typography, components and states.',
+        canonicalPath: '/styleguide',
+        noIndex: true,
     });
 
     return (

@@ -37,6 +37,7 @@ export default function CollectionBuilderPage() {
     useDocumentMeta({
         title: editing ? 'Edit collection — BaroLab' : 'New collection — BaroLab',
         description: 'Build a Barotrauma mod collection and get the load order the game needs.',
+        noIndex: true,
     });
 
     const [collection, setCollection] = useState(null);

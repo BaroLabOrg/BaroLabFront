@@ -2,9 +2,16 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './LoginPage.css';
 
 export default function LoginPage() {
+    useDocumentMeta({
+        title: 'Log in | BaroLab',
+        description: 'Log in to your BaroLab account.',
+        noIndex: true,
+    });
+
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');

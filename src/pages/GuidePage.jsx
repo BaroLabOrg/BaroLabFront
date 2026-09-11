@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getGuideById } from '../api/modGuides';
 import GuideMarkdown from '../components/guides/GuideMarkdown';
+import useDocumentMeta from '../hooks/useDocumentMeta';
+import { absoluteSiteUrl, breadcrumbStructuredData, plainTextExcerpt } from '../seo/siteMetadata';
 import './ModGuidePage.css';
 
 function value(object, camel, snake) {
@@ -15,6 +17,43 @@ export default function GuidePage() {
     const [guide, setGuide] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const guideDescription = plainTextExcerpt(guide?.description)
+        || 'Read this community-written Barotrauma guide on BaroLab.';
+    const guideUpdatedAt = value(guide, 'updatedAt', 'updated_at') || value(guide, 'createdAt', 'created_at');
+    const guideCreatedAt = value(guide, 'createdAt', 'created_at');
+    useDocumentMeta({
+        title: guide ? `${guide.title} — Barotrauma Guide | BaroLab` : 'Barotrauma Guide | BaroLab',
+        description: guideDescription,
+        canonicalPath: `/guides/${guideId}`,
+        type: 'article',
+        noIndex: Boolean(error && !guide),
+        structuredData: guide ? [
+            breadcrumbStructuredData([
+                { name: 'BaroLab', path: '/' },
+                { name: 'Barotrauma Guides', path: '/guides' },
+                { name: guide.title, path: `/guides/${guideId}` },
+            ]),
+            {
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: guide.title,
+                description: guideDescription,
+                url: absoluteSiteUrl(`/guides/${guideId}`),
+                datePublished: guideCreatedAt,
+                dateModified: guideUpdatedAt,
+                author: guide.author ? {
+                    '@type': 'Person',
+                    name: guide.author.username || guide.author.login,
+                } : undefined,
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'BaroLab',
+                    url: absoluteSiteUrl('/'),
+                },
+            },
+        ] : undefined,
+    });
 
     useEffect(() => {
         let cancelled = false;
@@ -31,7 +70,7 @@ export default function GuidePage() {
     const targetTitle = value(guide, 'targetTitle', 'target_title') || 'BaroLab content';
     const targetHref = value(guide, 'targetHref', 'target_href') || '/guides';
     const targetType = value(guide, 'targetType', 'target_type') || 'CONTENT';
-    const updatedAt = value(guide, 'updatedAt', 'updated_at') || value(guide, 'createdAt', 'created_at');
+    const updatedAt = guideUpdatedAt;
     const canEdit = user && (
         user.role === 'ADMIN'
         || user.role === 'SUPER_ADMIN'

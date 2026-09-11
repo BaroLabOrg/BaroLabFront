@@ -52,6 +52,7 @@ export default function GuideCreatePage() {
     useDocumentMeta({
         title: 'Create guide — BaroLab',
         description: 'Choose what your BaroLab guide is about.',
+        noIndex: true,
     });
 
     return (

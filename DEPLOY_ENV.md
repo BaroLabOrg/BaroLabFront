@@ -16,6 +16,16 @@
 - Google OAuth Client ID для кнопки входа через Google.
 - Пример: `1234567890-xxxx.apps.googleusercontent.com`
 
+`VITE_SITE_URL`
+- Публичный URL frontend без завершающего `/`.
+- Используется для canonical, OpenGraph и structured data.
+- Пример: `https://barolab.org`
+
+## SEO URLs
+
+`public/robots.txt` и `public/sitemap.xml` содержат публичные URL в явном виде.
+Если домен frontend или backend меняется, обновите ссылки на статический sitemap и backend sitemap вместе с переменными окружения.
+
 ## Где задавать в облаке
 
 Задавайте переменные в настройках окружения именно для сборки frontend-приложения:

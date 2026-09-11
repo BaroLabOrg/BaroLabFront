@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuest } from '../context/QuestContext';
 import usePromiseAudio from '../components/quest/usePromiseAudio';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import styles from './PromisePage.module.css';
 
 const BOOT_LINES = [
@@ -12,6 +13,12 @@ const BOOT_LINES = [
 ];
 
 export default function PromisePage() {
+    useDocumentMeta({
+        title: 'Promise | BaroLab',
+        description: 'A hidden BaroLab experience.',
+        noIndex: true,
+    });
+
     const navigate = useNavigate();
     const { resetQuest, closeTerminal } = useQuest();
     const [phase, setPhase] = useState('boot');

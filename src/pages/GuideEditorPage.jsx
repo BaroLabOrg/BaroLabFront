@@ -9,6 +9,7 @@ import GuideMarkdown from '../components/guides/GuideMarkdown';
 import InternalLinkPicker from '../components/guides/InternalLinkPicker';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { escapeMarkdownLinkLabel } from '../utils/internalGuideLinks';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ModGuideEditor.css';
 import './ModGuidePage.css';
 
@@ -48,6 +49,12 @@ async function loadTarget(type, id) {
 
 export default function GuideEditorPage() {
     const { guideId } = useParams();
+    useDocumentMeta({
+        title: guideId ? 'Edit guide | BaroLab' : 'Create guide | BaroLab',
+        description: 'Write and preview a BaroLab community guide.',
+        noIndex: true,
+    });
+
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const isEditMode = Boolean(guideId);
