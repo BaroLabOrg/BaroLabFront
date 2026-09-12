@@ -656,9 +656,12 @@
 }
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-body {
-    justify-content: center;
-    gap: 5px;
+    justify-content: space-between;
     padding: 12px 30px 12px 14px;
+}
+
+.home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-heading {
+    margin-bottom: 0;
 }
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-desc,

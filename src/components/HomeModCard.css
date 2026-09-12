@@ -1,11 +1,15 @@
 /* HomeModCard — Tactical Rust grid card. Chamfer-card, vector border,
-   amber corner bracket that arms orange on hover. */
+   amber corner bracket that arms orange on hover.
+
+   The card itself is not a link: .home-mod-card-title-link is a real <a>
+   whose ::after is stretched to cover the whole card (the standard
+   "stretched link" pattern), so the whole card stays clickable without
+   nesting the separate, real author <a> inside another anchor. */
 
 .home-mod-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    text-decoration: none;
     color: inherit;
     background: var(--surface);
     border: 1px solid var(--border-vector);
@@ -37,13 +41,7 @@
     border-color: var(--orange);
 }
 
-.home-mod-card:focus-visible {
-    outline: none;
-    border-color: var(--green);
-    box-shadow: inset 0 0 0 2px var(--green);
-}
-
-/* "Open this" affordance — signals the row is navigable. Same treatment as
+/* "Open this" affordance — signals the card is navigable. Same treatment as
    the "Choose your depth" arrows: a bare glyph, dim at rest, that takes the
    accent colour and slides right on hover — no chip or box. */
 .home-mod-card-go {
@@ -102,8 +100,36 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 7px;
     padding: 14px;
+}
+
+/* ── Heading — title + author read as one unit, tightly paired ─────────── */
+.home-mod-card-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.home-mod-card-title-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+}
+
+/* Stretched link: fills the whole card (its containing block is the
+   position:relative .home-mod-card, since this anchor itself stays static),
+   so the card is clickable anywhere without making the card itself a link. */
+.home-mod-card-title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.home-mod-card-title-link:focus-visible::after {
+    box-shadow: inset 0 0 0 2px var(--green);
 }
 
 .home-mod-card-title {
@@ -123,35 +149,49 @@
 }
 
 .home-mod-card-author {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: 5px;
+    width: fit-content;
+    max-width: 100%;
     margin: 0;
     font-family: var(--font-mono);
     font-size: 10.5px;
     letter-spacing: 0.02em;
-    color: var(--text-tertiary);
+    color: var(--deep-blue);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-mod-card-author--link {
+    transition: color var(--transition-fast);
+}
+
+.home-mod-card-author--link:hover,
+.home-mod-card-author--link:focus-visible {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    outline: none;
 }
 
 .home-mod-card-author-icon {
+    flex: 0 0 auto;
     display: inline-flex;
-    color: var(--text-tertiary);
+    color: inherit;
 }
 
 .home-mod-card-author-icon svg,
 .home-mod-card-stat svg {
-    width: 11px;
-    height: 11px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
     flex: 0 0 auto;
 }
 
 .home-mod-card-desc {
-    margin: 0;
+    margin: 0 0 10px;
     font-size: 12px;
     color: var(--text-secondary);
     line-height: 1.6;
@@ -162,11 +202,12 @@
     overflow: hidden;
 }
 
+/* ── Tags — one colour per rough category (see utils/modTagTone.js) ────── */
 .home-mod-card-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    margin-top: 2px;
+    margin-bottom: 10px;
 }
 
 .home-mod-card-tag {
@@ -177,17 +218,22 @@
     line-height: 1.6;
     text-transform: uppercase;
     padding: 2px 7px;
-    color: var(--orange);
-    background: var(--orange-tint);
-    border: 1px solid var(--orange);
+    border: 1px solid currentColor;
 }
+
+.home-mod-card-tag--security { color: var(--orange); background: var(--orange-tint); }
+.home-mod-card-tag--life     { color: var(--green); background: var(--green-tint); }
+.home-mod-card-tag--deep     { color: var(--deep-blue); background: var(--deep-blue-tint); }
+.home-mod-card-tag--vanilla  { color: var(--amber); background: var(--amber-tint); }
+.home-mod-card-tag--danger   { color: var(--danger); background: var(--danger-tint); }
+.home-mod-card-tag--hull     { color: var(--steel); background: transparent; }
 
 .home-mod-card-footer {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-top: auto;
-    padding-top: 9px;
+    padding-top: 10px;
     border-top: 1px solid var(--border-vector-soft);
 }
 
@@ -198,11 +244,11 @@
     font-family: var(--font-mono);
     font-size: 10.5px;
     color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
 }
 
-.home-mod-card-stat:first-child svg {
-    fill: var(--amber);
-    stroke: var(--amber);
+.home-mod-card-stat--rating {
+    color: var(--amber);
 }
 
 .home-mod-card-date {

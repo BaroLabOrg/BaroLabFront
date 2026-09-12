@@ -36,6 +36,20 @@ const PATHS = {
             <path d="M5.5 20c.6-4.2 2.8-6.3 6.5-6.3s5.9 2.1 6.5 6.3" />
         </>
     ),
+    star: (
+        <path
+            fill="currentColor"
+            stroke="none"
+            d="m12 3.3 2.62 5.5 6 .77-4.36 4.19 1.13 5.94L12 16.8l-5.39 2.9 1.13-5.94-4.36-4.19 6-.77L12 3.3Z"
+        />
+    ),
+    download: (
+        <>
+            <path d="M12 3.5v11" />
+            <path d="m7.5 9.5 4.5 4.5 4.5-4.5" />
+            <path d="M4.5 17.5V19a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-1.5" />
+        </>
+    ),
 };
 
 export default function ContentGlyph({ name, className = '', size = 22 }) {
