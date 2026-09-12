@@ -209,6 +209,135 @@ function normalizeImage(image) {
     };
 }
 
+function normalizeRenderAsset(asset) {
+    if (!asset || typeof asset !== 'object') return null;
+    const publicUrl = resolveMediaUrl(firstDefined(asset.publicUrl, asset.public_url));
+    if (!publicUrl) return null;
+    const fileHash = firstDefined(asset.fileHash, asset.file_hash);
+    const mimeType = firstDefined(asset.mimeType, asset.mime_type, 'image/png');
+    return {
+        ...asset,
+        publicUrl,
+        public_url: publicUrl,
+        fileHash,
+        file_hash: fileHash,
+        mimeType,
+        mime_type: mimeType,
+        width: Number(firstDefined(asset.width, 0)) || 0,
+        height: Number(firstDefined(asset.height, 0)) || 0,
+    };
+}
+
+function normalizeRenderBounds(bounds) {
+    if (!bounds || typeof bounds !== 'object') return null;
+    const normalized = {
+        x: Number(firstDefined(bounds.x, 0)),
+        y: Number(firstDefined(bounds.y, 0)),
+        width: Number(firstDefined(bounds.width, 0)),
+        height: Number(firstDefined(bounds.height, 0)),
+    };
+    return Number.isFinite(normalized.x)
+        && Number.isFinite(normalized.y)
+        && normalized.width > 0
+        && normalized.height > 0
+        ? normalized
+        : null;
+}
+
+function normalizeDamageModifier(modifier) {
+    if (!modifier || typeof modifier !== 'object') return null;
+    const afflictionType = firstDefined(modifier.afflictionType, modifier.affliction_type);
+    const afflictionIdentifier = firstDefined(modifier.afflictionIdentifier, modifier.affliction_identifier);
+    const multiplier = Number(firstDefined(modifier.multiplier, 1));
+    if (!Number.isFinite(multiplier)) return null;
+    return {
+        ...modifier,
+        afflictionType,
+        affliction_type: afflictionType,
+        afflictionIdentifier,
+        affliction_identifier: afflictionIdentifier,
+        multiplier,
+    };
+}
+
+function normalizeRenderLimb(limb) {
+    if (!limb || typeof limb !== 'object') return null;
+    const limbKey = firstDefined(limb.limbKey, limb.limb_key);
+    const image = normalizeRenderAsset(limb.image);
+    const bounds = normalizeRenderBounds(limb.bounds);
+    if (!limbKey || !image || !bounds) return null;
+    const ragdollLimbId = firstDefined(limb.ragdollLimbId, limb.ragdoll_limb_id);
+    const healthIndex = firstDefined(limb.healthIndex, limb.health_index);
+    const zIndex = Number(firstDefined(limb.zIndex, limb.z_index, 0)) || 0;
+    const hitColor = String(firstDefined(limb.hitColor, limb.hit_color, '')).toUpperCase();
+    const damageModifiers = normalizeArray(
+        firstDefined(limb.damageModifiers, limb.damage_modifiers),
+        normalizeDamageModifier,
+    );
+    const mappingStatus = firstDefined(limb.mappingStatus, limb.mapping_status, 'UNMAPPED');
+    const mappingSourceName = firstDefined(limb.mappingSourceName, limb.mapping_source_name);
+    return {
+        ...limb,
+        limbKey,
+        limb_key: limbKey,
+        ragdollLimbId,
+        ragdoll_limb_id: ragdollLimbId,
+        healthIndex,
+        health_index: healthIndex,
+        zIndex,
+        z_index: zIndex,
+        hitColor,
+        hit_color: hitColor,
+        bounds,
+        image,
+        damageModifiers,
+        damage_modifiers: damageModifiers,
+        mappingStatus,
+        mapping_status: mappingStatus,
+        mappingSourceName,
+        mapping_source_name: mappingSourceName,
+    };
+}
+
+export function normalizeCreatureRender(render) {
+    if (!render || typeof render !== 'object') return null;
+    const canvas = render.canvas && typeof render.canvas === 'object'
+        ? {
+            width: Number(firstDefined(render.canvas.width, 0)) || 0,
+            height: Number(firstDefined(render.canvas.height, 0)) || 0,
+        }
+        : null;
+    const fallbackComposite = normalizeRenderAsset(firstDefined(render.fallbackComposite, render.fallback_composite));
+    const hitMap = normalizeRenderAsset(firstDefined(render.hitMap, render.hit_map));
+    const limbs = normalizeArray(render.limbs, normalizeRenderLimb)
+        .sort((left, right) => left.zIndex - right.zIndex || left.ragdollLimbId - right.ragdollLimbId);
+    if (!canvas || canvas.width <= 0 || canvas.height <= 0 || !fallbackComposite || !hitMap || limbs.length === 0) {
+        return null;
+    }
+    const renderHash = firstDefined(render.renderHash, render.render_hash);
+    const rendererVersion = firstDefined(render.rendererVersion, render.renderer_version);
+    const poseKey = firstDefined(render.poseKey, render.pose_key);
+    const sourceVersion = firstDefined(render.sourceVersion, render.source_version);
+    return {
+        ...render,
+        renderHash,
+        render_hash: renderHash,
+        rendererVersion,
+        renderer_version: rendererVersion,
+        poseKey,
+        pose_key: poseKey,
+        sourceVersion,
+        source_version: sourceVersion,
+        canvas,
+        fallbackComposite,
+        fallback_composite: fallbackComposite,
+        hitMap,
+        hit_map: hitMap,
+        limbs,
+        warnings: Array.isArray(render.warnings) ? render.warnings : [],
+    };
+}
+
 function normalizeInfoboxField(field) {
     if (!field || typeof field !== 'object') return null;
 
@@ -638,6 +767,7 @@ function normalizeDetail(detail) {
     const publishedAt = firstDefined(detail.publishedAt, detail.published_at);
 
     const primaryImage = normalizeImage(firstDefined(detail.primaryImage, detail.primary_image));
+    const creatureRender = normalizeCreatureRender(firstDefined(detail.creatureRender, detail.creature_render));
     const infobox = normalizeArray(detail.infobox, normalizeInfoboxField);
     const relatedEntities = normalizeArray(
         firstDefined(detail.relatedEntities, detail.related_entities),
@@ -682,6 +812,8 @@ function normalizeDetail(detail) {
         published_at: publishedAt,
         primaryImage,
         primary_image: primaryImage,
+        creatureRender,
+        creature_render: creatureRender,
         infobox,
         relatedEntities,
         related_entities: relatedEntities,

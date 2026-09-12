@@ -10,6 +10,7 @@ import { PropertyFieldList } from '../components/PropertyValue';
 import RelatedGuidesSection from '../components/RelatedGuidesSection';
 import RelationGroup from '../components/RelationGroup';
 import ImageWithFallback from '../components/ImageWithFallback';
+import CreatureAnatomyViewer from '../components/CreatureAnatomyViewer';
 import { groupProperties, splitImportedProperties } from '../utils/importedProperties';
 import { groupRelations } from '../utils/relations';
 import { humanizeIdentifier } from '../utils/text';
@@ -397,6 +398,10 @@ export default function EncyclopediaDetailPage() {
                         </div>
                     )}
                 </section>
+
+                {detail.entityType === 'CHARACTER' && detail.creatureRender && (
+                    <CreatureAnatomyViewer render={detail.creatureRender} creatureName={detail.title} />
+                )}
 
                 <div className="encyclopedia-detail-layout">
                     <main className="encyclopedia-detail-main">

@@ -61,7 +61,7 @@ The frontend uses plain CSS, React Router, context providers, lazy-loaded route 
 | Mods, comments, tags, Steam transition | `src/pages/ModsListPage.jsx`, `ModPage.jsx`, `TagsPage.jsx` | `src/api/mods.js`, `tags.js`, `tagErrorMapper.js`, shared comment/mod/tag components | `ModsListPage.test.jsx`, `ModPage.test.jsx`, `TagsPage.test.jsx` and component tests |
 | Submarines | `src/pages/SubmarinesListPage.jsx`, `SubmarinePage.jsx` | `src/api/submarines.js`, `SubmarineCard.jsx`, `SubmarineGallery.jsx`, Steam/author/relation components | submarine page tests plus affected component tests |
 | Universal and mod-specific guides | `src/pages/GuidesListPage.jsx`, `GuidePage.jsx`, `GuideCreatePage.jsx`, `GuideEditorPage.jsx`, legacy `ModGuidePage.jsx`/`ModGuideEditor.jsx` | `src/api/modGuides.js`, `internalReferences.js`, `components/guides/`, `utils/internalGuideLinks.js`; read `GUIDE_INSTRUCTIONS.md` | guide page/editor and `components/guides/` tests |
-| Encyclopedia browsing and rendering | `src/pages/EncyclopediaListPage.jsx`, `EncyclopediaDetailPage.jsx` | `src/api/encyclopedia.js`, encyclopedia/relation/property components, `utils/relations.js`, `importedProperties.js` | encyclopedia page tests and related component/utility tests |
+| Encyclopedia browsing and rendering | `src/pages/EncyclopediaListPage.jsx`, `EncyclopediaDetailPage.jsx` | `src/api/encyclopedia.js`, `CreatureAnatomyViewer.jsx`/`.css` for detail-only character limb bundles, encyclopedia/relation/property components, `utils/relations.js`, `importedProperties.js` | encyclopedia page tests, `CreatureAnatomyViewer.test.jsx`, API normalization tests, and related component/utility tests |
 | Encyclopedia admin editor | `src/pages/EncyclopediaEditorPage.jsx` | admin functions/constants in `src/api/encyclopedia.js`, shared guide Markdown/internal-link components | `EncyclopediaEditorPage.test.jsx` and guide component tests |
 | Collections | `src/pages/CollectionsPage.jsx`, `CollectionBuilderPage.jsx`, `CollectionPage.jsx` | `src/api/modCollections.js`, `src/components/collection/`, `docs/COLLECTIONS_UI_PLAN.md` only when historical plan context is useful | collection page/API/component tests |
 | Load-order conversion | `src/pages/LoadOrderPage.jsx` | `src/api/loadOrder.js`, `src/pages/loadOrderSample.js` | add/inspect tests around conversion behavior |
@@ -91,7 +91,7 @@ Whenever a route or guard changes, verify navigation links, direct-load behavior
 - `src/api/api.js` owns `API_BASE`, the shared `request()` wrapper, `ApiRequestError`, pagination normalization, and server-failure signaling.
 - Domain clients own their normalization and endpoint calls. Do not bypass them from pages unless an existing pattern clearly requires it.
 - Backend JSON commonly uses `snake_case`; several clients normalize mixed `snake_case`/`camelCase`. Preserve this compatibility when changing contracts.
-- `src/api/encyclopedia.js`, `submarines.js`, and `modCollections.js` contain substantial domain normalization in addition to network calls; inspect their helpers before changing consumers.
+- `src/api/encyclopedia.js`, `submarines.js`, and `modCollections.js` contain substantial domain normalization in addition to network calls; inspect their helpers before changing consumers. Creature anatomy is normalized only on encyclopedia detail, while `primary_image` remains the independent preview/SEO image.
 - Auth token/session behavior lives in `AuthContext.jsx`; route authorization is UI convenience only. Backend security remains authoritative.
 
 ## Cross-repository map
@@ -102,7 +102,7 @@ Whenever a route or guard changes, verify navigation links, direct-load behavior
 | `src/api/mods.js`, comments/tags UI | `ModPostController.java`, `CommentController.java`, `TagController.java` and matching services |
 | `src/api/submarines.js` | `SubmarineController.java`, `SubmarineServiceImpl.java`, submarine search/Steam services |
 | `src/api/modGuides.js`, guide UI | `ModGuideController.java`, `ModGuideServiceImpl.java`, guide validator/renderer |
-| `src/api/encyclopedia.js` | `EncyclopediaController.java`, `AdminEncyclopediaController.java`, encyclopedia/search/relation services |
+| `src/api/encyclopedia.js`, `CreatureAnatomyViewer.jsx` | `EncyclopediaController.java`, `CreatureRenderIngestController.java`, `CreatureRenderQueryService.java`, encyclopedia/search/relation services |
 | `src/api/modCollections.js` | collection controllers and `service/collection/` |
 | `src/api/loadOrder.js` | `loadorder/` bounded context |
 | `src/api/steamSync.js`, `steamAvailability.js` | corresponding admin controllers and `service/steam/` |
