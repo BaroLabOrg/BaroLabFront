@@ -49,6 +49,12 @@ function normalizeEntityType(value) {
     return ENCYCLOPEDIA_ENTITY_TYPES.includes(value) ? value : '';
 }
 
+function toApiEntityType(entityType) {
+    // Vanilla fauna is still stored under the game's CHARACTER entity type.
+    // Keep the public CREATURE filter stable while that source taxonomy remains in use.
+    return entityType === 'CREATURE' ? 'CHARACTER' : entityType;
+}
+
 function normalizeEntitySource(value) {
     return ENCYCLOPEDIA_ENTITY_SOURCES.includes(value) ? value : '';
 }
@@ -129,7 +135,7 @@ export default function EncyclopediaListPage() {
                 const load = modFilter ? getEncyclopediaList : searchEncyclopedia;
                 const data = await load({
                     q,
-                    entityType: entityType || undefined,
+                    entityType: toApiEntityType(entityType) || undefined,
                     entitySource: entitySource || undefined,
                     mod: modFilter || undefined,
                     page,

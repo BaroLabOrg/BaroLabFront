@@ -182,8 +182,19 @@ describe('EncyclopediaListPage', () => {
             expect(getLocationParams().get('entityType')).toBe('CREATURE');
         });
         expect(encyclopediaApi.searchEncyclopedia).toHaveBeenLastCalledWith(
-            expect.objectContaining({ entityType: 'CREATURE' }),
+            expect.objectContaining({ entityType: 'CHARACTER' }),
         );
+    });
+
+    it('loads the creature catalog URL through the current character taxonomy', async () => {
+        renderPage('/encyclopedia?entityType=CREATURE');
+
+        await waitFor(() => {
+            expect(encyclopediaApi.searchEncyclopedia).toHaveBeenCalledWith(
+                expect.objectContaining({ entityType: 'CHARACTER' }),
+            );
+        });
+        expect(screen.getByRole('button', { name: 'Creature' })).toHaveClass('active');
     });
 
     it('changes sort preset', async () => {
