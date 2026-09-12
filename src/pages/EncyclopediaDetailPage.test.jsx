@@ -15,6 +15,10 @@ vi.mock('../api/internalReferences', () => ({
     loadInternalReferencePreview: vi.fn(),
 }));
 
+vi.mock('../components/CreatureAnatomyViewer', () => ({
+    default: ({ creatureName }) => <section aria-label={`${creatureName} anatomy viewer`} />,
+}));
+
 vi.mock('../context/AuthContext', () => ({
     useAuth: () => authState,
 }));
@@ -94,6 +98,46 @@ describe('EncyclopediaDetailPage', () => {
         expect(screen.getByText('Parasitic')).toBeInTheDocument();
         expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'Source: Vanilla')).toBeInTheDocument();
         expect(screen.queryByRole('link', { name: 'Edit article' })).not.toBeInTheDocument();
+    });
+
+    it('places anatomy on character details only when a render is available', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'CHARACTER',
+            slug: 'crawler',
+            title: 'Crawler',
+            primaryImage: { publicUrl: 'https://cdn.test/crawler-preview.png' },
+            creatureRender: { renderHash: 'render-1' },
+        }));
+
+        renderPage('/encyclopedia/crawler');
+
+        expect(await screen.findByLabelText('Crawler anatomy viewer')).toBeInTheDocument();
+        expect(screen.getByAltText('Crawler')).toHaveAttribute('src', 'https://cdn.test/crawler-preview.png');
+    });
+
+    it('does not mount anatomy for a character without an active render', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            entityType: 'CHARACTER',
+            slug: 'crawler',
+            title: 'Crawler',
+            creatureRender: null,
+        }));
+
+        renderPage('/encyclopedia/crawler');
+
+        await screen.findByRole('heading', { name: 'Crawler' });
+        expect(screen.queryByLabelText(/anatomy viewer/)).not.toBeInTheDocument();
+    });
+
+    it('does not mount anatomy for a non-character even if stray render data is present', async () => {
+        vi.spyOn(encyclopediaApi, 'getEncyclopediaDetail').mockResolvedValue(buildDetail({
+            creatureRender: { renderHash: 'render-1' },
+        }));
+
+        renderPage();
+
+        await screen.findByRole('heading', { name: 'Husk Infection' });
+        expect(screen.queryByLabelText(/anatomy viewer/)).not.toBeInTheDocument();
     });
 
     it('turns imported affliction identifiers into Causes links and flags unresolved values', async () => {

@@ -1,0 +1,460 @@
+.creature-anatomy {
+  --anatomy-accent: #d98639;
+  --anatomy-accent-soft: rgba(217, 134, 57, 0.14);
+  position: relative;
+  margin: 0 0 clamp(30px, 5vw, 54px);
+  border: 1px solid rgba(159, 180, 207, 0.22);
+  background: #080c11;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+.creature-anatomy::before,
+.creature-anatomy::after {
+  position: absolute;
+  z-index: 3;
+  width: 62px;
+  height: 1px;
+  background: var(--anatomy-accent);
+  content: '';
+  pointer-events: none;
+}
+
+.creature-anatomy::before {
+  top: -1px;
+  left: 22px;
+}
+
+.creature-anatomy::after {
+  right: 22px;
+  bottom: -1px;
+}
+
+.creature-anatomy-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(159, 180, 207, 0.18);
+  background: linear-gradient(90deg, rgba(217, 134, 57, 0.075), transparent 46%);
+}
+
+.creature-anatomy-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-header p {
+  margin: 8px 0 0;
+  color: #9fb4cf;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-status {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(159, 180, 207, 0.26);
+  color: #a9bdd4;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-status[data-state='ready'] {
+  border-color: rgba(81, 178, 118, 0.38);
+  color: #8dd0a6;
+}
+
+.creature-anatomy-status[data-state='fallback'] {
+  border-color: rgba(217, 134, 57, 0.42);
+  color: #e4a86e;
+}
+
+.creature-anatomy-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(250px, 0.7fr);
+  min-height: clamp(390px, 46vw, 620px);
+}
+
+.creature-anatomy-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 390px;
+  overflow: hidden;
+  border-right: 1px solid rgba(159, 180, 207, 0.18);
+  background:
+    linear-gradient(rgba(159, 180, 207, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 180, 207, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(217, 134, 57, 0.08), transparent 48%),
+    #06090d;
+  background-size: 32px 32px, 32px 32px, auto, auto;
+}
+
+.creature-anatomy-stage::before {
+  position: absolute;
+  inset: 14px;
+  z-index: 0;
+  border: 1px solid rgba(159, 180, 207, 0.08);
+  content: '';
+  pointer-events: none;
+}
+
+.creature-anatomy-canvas,
+.creature-anatomy-overlay {
+  position: absolute;
+  display: block;
+}
+
+.creature-anatomy-canvas {
+  z-index: 1;
+  cursor: crosshair;
+  touch-action: manipulation;
+}
+
+.creature-anatomy-overlay {
+  z-index: 2;
+  filter: drop-shadow(0 0 14px rgba(217, 134, 57, 0.45));
+  pointer-events: none;
+  transition: filter 180ms ease-out;
+}
+
+.creature-anatomy-hit-map {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.creature-anatomy-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  margin: 0;
+  color: #8da1b9;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+}
+
+.creature-anatomy-loading::after {
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin: 12px auto 0;
+  background: linear-gradient(90deg, transparent, var(--anatomy-accent), transparent);
+  content: '';
+  animation: anatomy-scan 1.4s ease-in-out infinite;
+}
+
+.creature-anatomy-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.creature-anatomy-fallback img {
+  width: 100%;
+  height: calc(100% - 54px);
+  object-fit: contain;
+}
+
+.creature-anatomy-fallback p {
+  max-width: 64ch;
+  margin: 14px 0 0;
+  color: #a8b8ca;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.creature-anatomy-tooltip {
+  position: absolute;
+  z-index: 5;
+  padding: 6px 8px;
+  border: 1px solid rgba(217, 134, 57, 0.55);
+  background: rgba(7, 10, 14, 0.94);
+  color: #f0c08f;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  transform: translate(12px, calc(-100% - 12px));
+}
+
+.creature-anatomy-inspector {
+  min-width: 0;
+  padding: clamp(22px, 3vw, 34px);
+  background: linear-gradient(180deg, rgba(159, 180, 207, 0.035), transparent 42%);
+}
+
+.creature-anatomy-selection > span,
+.creature-anatomy-modifiers h4 {
+  color: #859ab2;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-selection h3 {
+  margin: 8px 0 4px;
+  color: #f4eee6;
+  font-family: var(--font-heading);
+  font-size: clamp(1.45rem, 2.5vw, 2.3rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-selection p {
+  margin: 0;
+  color: #d99a5e;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.creature-anatomy-data {
+  margin: 28px 0 0;
+}
+
+.creature-anatomy-data > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(159, 180, 207, 0.14);
+}
+
+.creature-anatomy-data dt,
+.creature-anatomy-data dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.creature-anatomy-data dt {
+  color: #8497ad;
+}
+
+.creature-anatomy-data dd {
+  color: #d6e0ea;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  text-transform: capitalize;
+}
+
+.creature-anatomy-modifiers {
+  margin-top: 28px;
+}
+
+.creature-anatomy-modifiers h4 {
+  margin: 0 0 10px;
+}
+
+.creature-anatomy-modifiers ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.creature-anatomy-modifiers li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(159, 180, 207, 0.1);
+  color: #aebdcd;
+  font-size: 0.76rem;
+}
+
+.creature-anatomy-modifiers li span {
+  overflow-wrap: anywhere;
+}
+
+.creature-anatomy-modifiers li strong {
+  color: #f0c08f;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.creature-anatomy-modifiers > p,
+.creature-anatomy-warning {
+  color: #95a6b9;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.creature-anatomy-warning {
+  margin: 22px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(217, 134, 57, 0.26);
+  background: var(--anatomy-accent-soft);
+  color: #d9b18a;
+}
+
+.creature-anatomy-limb-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 1px;
+  border-top: 1px solid rgba(159, 180, 207, 0.18);
+  background: rgba(159, 180, 207, 0.12);
+}
+
+.creature-anatomy-limb-list button {
+  min-height: 48px;
+  padding: 9px 11px;
+  border: 0;
+  background: #0a0f15;
+  color: #a9b8c9;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.creature-anatomy-limb-list button:hover {
+  background: #101821;
+  color: #e5edf5;
+}
+
+.creature-anatomy-limb-list button[aria-pressed='true'] {
+  background: rgba(217, 134, 57, 0.16);
+  color: #f0c08f;
+  box-shadow: inset 0 -2px 0 var(--anatomy-accent);
+}
+
+.creature-anatomy-limb-list button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid #e0a164;
+  outline-offset: -3px;
+}
+
+.creature-anatomy-limb-list span,
+.creature-anatomy-limb-list small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creature-anatomy-limb-list span {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.creature-anatomy-limb-list small {
+  margin-top: 2px;
+  color: #718399;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+}
+
+.creature-anatomy-render-notes {
+  padding: 13px 18px 16px;
+  border-top: 1px solid rgba(217, 134, 57, 0.2);
+  background: rgba(217, 134, 57, 0.055);
+  color: #9fb0c2;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.creature-anatomy-render-notes summary {
+  color: #d9aa7a;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.creature-anatomy-render-notes summary:focus-visible {
+  outline: 2px solid #e0a164;
+  outline-offset: 4px;
+}
+
+.creature-anatomy-render-notes ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.creature-anatomy-render-notes li + li {
+  margin-top: 5px;
+}
+
+@keyframes anatomy-scan {
+  0%, 100% { opacity: 0.3; transform: scaleX(0.35); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+
+@media (max-width: 900px) {
+  .creature-anatomy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .creature-anatomy-stage {
+    min-height: clamp(330px, 72vw, 500px);
+    border-right: 0;
+    border-bottom: 1px solid rgba(159, 180, 207, 0.18);
+  }
+
+  .creature-anatomy-inspector {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  .creature-anatomy {
+    margin-inline: -8px;
+  }
+
+  .creature-anatomy-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .creature-anatomy-stage {
+    min-height: 300px;
+  }
+
+  .creature-anatomy-inspector {
+    padding: 22px 18px;
+  }
+
+  .creature-anatomy-limb-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .creature-anatomy-loading::after {
+    animation: none;
+  }
+
+  .creature-anatomy-overlay,
+  .creature-anatomy-limb-list button {
+    transition: none;
+  }
+}
