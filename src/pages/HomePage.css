@@ -334,7 +334,9 @@
 .home-cat-bg--mods {
     background:
         repeating-linear-gradient(90deg, rgba(255, 90, 31, 0.07) 0 2px, transparent 2px 26px),
-        repeating-linear-gradient(0deg, rgba(255, 90, 31, 0.05) 0 2px, transparent 2px 26px);
+        repeating-linear-gradient(0deg, rgba(255, 90, 31, 0.05) 0 2px, transparent 2px 26px),
+        radial-gradient(circle at 9% 16%, rgba(255, 90, 31, 0.18), transparent 32%),
+        radial-gradient(circle at 9% 16%, transparent 25%, rgba(255, 90, 31, 0.1) 26%, transparent 27%);
 }
 
 .home-cat-bg--submarines {
@@ -344,7 +346,10 @@
 }
 
 .home-cat-bg--guides {
-    background: repeating-linear-gradient(180deg, rgba(255, 176, 0, 0.05) 0 3px, transparent 3px 14px);
+    background:
+        repeating-linear-gradient(180deg, rgba(51, 255, 119, 0.06) 0 3px, transparent 3px 14px),
+        radial-gradient(circle at 85% 22%, rgba(51, 255, 119, 0.13), transparent 46%),
+        radial-gradient(circle at 85% 22%, transparent 30%, rgba(51, 255, 119, 0.07) 31%, transparent 32%);
     -webkit-mask-image: linear-gradient(115deg, transparent 42%, #000 80%);
     mask-image: linear-gradient(115deg, transparent 42%, #000 80%);
 }
@@ -381,7 +386,13 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-tertiary);
+    transition: color var(--transition-base);
 }
+
+/* Category identity is visible at rest, not just on hover */
+.home-cat-card--mods .home-cat-bracket { color: var(--orange); }
+.home-cat-card--submarines .home-cat-bracket { color: var(--deep-blue); }
+.home-cat-card--guides .home-cat-bracket { color: var(--green); }
 
 .home-cat-topline .home-arrow-icon {
     color: var(--text-tertiary);
@@ -440,7 +451,7 @@
 }
 
 .home-cat-card--submarines .home-cat-emblem { color: var(--deep-blue); }
-.home-cat-card--guides .home-cat-emblem { color: var(--amber); }
+.home-cat-card--guides .home-cat-emblem { color: var(--green); }
 
 /* Thematic hover motion — run only while the card is hovered */
 @keyframes cat-gear-spin { to { transform: rotate(360deg); } }
@@ -528,8 +539,13 @@
     font-size: 8.5px;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--text-tertiary);
-    border-bottom: 1px solid var(--border-vector);
+    color: var(--amber);
+    border-bottom: 1px solid rgba(255, 176, 0, 0.32);
+    transition: border-color var(--transition-base);
+}
+
+.home-cat-card:hover .home-cat-tag {
+    border-bottom-color: rgba(255, 176, 0, 0.6);
 }
 
 .home-cat-stub {
