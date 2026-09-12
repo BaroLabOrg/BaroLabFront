@@ -128,6 +128,14 @@
     z-index: 1;
 }
 
+/* The global a:focus-visible rule outranks the plain-class `outline: none`
+   above on specificity, so it still shows its own small ring around just
+   the title text unless re-suppressed here at matching specificity — the
+   ::after ring around the whole card is the one that should show instead. */
+.home-mod-card-title-link:focus-visible {
+    outline: none;
+}
+
 .home-mod-card-title-link:focus-visible::after {
     box-shadow: inset 0 0 0 2px var(--green);
 }
@@ -176,7 +184,12 @@
     color: var(--text-primary);
     text-decoration: underline;
     text-underline-offset: 2px;
-    outline: none;
+}
+
+.home-mod-card-author--link:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 1px;
 }
 
 .home-mod-card-author-icon {

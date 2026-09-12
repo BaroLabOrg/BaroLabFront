@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
+import useElementWidth from '../hooks/useElementWidth';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -12,6 +13,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const { login: doLogin, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
+    const [googleBtnRef, googleBtnWidth] = useElementWidth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -103,17 +105,19 @@ export default function LoginPage() {
                         <span>or</span>
                     </div>
 
-                    <div className="google-login-wrapper">
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={handleGoogleError}
-                            theme="filled_black"
-                            size="large"
-                            width="100%"
-                            text="signin_with"
-                            shape="rectangular"
-                            locale="en"
-                        />
+                    <div className="google-login-wrapper" ref={googleBtnRef}>
+                        {googleBtnWidth > 0 && (
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                                theme="filled_black"
+                                size="large"
+                                width={googleBtnWidth}
+                                text="signin_with"
+                                shape="rectangular"
+                                locale="en"
+                            />
+                        )}
                     </div>
 
                     <div className="auth-footer">

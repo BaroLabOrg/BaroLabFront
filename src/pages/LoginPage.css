@@ -199,11 +199,20 @@
 .google-login-wrapper {
   display: flex;
   justify-content: center;
+  min-height: 64px;
   padding: 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+/* GSI's `width` prop only accepts a fixed pixel number (no "100%"), so on
+   viewports narrower than that number the rendered iframe needs its own
+   shrink-to-fit safety net. */
+.google-login-wrapper > div,
+.google-login-wrapper iframe {
+  max-width: 100%;
 }
 
 .google-login-wrapper:hover {

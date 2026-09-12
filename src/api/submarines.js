@@ -133,6 +133,7 @@ export function normalizeSubmarine(submarine) {
             : undefined,
     );
     const cargoCapacity = firstDefined(submarine.cargoCapacity, submarine.cargo_capacity);
+    const engineForce = firstDefined(submarine.engineForce, submarine.engine_force);
     const maxHorizontalSpeedKph = firstDefined(submarine.maxHorizontalSpeedKph, submarine.max_horizontal_speed_kph);
     const turretSlotCount = firstDefined(submarine.turretSlotCount, submarine.turret_slot_count);
     const largeTurretSlotCount = firstDefined(submarine.largeTurretSlotCount, submarine.large_turret_slot_count);
@@ -191,6 +192,8 @@ export function normalizeSubmarine(submarine) {
         recommendedCrewDisplay,
         cargo_capacity: cargoCapacity,
         cargoCapacity,
+        engine_force: engineForce,
+        engineForce,
         max_horizontal_speed_kph: maxHorizontalSpeedKph,
         maxHorizontalSpeedKph,
         turret_slot_count: turretSlotCount,
