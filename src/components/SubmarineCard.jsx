@@ -79,6 +79,11 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
 
     const content = (
         <>
+            {/* "Open this" affordance — same bottom-right placement as every other
+                homepage card (see .home-mod-card-go / .home-cat-go). */}
+            <span className="submarine-card-go" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+            </span>
             <div className="submarine-card-preview">
                 <ImageWithFallback
                     className="submarine-card-preview-image"
@@ -108,12 +113,7 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
                 <TagChips tags={Array.isArray(submarine.tags) ? submarine.tags : []} />
             </div>
 
-            <div className="submarine-card-footer">
-                {actionLabel}
-                <svg className="submarine-card-footer-arrow" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                    <path d="M5 12h13M13 6l6 6-6 6" />
-                </svg>
-            </div>
+            <div className="submarine-card-footer">{actionLabel}</div>
         </>
     );
 

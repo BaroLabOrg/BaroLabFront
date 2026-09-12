@@ -394,18 +394,34 @@
 .home-cat-card--submarines .home-cat-bracket { color: var(--deep-blue); }
 .home-cat-card--guides .home-cat-bracket { color: var(--green); }
 
-.home-cat-topline .home-arrow-icon {
+/* "Open this" affordance — bottom-right, bare glyph, dim at rest, same
+   mechanism as .home-mod-card-go and .submarine-card-go so every card on
+   the homepage places it identically. */
+.home-cat-go {
+    position: absolute;
+    z-index: 2;
+    right: 24px;
+    bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-tertiary);
     transition: color var(--transition-fast), transform var(--transition-base);
+    pointer-events: none;
 }
 
-.home-cat-card:hover .home-cat-topline .home-arrow-icon {
+.home-cat-card--mods .home-cat-go {
+    right: 38px;
+    bottom: 38px;
+}
+
+.home-cat-card:hover .home-cat-go {
     transform: translateX(4px);
 }
 
-.home-cat-card--mods:hover .home-cat-topline .home-arrow-icon { color: var(--orange); }
-.home-cat-card--submarines:hover .home-cat-topline .home-arrow-icon { color: var(--deep-blue); }
-.home-cat-card--guides:hover .home-cat-topline .home-arrow-icon { color: var(--green); }
+.home-cat-card--mods:hover .home-cat-go { color: var(--orange); }
+.home-cat-card--submarines:hover .home-cat-go { color: var(--deep-blue); }
+.home-cat-card--guides:hover .home-cat-go { color: var(--green); }
 
 /* ── Emblem — large thematic watermark, sits behind the copy ────────────── */
 .home-cat-emblem {
@@ -671,18 +687,6 @@
 
 .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-footer {
     margin-top: 0;
-}
-
-/* Rail items: the "open" arrow sits centred on the right edge */
-.home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-go {
-    top: 50%;
-    bottom: auto;
-    right: 12px;
-    transform: translateY(-50%);
-}
-
-.home-card-grid--trending .home-mod-card:not(:first-child):hover .home-mod-card-go {
-    transform: translateY(-50%) translateX(4px);
 }
 
 /* Feature card: arrow bottom-right, footer clears it */
@@ -983,18 +987,6 @@
 
     .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-body {
         padding: 14px;
-    }
-
-    /* Card is now a vertical stack — move the arrow to the footer corner */
-    .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-go {
-        top: auto;
-        bottom: 12px;
-        right: 12px;
-        transform: none;
-    }
-
-    .home-card-grid--trending .home-mod-card:not(:first-child):hover .home-mod-card-go {
-        transform: translateX(4px);
     }
 
     .home-card-grid--trending .home-mod-card:not(:first-child) .home-mod-card-footer {

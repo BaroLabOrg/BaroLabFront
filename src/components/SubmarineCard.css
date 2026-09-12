@@ -70,7 +70,7 @@
 .submarine-card-preview-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform var(--transition-slow);
 }
 
@@ -197,9 +197,6 @@
 }
 
 .submarine-card-footer {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   margin-top: 0;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-vector-soft);
@@ -212,24 +209,40 @@
   transition: color var(--transition-fast), letter-spacing var(--transition-fast);
 }
 
-.submarine-card-footer-arrow {
-  width: 14px;
-  height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: transform var(--transition-base);
-}
-
 .submarine-card:hover .submarine-card-footer {
   letter-spacing: 0.1em;
   filter: brightness(1.1);
 }
 
-.submarine-card:hover .submarine-card-footer-arrow {
-  transform: translateX(3px);
+/* "Open this" affordance — same placement/behaviour as every other
+   homepage card: a bare arrow glyph, dim at rest, bottom-right, that
+   takes the card's accent colour and slides right on hover. */
+.submarine-card-go {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  transition: color var(--transition-fast), transform var(--transition-base);
+  pointer-events: none;
+}
+
+.submarine-card-go svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.submarine-card:hover .submarine-card-go {
+  color: var(--deep-blue);
+  transform: translateX(4px);
 }
 
 /* A sub whose file hasn't been parsed yet: no figures at all, not zeroes. */

@@ -233,10 +233,12 @@ export default function HomePage() {
                         <Link key={cat.key} to={cat.to} className={`home-cat-card home-cat-card--${cat.key}`}>
                             <span className={`home-cat-bg home-cat-bg--${cat.key}`} aria-hidden="true" />
                             <span className="home-cat-emblem" aria-hidden="true">{CATEGORY_ICONS[cat.key]}</span>
+                            {/* "Open this" affordance — same bottom-right placement as every
+                                other homepage card (see .home-mod-card-go / .submarine-card-go). */}
+                            <span className="home-cat-go" aria-hidden="true"><ArrowIcon /></span>
                             <span className="home-cat-body">
                                 <span className="home-cat-topline">
                                     <span className="home-cat-bracket">{cat.bracket}</span>
-                                    <ArrowIcon />
                                 </span>
                                 <span className="home-cat-title">{cat.title}</span>
                                 <span className="home-cat-desc">{cat.desc}</span>
