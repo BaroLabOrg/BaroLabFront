@@ -6,7 +6,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
   min-height: 290px;
   padding: 1rem;
   text-align: left;
@@ -54,6 +53,7 @@
 .submarine-card-preview {
   width: 100%;
   aspect-ratio: 16 / 9;
+  margin-bottom: 0.85rem;
   border: 1px solid var(--border-vector);
   background: var(--inset);
   overflow: hidden;
@@ -102,6 +102,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.7rem;
+  margin-bottom: 0.55rem;
 }
 
 .submarine-card-title {
@@ -130,7 +131,7 @@
 }
 
 .submarine-card-description {
-  margin: 0;
+  margin: 0 0 0.85rem;
   color: var(--text-secondary);
   font-size: 0.83rem;
   line-height: 1.6;
@@ -142,35 +143,49 @@
   overflow: hidden;
 }
 
+/* ── Stats — one icon per figure, matching the homepage card icon style ── */
 .submarine-card-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  color: var(--text-tertiary);
+  gap: 0.2rem 0.6rem;
+  margin-bottom: 0.7rem;
 }
 
-.submarine-card-metrics span {
+.submarine-card-stat {
   display: flex;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
-  flex-direction: column;
-  gap: 2px;
   padding: 6px 0;
   border-bottom: 1px solid var(--border-vector-soft);
 }
 
-.submarine-card-metrics small {
+.submarine-card-stat-icon {
+  flex: 0 0 auto;
+  color: var(--deep-blue);
+  opacity: 0.85;
+}
+
+.submarine-card-stat-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.submarine-card-stat-text small {
   color: var(--text-tertiary);
+  font-family: var(--font-mono);
   font-size: 0.55rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.submarine-card-metrics strong {
+.submarine-card-stat-text strong {
   overflow: hidden;
   color: var(--text-secondary);
-  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -178,10 +193,14 @@
 
 .submarine-card-tags {
   margin-top: auto;
+  margin-bottom: 0.75rem;
 }
 
 .submarine-card-footer {
-  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-vector-soft);
   color: var(--deep-blue);
@@ -193,14 +212,29 @@
   transition: color var(--transition-fast), letter-spacing var(--transition-fast);
 }
 
+.submarine-card-footer-arrow {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--transition-base);
+}
+
 .submarine-card:hover .submarine-card-footer {
   letter-spacing: 0.1em;
   filter: brightness(1.1);
 }
 
-/* Лодка, чей файл ещё не разбирали: цифр нет вовсе, а не нули. */
+.submarine-card:hover .submarine-card-footer-arrow {
+  transform: translateX(3px);
+}
+
+/* A sub whose file hasn't been parsed yet: no figures at all, not zeroes. */
 .submarine-card-metrics-empty {
-  margin: 0;
+  margin: 0 0 0.75rem;
   color: var(--text-tertiary);
   font-size: 0.85rem;
   font-style: italic;

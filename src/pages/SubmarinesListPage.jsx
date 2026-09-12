@@ -996,7 +996,7 @@ export default function SubmarinesListPage() {
                             <SubmarineCard
                                 key={submarine.id || submarine.externalId || submarine.external_id}
                                 submarine={submarine}
-                                actionLabel={guideTargetMode ? 'Write guide →' : 'Read more →'}
+                                actionLabel={guideTargetMode ? 'Write guide' : 'Read more'}
                                 onSelect={guideTargetMode ? (selectedSubmarine) => {
                                     const targetId = selectedSubmarine.externalId || selectedSubmarine.external_id;
                                     navigate(`/guides/new/editor?targetType=SUBMARINE&targetId=${encodeURIComponent(targetId)}`);

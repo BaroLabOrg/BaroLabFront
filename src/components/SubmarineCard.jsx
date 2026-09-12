@@ -1,6 +1,7 @@
 ﻿import { Link } from 'react-router-dom';
 import TagChips from './TagChips';
 import { steamBbcodeToExcerpt } from '../utils/steamBbcode';
+import ContentGlyph from './ContentGlyph';
 import ImageWithFallback from './ImageWithFallback';
 import './SubmarineCard.css';
 
@@ -26,18 +27,21 @@ function formatCrew(submarine) {
 }
 
 /**
- * Одна цифра на карточке, и только если она есть.
+ * One stat cell, and only if there's a value for it.
  *
- * Пустое место здесь честнее прочерка с единицей: до тех пор, пока файл лодки
- * никто не прочитал, у неё неизвестна не цена, а всё сразу.
+ * Blank is more honest than a dash-with-unit here: until someone has read
+ * the sub's file, it's not that the price is unknown — everything is.
  */
-function stat(label, value, unit = '') {
+function stat(label, value, unit, glyph) {
     if (value === null || value === undefined) return null;
     const shown = typeof value === 'number' ? formatNumber(value) : value;
     return (
-        <span key={label}>
-            <small>{label}</small>
-            <strong>{unit ? `${shown} ${unit}` : shown}</strong>
+        <span key={label} className="submarine-card-stat">
+            <ContentGlyph name={glyph} className="submarine-card-stat-icon" size={15} />
+            <span className="submarine-card-stat-text">
+                <small>{label}</small>
+                <strong>{unit ? `${shown} ${unit}` : shown}</strong>
+            </span>
         </span>
     );
 }
@@ -51,14 +55,14 @@ function subtitle(submarine) {
 
 function SubmarineCardStats({ submarine }) {
     const stats = [
-        stat('Price', submarine.price, 'mk'),
-        stat('Crew', formatCrew(submarine)),
-        stat('Cargo', submarine.cargoCapacity),
-        // Тяга, а не скорость: скорость считает физика игры, из файла лодки
-        // она не следует
-        stat('Thrust', submarine.engineForce),
-        stat('Turrets', submarine.turretSlotCount),
-        stat('Build', submarine.fabricationType),
+        stat('Price', submarine.price, 'mk', 'price'),
+        stat('Crew', formatCrew(submarine), '', 'crew'),
+        stat('Cargo', submarine.cargoCapacity, '', 'cargo'),
+        // Thrust, not speed: speed is computed by the game's physics, it
+        // doesn't come from the sub file itself.
+        stat('Thrust', submarine.engineForce, '', 'thrust'),
+        stat('Turrets', submarine.turretSlotCount, '', 'weapon'),
+        stat('Build', submarine.fabricationType, '', 'build'),
     ].filter(Boolean);
 
     if (stats.length === 0) {
@@ -67,7 +71,7 @@ function SubmarineCardStats({ submarine }) {
     return <div className="submarine-card-metrics">{stats}</div>;
 }
 
-export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read more →' }) {
+export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read more' }) {
     const externalId = submarine.externalId ?? submarine.external_id;
     const mainImage = submarine.main_image || submarine.mainImage;
     const previewAlt = submarine.title ? `${submarine.title} preview` : 'Submarine preview';
@@ -104,7 +108,12 @@ export default function SubmarineCard({ submarine, onSelect, actionLabel = 'Read
                 <TagChips tags={Array.isArray(submarine.tags) ? submarine.tags : []} />
             </div>
 
-            <div className="submarine-card-footer">{actionLabel}</div>
+            <div className="submarine-card-footer">
+                {actionLabel}
+                <svg className="submarine-card-footer-arrow" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <path d="M5 12h13M13 6l6 6-6 6" />
+                </svg>
+            </div>
         </>
     );
 
